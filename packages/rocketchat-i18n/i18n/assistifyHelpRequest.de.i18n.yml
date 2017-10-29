@@ -17,10 +17,10 @@ Expertises: Themen
 Experts_channel: Expertenkanal
 Experts: Experten
 gui_title: GUI-Titel
-Hide_expertise_warning: Sind sie sicher, dass Sie das Thema "%s" verstecken wollen? Sie sind danach immer noch Experte zu dem Thema und werden bei neuen Anfragen gefragt werden.
-Hide_request_warning: Sind sie sicher, dass Sie die Anfrage "%s" verstecken wollen? Sie können sie danach immer noch einsehen, wenn Sie möchten.
-Leave_expertise_warning: Sind sie sicher, dass Sie das Thema "%s" verlassen wollen? Sie sind danach kein Experte zu dem Thema mehr. Bei neuen Anfrage werden Sie nicht mehr gefragt werden!
-Leave_request_warning: Sind sie sicher, dass Sie die Anfrage "%s" verlassen wollen? Sie können sie danach nicht mehr einsehen und auch nicht in der Suche finden!
+Hide_expertise_warning: Sind Sie sicher, dass Sie das Thema "%s" verstecken wollen? Sie sind danach immer noch Experte zu dem Thema und werden bei neuen Anfragen gefragt werden.
+Hide_request_warning: Sind Sie sicher, dass Sie die Anfrage "%s" verstecken wollen? Sie können sie danach immer noch einsehen, wenn Sie möchten.
+Leave_expertise_warning: Sind Sie sicher, dass Sie das Thema "%s" verlassen wollen? Sie sind danach kein Experte zu dem Thema mehr. Bei einer neuen Anfrage werden Sie nicht mehr gefragt werden!
+Leave_request_warning: Sind sie Sicher, dass Sie die Anfrage "%s" verlassen wollen? Sie können sie danach nicht mehr einsehen und auch nicht in der Suche finden!
 More_requests: Weitere Anfragen
 New_expertise: Neues Thema
 New_request_for_expertise: Neue Anfrage zum Thema
