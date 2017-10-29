@@ -1,9 +1,19 @@
+import { RocketChat, UiTextContext } from 'meteor/rocketchat:lib';
+
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
 		const instance = Template.instance();
 		const helpRequest = instance.helpRequest.get();
 		if (helpRequest) {
 			return helpRequest.resolutionStatus && helpRequest.resolutionStatus !== 'resolved'; //undefined in livechats
+		}
+	},
+
+	helprequestClosed() {
+		const instance = Template.instance();
+		const helpRequest = instance.helpRequest.get();
+		if (helpRequest) {
+			return helpRequest.resolutionStatus && helpRequest.resolutionStatus === 'resolved'; //undefined in livechats
 		}
 	},
 
@@ -26,77 +36,16 @@ Template.HelpRequestActions.helpers({
 	}
 });
 
-Template.HelpRequestActions.dialogs = {
-	ClosingDialog: class {
-		/**
-		 * @param room the room to get the values from
-		 * @param properties (optional) SweetAlert options
-		 */
-		constructor(helpRequest, properties) {
-			this.room = ChatRoom.findOne(helpRequest.roomId);
-			this.properties = _.isObject(properties) ? properties : {};
-		}
-
-		/**
-		 * @return Promise (keep in mind that native es6-promises aren't cancelable. So always provide a then & catch)
-		 */
-		display() {
-			const self = this;
-			return new Promise(function(resolve, reject) {
-				swal.withForm(_.extend({
-					title: t('Closing_chat'),
-					text: '',
-					formFields: [{
-						id: 'comment',
-						value: self.room.comment,
-						type: 'input',
-						label: t('comment'),
-						placeholder: t('Please_add_a_comment')
-					}, {
-						id: 'tags',
-						value: self.room.tags ? self.room.tags.join(', ') : '',
-						type: 'input',
-						placeholder: t('Please_add_a_tag')
-					}, {
-						id: 'knowledgeProviderUsage',
-						type: 'select',
-						options: [
-							{value: 'Unknown', text: t('knowledge_provider_usage_unknown')},
-							{value: 'Perfect', text: t('knowledge_provider_usage_perfect')},
-							{value: 'Helpful', text: t('knowledge_provider_usage_helpful')},
-							{value: 'NotUsed', text: t('knowledge_provider_usage_not_used')},
-							{value: 'Useless', text: t('knowledge_provider_usage_useless')}
-						]
-					}],
-					showCancelButton: true,
-					closeOnConfirm: false
-				}, self.properties), function(isConfirm) {
-					if (!isConfirm) { //on cancel
-						$('.swal-form').remove(); //possible bug? why I have to do this manually
-						reject();
-						return false;
-					}
-					const form = this.swalForm;
-					resolve(form);
-				});
-			}).then((r) => {
-				$('.sa-input-error').show();
-				return r;
-			}).catch((reason) => {
-				throw reason;
-			});
-		}
-	}
-};
-
 Template.HelpRequestActions.events({
 	'click .close-helprequest'(event, instance) {
 		event.preventDefault();
+		const warnText = RocketChat.roomTypes.roomTypes['r'].getUiText(UiTextContext.CLOSE_WARNING);
 
 		swal(_.extend({
 			title: t('Closing_chat'),
+			text: warnText ? t(warnText) : '',
 			type: 'input',
-			inputPlaceholder: t('Please_add_a_comment'),
+			inputPlaceholder: t('Close_request_comment'),
 			showCancelButton: true,
 			closeOnConfirm: false,
 			roomId: instance.data.roomId
