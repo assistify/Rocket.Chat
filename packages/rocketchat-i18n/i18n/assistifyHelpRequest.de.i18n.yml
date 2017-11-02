@@ -2,8 +2,8 @@ application: Anwendung
 Assistify_room_count: Letzte Raumnummer
 Choose_experts: Die auswählen, die sich damit auskennen
 Close_HelpRequest: Chat beenden
-Close_request_comment: Sie können (berühmte) letzte Worte los werden
-Close_request_warning: Bitte schließen Sie den Chat, wenn die Anfrage beantwortet ist. So können wir aus dem Geschriebenen lernen.
+Close_request_comment: Werden Sie hier Ihre (berühmten) letzten Worte los!
+Close_request_warning: Ist die Anfrage abschließend beantwortet, dann schließen Sie den Chat. So können wir aus dem Geschriebenen lernen.
 create-e: Thema anlegen
 create-r: Anfrage anlegen
 delete-e: Thema löschen
@@ -17,8 +17,8 @@ Expertises: Themen
 Experts_channel: Expertenkanal
 Experts: Experten
 gui_title: GUI-Titel
-Hide_expertise_warning: Sind Sie sicher, dass Sie das Thema "%s" verstecken wollen? Sie sind danach immer noch Experte zu dem Thema und werden bei neuen Anfragen gefragt werden.
-Hide_request_warning: Sind Sie sicher, dass Sie die Anfrage "%s" verstecken wollen? Sie können sie danach immer noch einsehen, wenn Sie möchten.
+Hide_expertise_warning: Sind Sie sicher, dass Sie das Thema "%s" ausblenden wollen? Sie sind danach immer noch Experte zu dem Thema und werden bei neuen Anfragen gefragt werden.
+Hide_request_warning: Sind Sie sicher, dass Sie die Anfrage "%s" ausblenden wollen? Sie können sie danach immer noch einsehen, wenn Sie möchten.
 Leave_expertise_warning: Sind Sie sicher, dass Sie das Thema "%s" verlassen wollen? Sie sind danach kein Experte zu dem Thema mehr. Bei einer neuen Anfrage werden Sie nicht mehr gefragt werden!
 Leave_request_warning: Sind sie Sicher, dass Sie die Anfrage "%s" verlassen wollen? Sie können sie danach nicht mehr einsehen und auch nicht in der Suche finden!
 More_requests: Weitere Anfragen
