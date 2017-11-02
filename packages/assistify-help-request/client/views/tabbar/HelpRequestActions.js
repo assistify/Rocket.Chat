@@ -20,19 +20,19 @@ Template.HelpRequestActions.helpers({
 	isLivechat() {
 		const instance = Template.instance();
 		const room = ChatSubscription.findOne({rid: instance.data.roomId});
-		return room.t === 'l';
+		return room && room.t === 'l';
 	},
 
 	livechatOpen() {
 		const instance = Template.instance();
 		const room = ChatSubscription.findOne({rid: instance.data.roomId});
-		return room.open;
+		return room && room.open;
 	},
 
 	isOpenLivechat() {
 		const instance = Template.instance();
 		const room = ChatSubscription.findOne({rid: instance.data.roomId});
-		return room.t === 'l' && room.open;
+		return room && room.t === 'l' && room.open;
 	}
 });
 
