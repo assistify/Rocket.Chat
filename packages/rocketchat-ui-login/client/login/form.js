@@ -128,10 +128,18 @@ Template.loginForm.events({
 					const user = Meteor.user();
 					instance.loading.set(false);
 					if (error != null) {
-						if (error.error === 'no-valid-email') {
-							instance.state.set('email-verification');
-						} else {
-							toastr.error(t('User_not_found_or_incorrect_password'));
+						switch (error.error) {
+							case 'no-valid-email':
+								instance.state.set('email-verification');
+								break;
+							case 'error-login-not-allowed':
+								toastr.error(t('error-login-not-allowed', {action: 'Login'})); //should this not actually be the default
+								break;
+							case 'error-user-is-not-activated':
+								toastr.error(t(error.error));
+								break;
+							default:
+								toastr.error(t('User_not_found_or_incorrect_password'));
 						}
 						return;
 					}
