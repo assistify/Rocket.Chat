@@ -152,9 +152,7 @@ Accounts.validateLoginAttempt(function(login) {
 	login = RocketChat.callbacks.run('beforeValidateLogin', login);
 
 	if (login.allowed !== true) {
-		throw new Meteor.Error('error-login-not-allowed', 'login is not allowed', {
-			'function': 'Accounts.validateLoginAttempt'
-		});
+		return login.allowed;
 	}
 
 	if (login.user.type === 'visitor') {

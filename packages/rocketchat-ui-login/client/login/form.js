@@ -132,13 +132,12 @@ Template.loginForm.events({
 							case 'no-valid-email':
 								instance.state.set('email-verification');
 								break;
-							case 'error-login-not-allowed':
-								toastr.error(t('error-login-not-allowed', {action: 'Login'})); //should this not actually be the default
-								break;
 							case 'error-user-is-not-activated':
 								toastr.error(t(error.error));
 								break;
 							default:
+								/* we don't want to inform the user about the details
+								 why he couldn't log in for safety reasons */
 								toastr.error(t('User_not_found_or_incorrect_password'));
 						}
 						return;
