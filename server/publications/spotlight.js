@@ -1,5 +1,20 @@
 Meteor.methods({
 	spotlight(text, usernames, type = {users: true, rooms: true}, rid) {
+		/**
+		 * Fetch all rooms which can be accessed by the user
+		 */
+		const accessibleRooms = RocketChat.models.Rooms.findAccessibleByUsername(Meteor.user().username).fetch();
+
+		/**
+		 * A Rocketchat callback triggered before the server search.
+		 */
+		RocketChat.callbacks.run('onSpotlightStart', {
+			text,
+			usernames,
+			type,
+			accessibleRooms
+		});
+
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 		const result = {
 			users: [],
@@ -20,6 +35,7 @@ Meteor.methods({
 			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch();
 			}
+			RocketChat.callbacks.run('onSpotlightEnd', { text, usernames, type, result, accessibleRooms });
 			return result;
 		}
 		const userOptions = {
@@ -65,6 +81,12 @@ Meteor.methods({
 				sort: userOptions.sort
 			}).fetch();
 		}
+
+		/**
+		 * A Rocketchat callback triggered right after the server search and before the results are
+		 * displayed. Result can be altered at this place
+		 */
+		RocketChat.callbacks.run('onSpotlightEnd', { text, usernames, type, result, accessibleRooms });
 
 		return result;
 	}

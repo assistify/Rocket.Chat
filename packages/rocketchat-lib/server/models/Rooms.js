@@ -377,6 +377,27 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findAccessibleByUsername(username, options) {
+		/**
+		 * Find all "chat" rooms, any room where the given user has a subscription to
+		 */
+		const query = {
+			$or: [
+				{ t: 'c' },
+				{ usernames: username },
+				{
+					t: 'l',
+					$or: [
+						username,
+						{ 'servedBy.username': username },
+						{ usernames: username }
+					]
+				}
+			]
+		};
+		return this.find(query, options);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);

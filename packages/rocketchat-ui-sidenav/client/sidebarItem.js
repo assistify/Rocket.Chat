@@ -9,10 +9,64 @@ Template.sidebarItem.helpers({
 	}
 });
 
+let popupInstance = null;
+
 Template.sidebarItem.events({
-	'click [data-id], click .sidebar-item__link'() {
-		return menu.close();
+	'click [data-id], click .sidebar-item__link'(e) {
+		if (this.additionalData) {
+			e.preventDefault();
+			const parent = document.querySelector('.main-content');
+			const currentListItem = $(e.currentTarget).closest('li');
+			const listOffset = currentListItem.parent().position().top;
+			const listItemOffset = currentListItem.position().top;
+			let totalOffset = listOffset + listItemOffset;
+			const hoverHeight = 300;
+			if (totalOffset + hoverHeight > $(window).height()) {
+				totalOffset -= hoverHeight - currentListItem.height();
+			}
+			const top = `${ totalOffset }px`;
+			if (popupInstance) {
+				Blaze.remove(popupInstance);
+			}
+			popupInstance = Blaze.renderWithData(Template.sidebarItemPopup, {
+				top,
+				content: this.additionalData,
+				height: `${ hoverHeight }px`,
+				refItem: this._id,
+				sidebarCtrl: menu,
+				open: this.open //pass the reactive var to the hover box
+			}, parent);
+			return false;
+
+		} else {
+			return menu.close();
+		}
 	},
+	// 'click [data-id].has-additional-data'(e) {
+	// 	if (this.additionalData) {
+	// 		const parent = document.querySelector('.main-content');
+	// 		const currentListItem = $(e.currentTarget).parents('li');
+	// 		const listOffset = currentListItem.parent().position().top;
+	// 		const listItemOffset = currentListItem.position().top;
+	// 		let totalOffset = listOffset + listItemOffset;
+	// 		const hoverHeight = 300;
+	// 		if (totalOffset + hoverHeight > $(window).height()) {
+	// 			totalOffset -= hoverHeight - currentListItem.height();
+	// 		}
+	// 		const top = `${ totalOffset }px`;
+	// 		this.sidebarItemPopup = Blaze.renderWithData(Template.sidebarItemPopup, {
+	// 			top,
+	// 			content: this.additionalData,
+	// 			height: `${ hoverHeight }px`,
+	// 			refItem: this._id
+	// 		}, parent);
+	// 	}
+	// },
+	// 'mouseout [data-id]'() {
+	// 	if (this.additionalData && this.sidebarItemPopup) {
+	// 		Blaze.remove(this.sidebarItemPopup);
+	// 	}
+	// },
 	'click .sidebar-item__menu'(e) {
 		const canLeave = () => {
 			const roomData = Session.get(`roomData${ this.rid }`);

@@ -268,6 +268,12 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		template.clickingItem = false;
 		template.value.set(this._id);
+
+		if (this.additionalData) {
+			//we will show the hover box, DO NOT clear popup
+			return false;
+		}
+
 		template.enterValue();
 		template.open.set(false);
 		return toolbarSearch.clear();
@@ -283,7 +289,7 @@ Template.messagePopup.helpers({
 		return Object.assign(template.records.get(), {toolbar: true});
 	},
 	toolbarData() {
-		return {...Template.currentData(), toolbar: true};
+		return {...Template.currentData(), toolbar: true, open: Template.instance().open };
 	},
 	sidebarHeaderHeight() {
 		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;

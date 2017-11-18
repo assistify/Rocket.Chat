@@ -3,7 +3,7 @@
 		{{#if statusClass}}
 			<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
 		{{/if}}
-		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+		<a class="sidebar-item__link {{#if additionalData}}has-additional-data{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
 			{{#if icon}}
 				<div class="sidebar-item__picture">
 					{{> icon block="sidebar-item__icon" icon=icon}}

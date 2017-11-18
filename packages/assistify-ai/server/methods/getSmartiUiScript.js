@@ -17,11 +17,15 @@ function loadSmarti() {
 
 	let response = null;
 	try {
+		const options = {
+			headers: {
+				'Authorization': 'Basic YWRtaW46ZDJiYzkwYmEtMTM2MS00ZGFiLWExMTgtODc4NTNiOGY1ODE0'
+			}
+		};
 		SystemLogger.debug('Trying to retrieve Smarti-Widget script from', DBS_AI_SMARTI_WIDGET_URL);
-		response = HTTP.get(DBS_AI_SMARTI_WIDGET_URL);
+		response = HTTP.get(DBS_AI_SMARTI_WIDGET_URL, options);
 	} catch (error) {
-		SystemLogger.error('Could not load the Smarti-Widget script at', DBS_AI_SMARTI_URL);
-		SystemLogger.debug(error);
+		SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
 		throw new Meteor.Error('error-unreachable-url');
 	}
 

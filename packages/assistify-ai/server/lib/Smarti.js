@@ -42,7 +42,7 @@ class SmartiAdapter {
 			this.options.data = requestBody;
 			SystemLogger.debug('Smarti - trigger analysis:', JSON.stringify(options, null, 2));
 
-			const URL = `${ this.properties.url }rocket/${ RocketChat.settings.get('DBS_AI_Redlink_Domain') }`;
+			const URL = `${ this.properties.url }/rocket/${ RocketChat.settings.get('DBS_AI_Redlink_Domain') }`;
 			SystemLogger.info(`Send post request: ${ URL } with options: ${ JSON.stringify(options, null, 2) }`);
 			const response = HTTP.post(URL, options);
 
@@ -62,7 +62,7 @@ class SmartiAdapter {
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(room._id);
 
 		if (m) {
-			const URL = `${ this.properties.url }conversation/${ m.conversationId }/publish`;
+			const URL = `${ this.properties.url }/conversation/${ m.conversationId }/publish`;
 			SystemLogger.info(`Send post request: ${ URL }`);
 			const response = HTTP.post(URL);
 			if (response.statusCode === 200) {
@@ -75,6 +75,23 @@ class SmartiAdapter {
 		}
 	}
 
+	onSearch(text, accessibleRooms, filter = null, start = 0, rows = 10) {
+		const URL = `${ this.properties.url }/rocket/${ RocketChat.settings.get('DBS_AI_Redlink_Domain') }/search`;
+		const options = {
+			...this.options,
+			params: {
+				text,
+				start,
+				rows,
+				hl: true,
+				'hl.fl': 'text',
+				'hl.simple.pre': '<strong class="highlight">',
+				'hl.simple.post': '</strong>'
+			}
+		};
+		SystemLogger.debug(`Send get request: ${ URL } with options: `, options);
+		return HTTP.get(URL, options);
+	}
 }
 
 class SmartiMock extends SmartiAdapter {
@@ -82,7 +99,10 @@ class SmartiMock extends SmartiAdapter {
 	constructor(adapterProps) {
 		super(adapterProps);
 		this.properties.url = 'http://localhost:8080';
-		delete this.headers.authorization;
+
+		if (this.headers) {
+			delete this.headers.authorization;
+		}
 	}
 }
 
@@ -141,7 +161,7 @@ export class SmartiAdapterFactory {
 
 			SystemLogger.debug(RocketChat.settings);
 
-			const useMock = false;
+			const useMock = true;
 			if (useMock) { //todo: proper mocking
 				this.singleton = new SmartiMock(adapterProps);
 			} else {
@@ -163,6 +183,65 @@ Meteor.methods({
 		SystemLogger.debug('Smarti - last smarti result requested:', JSON.stringify(rid, '', 2));
 		SystemLogger.debug('Smarti - last message:', JSON.stringify(RocketChat.models.LivechatExternalMessage.findOneById(rid), '', 2));
 		return RocketChat.models.LivechatExternalMessage.findOneById(rid);
+	},
+
+	/**
+	 * A function searching conversations with the given text in the given rooms
+	 *
+	 * @param {string} text - the text we should search for
+	 * @param {[]} accessibleRooms - an array containing all rooms in which given text should be searched
+	 * @param {[]} filter - any additional filters; not used right now
+	 * @param {number} start - pagination offset should be a multiple of rows
+	 * @param {number} rows - number of results being returned
+	 */
+	findInSmarti(text, accessibleRooms, filter = null, start = 0, rows = 10) {
+		const smartiAdapter = SmartiAdapterFactory.getInstance();
+		const serverData = smartiAdapter.onSearch(text, accessibleRooms, filter, start, rows);
+		SystemLogger.info('Smarti - findInSmarti: ', text, filter, start, rows, serverData);
+		const result = [];
+
+		if (serverData.statusCode === 200) {
+			const documents = serverData.data.docs;
+			const highlighting = serverData.data.highlighting;
+			documents.forEach((item) => {
+				const room = RocketChat.models.Rooms.findOneById(item.meta.channel_id[0]);
+				if (room) {
+					//create room obj from document
+					const obj = {
+						_id: item.id,
+						t: 'r',
+						name: room.name,
+						unread: 0,
+						rid: item.meta.channel_id[0],
+						additionalData: ''
+					};
+
+					//generate additionalData based on highlighting information (html encoded)
+					if (item.messages) {
+						const roomLink = `/request/${ room.fname }`;
+						obj.additionalData += '<h3>Gefundene Nachrichten</h3>';
+						obj.additionalData += '<div class="flex-grow"><ul>';
+
+						item.messages.forEach((message) => {
+							const highlightingKey = `${ item.id }_${ message.id }`;
+							if (highlighting && highlighting[highlightingKey] && highlighting[highlightingKey].text && highlighting[highlightingKey].text.length) {
+								highlighting[highlightingKey].text.forEach((highlightedItem) => {
+									const msgLink = `${ roomLink }?msg=${ message.id }`;
+									obj.additionalData += `<li><a href="${ msgLink }"><div>${ highlightedItem }</div></a></li>`;
+								});
+							}
+						});
+
+						obj.additionalData += '</ul></div>';
+						obj.additionalData += `<div><a href="${ roomLink }">zum Channel</a></div>`;
+					}
+
+					result.push(obj);
+				}
+			});
+		}
+
+		return result;
 	}
 });
 
