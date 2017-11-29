@@ -262,18 +262,18 @@ Template.AssistifyCreateRequest.onCreated(function() {
 
 	//prefill form based on query parameters if passed
 	if (FlowRouter.current().queryParams) {
-		const expertise = FlowRouter.current().queryParams['topic'] || FlowRouter.current().queryParams['expertise'];
+		const expertise = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('expertise');
 		if (expertise) {
 			instance.expertise.set(expertise);
 			instance.debounceValidateExpertise(expertise);
 		}
 
-		const title = FlowRouter.current().queryParams['title'];
+		const title = FlowRouter.getQueryParam('title');
 		if (title) {
 			instance.requestTitle.set(title);
 		}
 
-		const question = FlowRouter.current().queryParams['question'];
+		const question = FlowRouter.getQueryParam('question');
 		if (question) {
 			instance.openingQuestion.set(question);
 		}
