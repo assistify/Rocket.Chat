@@ -140,7 +140,6 @@ Template.AssistifyCreateRequest.events({
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
-	this.find('input[name="expertise"]').focus();
 	this.ac.element = this.find('input[name="expertise"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {
@@ -150,6 +149,12 @@ Template.AssistifyCreateRequest.onRendered(function() {
 
 		return instance.find('.js-save-request').focus();
 	});
+
+	if (this.find('input[name="expertise"]').value) {
+		this.find('input[name="request_title"]').focus();
+	} else {
+		this.find('input[name="expertise"]').focus();
+	}
 });
 
 Template.AssistifyCreateRequest.onCreated(function() {
@@ -161,6 +166,13 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	instance.titleError = new ReactiveVar(null);
 	instance.requestTitle = new ReactiveVar('');
 	instance.openingQuestion = new ReactiveVar('');
+
+	if (FlowRouter._current.queryParams) {
+		const expertise = FlowRouter._current.queryParams['topic'] || FlowRouter._current.queryParams['expertise'];
+		if (expertise) {
+			instance.expertise.set(expertise);
+		}
+	}
 
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
