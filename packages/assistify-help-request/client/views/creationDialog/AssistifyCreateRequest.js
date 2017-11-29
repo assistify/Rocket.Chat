@@ -140,9 +140,13 @@ Template.AssistifyCreateRequest.events({
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
-	this.ac.element = this.find('input[name="expertise"]');
-	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	const expertiseElement = this.find('input[name="expertise"]');
+	const titleElement = this.find('input[name="request_title"]');
+	const questionElement = this.find('input[name="first_question"]');
+
+	instance.ac.element = expertiseElement;
+	instance.ac.$element = $(instance.ac.element);
+	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
 		instance.debounceValidateExpertise(item.name);
@@ -151,22 +155,22 @@ Template.AssistifyCreateRequest.onRendered(function() {
 	});
 
 	if (instance.requestTitle.get()) {
-		instance.find('input[name="request_title"]').value = instance.requestTitle.get();
+		titleElement.value = instance.requestTitle.get();
 	}
 
 	if (instance.openingQuestion.get()) {
-		instance.find('input[name="first_question"]').value = instance.openingQuestion.get();
+		questionElement.value = instance.openingQuestion.get();
 	}
 
 	// strategy for setting the focus (yac!)
-	if (!this.find('input[name="expertise"]').value) {
-		this.find('input[name="expertise"]').focus();
-	} else if (!this.find('input[name="first_question"]').value) {
-		this.find('input[name="first_question"]').focus();
-	} else if (!this.find('input[name="request_title"]').value) {
-		this.find('input[name="request_title"]').focus();
+	if (!expertiseElement.value) {
+		expertiseElement.focus();
+	} else if (!questionElement.value) {
+		questionElement.focus();
+	} else if (!titleElement.value) {
+		titleElement.focus();
 	} else {
-		this.find('input[name="first_question"]').focus();
+		questionElement.focus();
 	}
 
 });
@@ -257,19 +261,19 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	this.ac.tmplInst = this;
 
 	//prefill form based on query parameters if passed
-	if (FlowRouter._current.queryParams) {
-		const expertise = FlowRouter._current.queryParams['topic'] || FlowRouter._current.queryParams['expertise'];
+	if (FlowRouter.current().queryParams) {
+		const expertise = FlowRouter.current().queryParams['topic'] || FlowRouter.current().queryParams['expertise'];
 		if (expertise) {
 			instance.expertise.set(expertise);
 			instance.debounceValidateExpertise(expertise);
 		}
 
-		const title = FlowRouter._current.queryParams['title'];
+		const title = FlowRouter.current().queryParams['title'];
 		if (title) {
 			instance.requestTitle.set(title);
 		}
 
-		const question = FlowRouter._current.queryParams['question'];
+		const question = FlowRouter.current().queryParams['question'];
 		if (question) {
 			instance.openingQuestion.set(question);
 		}
