@@ -150,11 +150,25 @@ Template.AssistifyCreateRequest.onRendered(function() {
 		return instance.find('.js-save-request').focus();
 	});
 
-	if (this.find('input[name="expertise"]').value) {
+	if (instance.requestTitle.get()) {
+		instance.find('input[name="request_title"]').value = instance.requestTitle.get();
+	}
+
+	if (instance.openingQuestion.get()) {
+		instance.find('input[name="first_question"]').value = instance.openingQuestion.get();
+	}
+
+	// strategy for setting the focus (yac!)
+	if (!this.find('input[name="expertise"]').value) {
+		this.find('input[name="expertise"]').focus();
+	} else if (!this.find('input[name="first_question"]').value) {
+		this.find('input[name="first_question"]').focus();
+	} else if (!this.find('input[name="request_title"]').value) {
 		this.find('input[name="request_title"]').focus();
 	} else {
-		this.find('input[name="expertise"]').focus();
+		this.find('input[name="first_question"]').focus();
 	}
+
 });
 
 Template.AssistifyCreateRequest.onCreated(function() {
@@ -166,13 +180,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	instance.titleError = new ReactiveVar(null);
 	instance.requestTitle = new ReactiveVar('');
 	instance.openingQuestion = new ReactiveVar('');
-
-	if (FlowRouter._current.queryParams) {
-		const expertise = FlowRouter._current.queryParams['topic'] || FlowRouter._current.queryParams['expertise'];
-		if (expertise) {
-			instance.expertise.set(expertise);
-		}
-	}
 
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
@@ -224,12 +231,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 		}
 	}, 500);
 
-	// instance.clearForm = function() {
-	// 	instance.requestRoomName.set('');
-	// 	instance.expertise.set('');
-	// 	instance.find('#expertise-search').value = '';
-	// };
-
 	this.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
@@ -254,4 +255,23 @@ Template.AssistifyCreateRequest.onCreated(function() {
 
 	});
 	this.ac.tmplInst = this;
+
+	//prefill form based on query parameters if passed
+	if (FlowRouter._current.queryParams) {
+		const expertise = FlowRouter._current.queryParams['topic'] || FlowRouter._current.queryParams['expertise'];
+		if (expertise) {
+			instance.expertise.set(expertise);
+			instance.debounceValidateExpertise(expertise);
+		}
+
+		const title = FlowRouter._current.queryParams['title'];
+		if (title) {
+			instance.requestTitle.set(title);
+		}
+
+		const question = FlowRouter._current.queryParams['question'];
+		if (question) {
+			instance.openingQuestion.set(question);
+		}
+	}
 });
