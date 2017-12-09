@@ -1,5 +1,10 @@
 import { RocketChat, UiTextContext } from 'meteor/rocketchat:lib';
 
+const showClosingComment = function() {
+	if (RocketChat.settings.get('Assitify_Deactivate_request_closing_comments')) {
+		return 'input';
+	}
+};
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
 		const instance = Template.instance();
@@ -36,6 +41,7 @@ Template.HelpRequestActions.helpers({
 	}
 });
 
+
 Template.HelpRequestActions.events({
 	'click .close-helprequest'(event, instance) {
 		event.preventDefault();
@@ -44,7 +50,7 @@ Template.HelpRequestActions.events({
 		swal(_.extend({
 			title: t('Closing_chat'),
 			text: warnText ? t(warnText) : '',
-			type: 'input',
+			type: showClosingComment(),
 			inputPlaceholder: t('Close_request_comment'),
 			showCancelButton: true,
 			closeOnConfirm: false,
