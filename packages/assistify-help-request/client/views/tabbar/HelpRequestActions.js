@@ -83,7 +83,7 @@ Template.HelpRequestActions.events({
 
 		swal({
 			title: t('Closing_chat'),
-			type: 'input',
+			type: showClosingComment(),
 			inputPlaceholder: t('Please_add_a_comment'),
 			showCancelButton: true,
 			closeOnConfirm: false
