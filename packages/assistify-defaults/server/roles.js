@@ -180,7 +180,7 @@ const createConfigurationRole = function() {
 		'change-setting-Accounts_ManuallyApproveNewUsers',
 		'change-setting-Accounts_EmailVerification',
 		'change-setting-Accounts',
-		'change-setting-Assitify_Deactivate_request_closing_comments'
+		'change-setting-Assistify_Deactivate_request_closing_comments'
 	];
 
 	assignPermissions(CONFIGURATION_ROLE_NAME,

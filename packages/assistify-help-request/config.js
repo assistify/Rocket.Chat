@@ -26,7 +26,7 @@ Meteor.startup(() => {
 		section: 'General'
 	});
 
-	RocketChat.settings.add('Assitify_Deactivate_request_closing_comments', false, {
+	RocketChat.settings.add('Assistify_Deactivate_request_closing_comments', false, {
 		group: 'Assistify',
 		i18nLabel: 'Deactivate_close_comment',
 		type: 'boolean',

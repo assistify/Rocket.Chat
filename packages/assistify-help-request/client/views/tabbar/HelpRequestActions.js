@@ -1,7 +1,7 @@
 import {RocketChat, UiTextContext} from 'meteor/rocketchat:lib';
 
 const showClosingComment = function() {
-	return !RocketChat.settings.get('Assitify_Deactivate_request_closing_comments');
+	return !RocketChat.settings.get('Assistify_Deactivate_request_closing_comments');
 };
 
 Template.HelpRequestActions.helpers({
