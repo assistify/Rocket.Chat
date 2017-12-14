@@ -55,7 +55,7 @@ Template.HelpRequestActions.events({
 		};
 
 		if (showClosingComment()) {
-			swalConfig = Object.assign(swalConfig, {
+			swalConfig = _.extend(swalConfig, {
 				type: 'input',
 				inputPlaceholder: t('Close_request_comment')
 			});
@@ -94,7 +94,7 @@ Template.HelpRequestActions.events({
 		};
 
 		if (showClosingComment()) {
-			swalConfig = Object.assign(swalConfig, {
+			swalConfig = _.extend(swalConfig, {
 				type: 'input',
 				inputPlaceholder: t('Please_add_a_comment')
 			});
