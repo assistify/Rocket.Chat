@@ -1,7 +1,7 @@
 import {RocketChat, UiTextContext} from 'meteor/rocketchat:lib';
 
 const showClosingComment = function() {
-	return !!RocketChat.settings.get('Assitify_Deactivate_request_closing_comments');
+	return !RocketChat.settings.get('Assitify_Deactivate_request_closing_comments');
 };
 
 Template.HelpRequestActions.helpers({
@@ -55,7 +55,7 @@ Template.HelpRequestActions.events({
 		};
 
 		if (showClosingComment()) {
-			swalConfig = _.extend(swalConfig, {
+			swalConfig = Object.assign(swalConfig, {
 				type: 'input',
 				inputPlaceholder: t('Close_request_comment')
 			});
@@ -94,7 +94,7 @@ Template.HelpRequestActions.events({
 		};
 
 		if (showClosingComment()) {
-			swalConfig = _.extend(swalConfig, {
+			swalConfig = Object.assign(swalConfig, {
 				type: 'input',
 				inputPlaceholder: t('Please_add_a_comment')
 			});
