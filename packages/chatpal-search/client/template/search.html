@@ -1,0 +1,97 @@
+<template name="ChatpalSearch">
+	<div class="chatpal-external-search-input">
+		<i class="icon-search"></i>
+		<input type="text" class="chatpal-external-search-input-in" placeholder='{{_ "CHATPAL_ENTER_SEARCH_STRING"}}'>
+	</div>
+	{{#if showResults}}
+		<div id="chatpal-search-result-container">
+			<div class="chatpal-search-container">
+		<button class="chatpal-search-container-close">
+			<i class="icon-cancel"></i>
+		</button>
+		<h1>{{_ "CHATPAL_SEARCH_RESULTS_TITLE"}}</h1>
+		{{#if enabled}}
+		<div class="chatpal-search-result">
+			{{#if loading}}
+				<div class="loading">
+					<div class="loading">
+						<div class="spinner">
+							<div class="bounce1"></div>
+							<div class="bounce2"></div>
+							<div class="bounce3"></div>
+						</div>
+					</div>
+				</div>
+			{{else}}
+			<div class="chatpal-search-result-inner">
+				<div class="chatpal-search-result-header">
+					<!--<div class="chatpal-search-channel-filter">
+                        <select class="chatpal-search-channel-filter-selector">
+                            <option value="none">allen Räumen</option>
+                            <option value="room">diesem Raum</option>
+                        </select>
+                    </div>-->
+					<h2 class="chatpal-search-number">
+						{{#if resultNumFound}}
+							{{resultNumFound}}
+						{{/if}}
+					</h2>
+					<!--<ul class="chatpal-search-sorting">
+                        <li>Recent</li>
+                        <li>Relevant</li>
+                    </ul>-->
+					<div style="clear:both"></div>
+				</div>
+				{{#if resultDocs}}
+					<div class="chatpal-search-result-list">
+						{{#each resultDocs}}
+							{{> ChatpalSearchSingleMessage}}
+						{{/each}}
+					</div>
+				{{/if}}
+				{{#if resultPaging}}
+					{{#if $neq resultPaging.numOfPages 0}}
+						<div class="chatpal-paging">
+							{{#if $gt resultPaging.currentPage 1}}
+								<div class="chatpal-paging-prev chatpal-paging-button">
+									<i class="icon-left-circled2"></i>
+								</div>
+							{{/if}}
+							<div class="chatpal-paging-text">{{_ "CHATPAL_SEARCH_PAGE_OF" resultPaging.currentPage resultPaging.numOfPages}}</div>
+							{{#if $lt resultPaging.currentPage resultPaging.numOfPages}}
+								<div class="chatpal-paging-next chatpal-paging-button">
+									<i class="icon-right-circled2"></i>
+								</div>
+							{{/if}}
+						</div>
+					{{/if}}
+				{{/if}}
+			</div>
+			{{/if}}
+		</div>
+		{{else}}
+			<div class="chatpal-search-info">
+				Search is currently not available. Maybe it is not yet configured or service is currently down.
+			</div>
+		{{/if}}
+	</div>
+		</div>
+	{{/if}}
+</template>
+
+<template name="ChatpalSearchSingleMessage">
+	<div class="chatpal-search-result-single">
+		<h2>
+			<span class="chatpal-channel">{{room_data.type_symbol}} {{room_data.name}}</span>
+			<a class="chatpal-link" href="/{{room_data.link_path}}/{{room_data.name}}?msg={{id}}">{{_ "CHATPAL_SEARCH_GOTO_MESSAGE"}}</a>
+			<span class="chatpal-date">{{date_strings.date}}</span>
+		</h2>
+		<div class="chatpal-avatar">
+			<div class="chatpal-avatar-image" style="background-image:url(/avatar/{{user_data.username}}?_dc=undefined);"></div>
+		</div>
+		<span class="chatpal-name">{{user_data.name}}</span>
+		<span class="chatpal-time">{{date_strings.time}}</span>
+		<div class="chatpal-message">{{{highlight_text}}}</div>
+		<div style="clear: both"></div>
+	</div>
+</template>

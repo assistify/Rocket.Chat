@@ -1,0 +1,246 @@
+#chatpal-search-result-container {
+	width: 450px;
+	position: absolute;
+	top: 61px;
+	right: 0px;
+	background-color: white;
+	border-left: 1px solid #efefef;
+	height: calc(100vh - 60px);
+}
+
+.chatpal-external-search-input {
+	position: absolute;
+	top: 12px;
+	right: 40px;
+	z-index: 1000;
+	display: block;
+}
+
+.chatpal-external-search-input i {
+	position: absolute;
+	top: 11px;
+	left: 10px;
+	font-size: 18px;
+	color: #333;
+}
+
+.chatpal-search-container-close {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	font-size: 20px;
+	color: #ccc;
+	cursor: pointer;
+}
+
+.chatpal-external-search-input input {
+	width: 300px;
+	padding: 9px 5px 9px 37px;
+	border: 1px solid #eee;
+	border-radius: 5px;
+	font-size: 14px;
+	background-color: white;
+}
+
+.chatpal-search-container {
+	position: relative;
+	display: flex;
+	flex-direction:column;
+	overflow:hidden;
+}
+
+
+.chatpal-search-container h1 {
+	padding: 20px 10px;
+	font-size: 18px;
+	border-bottom: 1px solid #eee;
+}
+
+.chatpal-search-input {
+	margin-bottom: 10px !important;
+	background-color: white !important;
+}
+
+.chatpal-search-result{
+	overflow:scroll;
+	flex:1 1 auto;
+	height: calc(100vh - 80px);
+	background-color: #f1f1f1;
+}
+
+.chatpal-search-result-inner {
+	padding: 0 10px;
+}
+
+.chatpal-search-input-container {
+	/* margin-top: -20px !important; */
+	border-bottom: 1px solid rgb(203, 206, 209);
+	/*background-color: #F4F4F4;*/
+	z-index: 10000;
+	padding-top:10px;
+	padding-right:15px;
+	flex: 0 0 auto;
+}
+
+.chatpal-search-result-header {
+	margin: 20px 0;
+}
+
+.chatpal-search-number {
+	float: left;
+}
+
+.chatpal-search-sorting {
+	float: right;
+}
+
+.chatpal-search-result-single {
+	background-color: white;
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #e6e6e6;
+	margin-bottom: 10px;
+	min-height: 92px;
+	position: relative;
+}
+
+.chatpal-search-result-single h2 {
+	margin-bottom: 20px;
+}
+
+.chatpal-search-result-single .chatpal-avatar {
+	width: 36px;
+	height: 36px;
+	position: absolute;
+}
+
+.chatpal-search-result-single .chatpal-avatar .chatpal-avatar-image {
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: 100%;
+	height: 100%;
+}
+
+.chatpal-search-result-single .chatpal-name {
+	padding: 0 0 0 46px;
+	font-size: 14px;
+	color: #444;
+	font-weight: bold;
+}
+
+.chatpal-search-result-single .chatpal-date {
+	float: right;
+	font-size: 12px;
+	color: #a0a0a0;
+	font-weight: normal;
+}
+
+.chatpal-search-result-single .chatpal-time {
+	font-size: 12px;
+	color: #a0a0a0;
+	margin-left: 3px;
+}
+
+.chatpal-search-result-single .chatpal-message {
+	padding: 0 0 0 46px;
+	line-height: 20px;
+	margin-top: 5px;
+}
+
+.chatpal-search-result-single .chatpal-message em {
+	font-style: normal;
+	background-color: #FAF9C8;
+}
+
+.chatpal-search-result-single .chatpal-link {
+	display: none;
+	margin-left: 3px;
+	color: #286ca8;
+}
+
+.chatpal-search-result-single .chatpal-link:hover {
+	text-decoration: underline;
+}
+
+.chatpal-search-result-single:hover .chatpal-link {
+	display: inline-block;
+}
+
+.chatpal-paging {
+	text-align: center;
+	margin: 30px 0 50px 0;
+}
+
+.chatpal-paging-text {
+	display: inline-block;
+	position: relative;
+	top: -2px;
+}
+
+.chatpal-paging .chatpal-paging-button {
+	color: #286ca8;
+	cursor: pointer;
+	font-size: 20px;
+	display: inline-block;
+}
+
+.chatpal-paging .chatpal-paging-prev {
+	padding-right: 10px;
+}
+
+.chatpal-paging .chatpal-paging-next {
+	padding-left: 10px;
+}
+
+.chatpal-search-info {
+	margin-top: 40px;
+	padding: 10px;
+}
+
+.spinner {
+	margin: 30px auto 0;
+	width: 70px;
+	text-align: center;
+}
+
+.spinner > div {
+	width: 12px;
+	height: 12px;
+	background-color: #666;
+
+	border-radius: 100%;
+	display: inline-block;
+	-webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+	animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+	-webkit-animation-delay: -0.16s;
+	animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+	0%, 80%, 100% { -webkit-transform: scale(0) }
+	40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+	0%, 80%, 100% {
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	} 40% {
+		  -webkit-transform: scale(1.0);
+		  transform: scale(1.0);
+	  }
+}
+
+@media screen and (max-width: 450px){
+	#chatpal-search-result-container {
+		width: 400px;
+	}
+}
