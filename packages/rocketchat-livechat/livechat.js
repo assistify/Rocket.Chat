@@ -30,15 +30,29 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 
 	const html = `<html>
 		<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
+			
 			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="/livechat/livechat.css?_dc=${ Autoupdate.autoupdateVersion }">
 			<script type="text/javascript">
 				__meteor_runtime_config__ = ${ JSON.stringify(__meteor_runtime_config__) };
+			
+				
+ 				
+					
 			</script>
 
 			${ head }
 		</head>
 		<body>
 			<script type="text/javascript" src="/livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
+			<script> 
+			
+				$(document).ready(function() {
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+ 				$("body").addClass("mobile-view");
+ 				}
+});			
+			</script>
 		</body>
 	</html>`;
 
