@@ -3,9 +3,6 @@
 @import "utils/_keyframes.import.less";
 @import "utils/_loading.import.less";
 
-@smartphones: ~"only screen and (max-width: 480px)";
-@footer-min-height-media: 65px;
-
 * {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -244,7 +241,6 @@ input:focus {
 	background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
 
 
-
 	span {
 		position: relative;
 		z-index: 2;
@@ -326,14 +322,10 @@ input:focus {
 		cursor: pointer;
 		padding: 0 10px;
 
-
-
 		h1 {
 			margin: 0;
 			font-size: 10pt;
 			display: inline-block;
-
-
 
 		}
 
@@ -342,6 +334,7 @@ input:focus {
 			float: right;
 
 			svg {
+
 			  cursor: pointer;
 			  fill: currentColor;
 			  width: 14px;
@@ -353,12 +346,6 @@ input:focus {
 				margin-right: 0;
 			  }
 			}
-			  svg.maximize {
-
-			  }
-			  svg.popout {
-
-			  }
 
 		}
 	}
@@ -386,9 +373,11 @@ input:focus {
 		.info {
 			flex: 1;
 			padding: 5px 0;
+
 		  }
 
 		  ul{
+
 
 			h2 {
 				color: @primary-font-color;
@@ -410,8 +399,10 @@ input:focus {
 		overflow-y: auto;
 
 
+
 		.wrapper {
 			padding-bottom: 6px;
+
 
 
 			ul {
@@ -665,11 +656,12 @@ input:focus {
 			z-index: 5;
 			transition: transform 0.3s ease-out;
 			transform: translateY(-40px);
+
 		  	visibility: visible;
+
 
 			&.not {
 				transform: translateY(100%);
-			  	visibility: hidden;
 			}
 		}
 
@@ -685,9 +677,9 @@ input:focus {
 		  	visibility: hidden;
 
 
+
 			&.show {
 				transform: translateY(0);
-			  	visibility: visible;
 			}
 		}
 	}
@@ -975,8 +967,6 @@ input:focus {
 	opacity: 0.5;
 	align-self: flex-end;
 	transition: opacity 0.15s ease-out;
-  	bottom: 0;
-  	position: fixed;
 
 	&:hover {
 		opacity: 1;
