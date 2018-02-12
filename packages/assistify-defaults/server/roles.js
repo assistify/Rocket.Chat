@@ -165,6 +165,7 @@ const createConfigurationRole = function() {
 			'manage-emoji',
 			'manage-own-integrations',
 			'manage-selected-settings',
+			'manage-assets',
 			'change-setting-Accounts_ManuallyApproveNewUsers',
 			'change-setting-Accounts_RegistrationForm',
 			'change-setting-Accounts_RegistrationForm_SecretURL',
