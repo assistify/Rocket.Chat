@@ -1,3 +1,8 @@
+<a name="assistify-0.6.1"></a>
+## Assistify-0.6.1 (2018-02-XX)
+... To be done
+
+
 <a name="0.61.0"></a>
 # 0.61.0 (2018-01-27)
 
