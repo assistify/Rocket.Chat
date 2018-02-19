@@ -444,7 +444,7 @@ Template.channelSettingsInfo.helpers({
 		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
 	name() {
-		return Template.instance().room.name;
+		return Template.instance().room.fname;
 	},
 	description() {
 		return Template.instance().room.description;

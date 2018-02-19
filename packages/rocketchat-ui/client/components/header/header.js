@@ -39,7 +39,8 @@ Template.header.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
+		return roomData.fname;
+		//RocketChat.roomTypes.getRoomName(roomData.t, roomData);
 	},
 
 	secondaryName() {
