@@ -38,14 +38,21 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 		</head>
 		<body>
 			<script type="text/javascript" src="/livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
-			<script> 
-			/* Her we use the UserAgent to check for mobile Devices, because the LiveChat-Iframe has a fixed width of 320px 
-			and that's why we can not use @media-Query. The used Solution is based on a StackOverflow-Answer with 1634 up's.   */
+			<script>
+				/**
+				 * Using a pure javascript device detection based on UserAgent check.
+				 * Reason: @media-Query does not work within iframes having a fixed width.
+				 * The user agent check has been taken from:
+				 * https://stackoverflow.com/questions/3514784/
+				 *
+				 * @TODO Knowing this is not the best solution, we should check alternatives here.
+				 * E.g. check https://stackoverflow.com/questions/27227214/
+				 */
 				$(document).ready(function() {
     				if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
  						$("body").addClass("mobile-view");
  					}
-				});			
+				});
 			</script>
 		</body>
 	</html>`;
