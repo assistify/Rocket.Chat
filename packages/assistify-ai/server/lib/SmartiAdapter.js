@@ -87,8 +87,21 @@ export class SmartiAdapter {
 
 		if (conversationId) {
 			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
-			// add message to conversation
-			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			if (message.editedAt) {
+				SystemLogger.debug('Trying to update existing message...');
+				// update existing message
+				SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
+					// 404 is expected if message doesn't exist
+					if (error.response.statusCode === 404) {
+						SystemLogger.debug('Message not found!');
+						return null;
+					}
+				});
+			} else {
+				SystemLogger.debug('Adding new message to conversation...');
+				// add message to conversation
+				SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			}
 		} else {
 			SystemLogger.debug('Conversation not found for channel');
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);

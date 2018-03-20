@@ -5,11 +5,6 @@ import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
-	// skips this callback if the message was edited
-	if (message.editedAt) {
-		return message;
-	}
-
 	let knowledgeEnabled = false;
 	RocketChat.settings.get('Assistify_AI_Enabled', function(key, value) {
 		knowledgeEnabled = value;
