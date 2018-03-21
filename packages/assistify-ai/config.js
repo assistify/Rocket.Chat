@@ -69,6 +69,11 @@ Meteor.startup(() => {
 				public: true,
 				i18nLabel: 'Assistify_AI_RocketChat_Webhook_Token'
 			});
+
+			this.add('Assistify_AI_Resync', 'triggerFullResync', {
+				type: 'action',
+				actionText: 'Resync Smarti'
+			});
 		});
 	};
 

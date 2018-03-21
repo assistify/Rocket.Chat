@@ -88,7 +88,12 @@ export class SmartiAdapter {
 		if (conversationId) {
 			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
 			// add message to conversation
-			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			const res = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			// mark message as synced
+			if (res) {
+				console.log('Conversation found and message will be synced now');
+				Meteor.call('markMessageAsSynced', message._id);
+			}
 		} else {
 			SystemLogger.debug('Conversation not found for channel');
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
@@ -122,6 +127,8 @@ export class SmartiAdapter {
 
 			const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
 			if (conversation && conversation.id) {
+				console.log('Conversation not found - create conversation and message will be synced now');
+				Meteor.call('markMessageAsSynced', message._id);
 				conversationId = conversation.id;
 				updateMapping(message, conversationId);
 			}

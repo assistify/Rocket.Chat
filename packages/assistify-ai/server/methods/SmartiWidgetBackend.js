@@ -1,6 +1,7 @@
 /* globals SystemLogger, RocketChat */
 
 import {SmartiProxy, verbs} from '../SmartiProxy';
+import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 
 const querystring = require('querystring');
 
@@ -183,5 +184,46 @@ Meteor.methods({
 			delayedReload();
 		}
 		return script;
+	}
+});
+
+Meteor.methods({
+	triggerFullResync() {
+		console.log('Full resync is triggered');
+		// Meteor.call('markMessageAsSynced', 'zNsnTjfwviWf4r6jY');
+		// Meteor.call('tryResync');
+	}
+});
+
+Meteor.methods({
+	markMessageAsSynced(messageId) {
+		const messageDB = RocketChat.models.Messages;
+		const message = messageDB.findOneById(messageId);
+		const lastUpdate = message ? message._updatedAt : 0;
+		if (lastUpdate) {
+			console.log('Update Message');
+			messageDB.model.update(
+				{_id: messageId},
+				{
+					$set: {
+						lastSync: lastUpdate
+					}
+				});
+		} else {
+			console.log('Message not found');
+		}
+	}
+});
+
+Meteor.methods({
+	tryResync(rid) {
+		console.log('Try resyncing messages');
+		const knowledgeAdapter = getKnowledgeAdapter();
+		const messageDB = RocketChat.models.Messages;
+		const messages = messageDB.find({ lastSync: { $exists: false }, rid }).fetch();
+		for (let i=0; i < messages.length; i++) {
+			console.log(messages[i]._id);
+			knowledgeAdapter.onMessage(messages[i]);
+		}
 	}
 });
