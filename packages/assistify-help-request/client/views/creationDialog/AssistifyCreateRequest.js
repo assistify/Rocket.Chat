@@ -108,7 +108,7 @@ Template.AssistifyCreateRequest.events({
 		const openingQuestion = instance.openingQuestion.get();
 		if (expertise) {
 			instance.titleError.set(null);
-			Meteor.call('createRequest', requestTitle, expertise, openingQuestion, (err, result) => {
+			Meteor.call('createRequestFromExpertise', requestTitle, expertise, openingQuestion, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {
@@ -130,7 +130,6 @@ Template.AssistifyCreateRequest.events({
 							return handleError(err);
 					}
 				}
-				console.log('Room Created');
 				// toastr.success(TAPi18n.__('New_request_created'));
 				const roomCreated = RocketChat.models.Rooms.findOne({_id: result.rid});
 				FlowRouter.go('request', {name: roomCreated.name}, FlowRouter.current().queryParams);

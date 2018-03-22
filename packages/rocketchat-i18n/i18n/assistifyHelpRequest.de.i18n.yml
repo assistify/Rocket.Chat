@@ -48,4 +48,12 @@ transaction: Transaktion
 view-e-room: Alle Themen einsehen
 view-r-room: Alle Anfragen einsehen
 Your_question: Frage
-
+ask_help: Frage stellen
+About-help-channel: Um die Übersicht zu behalten wird deine Frage in einer neuen Anfrage gestellt. Experten werden automatisch hinzugefügt. Hier kannst du ungestört weiterreden.
+Link-requests: Hier geht es weiter zum Raum __roomName__
+Thread_start: Thread starten
+Thread_started_message_self: __initiator__ hat einen neuen Thread gestartet. Hilf dabei, die Sache geklärt zu bekommen!
+Thread_started_message: __initiator__ hat einen neuen Thread zur Nachricht von __author__ gestartet. Hilf dabei, die Sachezu klären!
+Thread_welcome_message: __initiator__ hat aus __roomName__ heraus diesen Thread begonnen. Sobald sich die Sache erledigt hat, kannst Du den Kanal schließen.
+Threading_about: Du erstellst einen neuen Kanal, der mit dieser Nachricht beginnt. Alle Mitglieder des alten Raums werden dort rein eingeladen, um die Sache zu klären.
+Thread_view: Thread anzeigen

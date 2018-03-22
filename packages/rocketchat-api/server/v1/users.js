@@ -51,6 +51,10 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 
 		const user = this.getUserFromParams();
 
+		if (RocketChat.authz.hasRole(user._id, 'admin') && !RocketChat.authz.hasRole(this.userId, 'admin')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('deleteUser', user._id);
 		});

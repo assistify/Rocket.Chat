@@ -137,4 +137,25 @@ html.rtl .attachment {
 		border-width: 1px;
 		border-radius: 5px;
 	}
+
+	& .thread-reference {
+		color:black;
+
+	  	font-weight: 500;
+	}
+
+	& .field button {
+		width: fit-content;
+	  	padding: 3px 10px;
+		min-height: 20px;
+
+		& > svg {
+		  margin-left: -4px;
+		  margin-right: 8px;
+		}
+
+		&:hover {
+		  text-decoration: none;
+	 	}
+  	}
 }

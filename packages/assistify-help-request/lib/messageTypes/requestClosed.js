@@ -1,4 +1,5 @@
 /* globals RocketChat */
+import {RocketChat} from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 	RocketChat.MessageTypes.registerType({
@@ -12,7 +13,6 @@ Meteor.startup(function() {
 			};
 		}
 	});
-
 	RocketChat.MessageTypes.registerType({
 		id: 'request_closed_explanation',
 		system: true,
@@ -24,3 +24,4 @@ Meteor.startup(function() {
 		}
 	});
 });
+
