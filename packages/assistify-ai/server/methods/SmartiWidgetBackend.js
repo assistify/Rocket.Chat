@@ -190,8 +190,16 @@ Meteor.methods({
 Meteor.methods({
 	triggerFullResync() {
 		console.log('Full resync is triggered');
-		// Meteor.call('markMessageAsSynced', 'zNsnTjfwviWf4r6jY');
-		// Meteor.call('tryResync');
+		const requests = RocketChat.models.Rooms.findByType('r').fetch();
+		console.log('Number of Requests: ', requests.length);
+		for (let i=0; i < requests.length; i++) {
+			Meteor.call('tryResync', requests[i]._id);
+		}
+		const topics = RocketChat.models.Rooms.findByType('e').fetch();
+		console.log('Number of Topics: ', topics.length);
+		for (let i=0; i < topics.length; i++) {
+			Meteor.call('tryResync', topics[i]._id);
+		}
 	}
 });
 
