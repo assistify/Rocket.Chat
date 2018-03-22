@@ -189,14 +189,13 @@ Meteor.methods({
 
 Meteor.methods({
 	triggerFullResync() {
-		console.log('Full resync is triggered');
-		const requests = RocketChat.models.Rooms.findByType('r').fetch();
-		console.log('Number of Requests: ', requests.length);
+		const requests = RocketChat.models.Rooms.model.find({t:'r', closer: {$exists: false}}).fetch();
+		SystemLogger.debug('Number of Requests to sync: ', requests.length);
 		for (let i=0; i < requests.length; i++) {
 			Meteor.call('tryResync', requests[i]._id);
 		}
-		const topics = RocketChat.models.Rooms.findByType('e').fetch();
-		console.log('Number of Topics: ', topics.length);
+		const topics = RocketChat.models.Rooms.model.find({t:'e', closer: {$exists: false}}).fetch();
+		SystemLogger.debug('Number of Topics to sync: ', topics.length);
 		for (let i=0; i < topics.length; i++) {
 			Meteor.call('tryResync', topics[i]._id);
 		}
@@ -209,7 +208,6 @@ Meteor.methods({
 		const message = messageDB.findOneById(messageId);
 		const lastUpdate = message ? message._updatedAt : 0;
 		if (lastUpdate) {
-			console.log('Update Message');
 			messageDB.model.update(
 				{_id: messageId},
 				{
@@ -217,15 +215,16 @@ Meteor.methods({
 						lastSync: lastUpdate
 					}
 				});
+			SystemLogger.debug('Message Id: ', messageId, ' has been synced');
 		} else {
-			console.log('Message not found');
+			SystemLogger.debug('Message Id: ', messageId, ' can not be synced');
 		}
 	}
 });
 
 Meteor.methods({
 	tryResync(rid) {
-		console.log('Try resyncing messages');
+		SystemLogger.debug('Sync all unsynced messages in room: ', rid);
 		const knowledgeAdapter = getKnowledgeAdapter();
 		const messageDB = RocketChat.models.Messages;
 		const messages = messageDB.find({ lastSync: { $exists: false }, rid }).fetch();

@@ -91,7 +91,7 @@ export class SmartiAdapter {
 			const res = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
 			// mark message as synced
 			if (res) {
-				console.log('Conversation found and message will be synced now');
+				SystemLogger.debug('Conversation found and message will be synced now');
 				Meteor.call('markMessageAsSynced', message._id);
 			}
 		} else {
@@ -127,7 +127,7 @@ export class SmartiAdapter {
 
 			const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
 			if (conversation && conversation.id) {
-				console.log('Conversation not found - create conversation and message will be synced now');
+				SystemLogger.debug('Conversation not found - create conversation and message will be synced now');
 				Meteor.call('markMessageAsSynced', message._id);
 				conversationId = conversation.id;
 				updateMapping(message, conversationId);
