@@ -210,6 +210,7 @@ const createManagerRole = function() {
 
 	const permissions = [
 		'add-user-to-any-c-room',
+		'add-user-to-joined-room',
 		'archive-room',
 		'ban-user',
 		'bulk-register-user',
