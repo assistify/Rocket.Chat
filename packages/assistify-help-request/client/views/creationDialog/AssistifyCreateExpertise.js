@@ -195,7 +195,16 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 	this.error = new ReactiveVar(null);
 
 	this.checkChannel = _.debounce((name) => {
-		if (validateChannelName(name)) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			Meteor.call('roomDisplayNameExists', name, (error, result) => {
+				if (error) {
+					return;
+				}
+				if (result) {
+					this.inUse.set(result);
+				}
+			});
+		} else if (validateChannelName(name)) {
 			return Meteor.call('roomNameExists', name, (error, result) => {
 				if (error) {
 					return;
