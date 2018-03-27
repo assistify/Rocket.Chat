@@ -1,9 +1,9 @@
 /* globals _ */
 /* globals AutoComplete, Deps */
 /* globals _ */
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import {ReactiveVar} from 'meteor/reactive-var';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -35,7 +35,7 @@ const validateChannelName = (name) => {
 		return true;
 	}
 
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${RocketChat.settings.get('UTF8_Names_Validation')}$`);
 	return name.length === 0 || reg.test(name);
 };
 const filterNames = (old) => {
@@ -43,7 +43,7 @@ const filterNames = (old) => {
 		return old;
 	}
 
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${RocketChat.settings.get('UTF8_Names_Validation')}$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
 };
 
@@ -63,9 +63,9 @@ Template.AssistifyCreateExpertise.helpers({
 			noMatchTemplate: 'userSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
-				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
-					return `<strong>${ part }</strong>`;
-				}) }`;
+				return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get()), function (part) {
+					return `<strong>${part}</strong>`;
+				})}`;
 			}
 		};
 	},
@@ -103,8 +103,8 @@ Template.AssistifyCreateExpertise.helpers({
 
 Template.AssistifyCreateExpertise.events({
 	...acEvents,
-	'click .rc-tags__tag'({target}, t) {
-		const {username} = Blaze.getData(target);
+	'click .rc-tags__tag'({ target }, t) {
+		const { username } = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
 	'change [name="type"]'(e, t) {
@@ -147,7 +147,7 @@ Template.AssistifyCreateExpertise.events({
 			return instance.find('input[name="expertise"]').focus();
 		}
 
-		Meteor.call('createExpertise', name, instance.selectedUsers.get().map(user => user.username), function(err, result) {
+		Meteor.call('createExpertise', name, instance.selectedUsers.get().map(user => user.username), function (err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -159,29 +159,29 @@ Template.AssistifyCreateExpertise.events({
 				return;
 			}
 
-			return FlowRouter.go('expertise', {name: result.name}, FlowRouter.current().queryParams);
+			return FlowRouter.go('expertise', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
 	}
 });
 
-Template.AssistifyCreateExpertise.onRendered(function() {
+Template.AssistifyCreateExpertise.onRendered(function () {
 	const users = this.selectedUsers;
 
 	this.firstNode.parentNode.querySelector('[name="expertise"]').focus();
 	this.ac.element = this.firstNode.parentNode.querySelector('[name="experts"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	this.ac.$element.on('autocompleteselect', function (e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
 	});
 });
 
-Template.AssistifyCreateExpertise.onCreated(function() {
+Template.AssistifyCreateExpertise.onCreated(function () {
 	this.selectedUsers = new ReactiveVar([]);
 
-	const filter = {exceptions: this.selectedUsers.get().map(u => u.username)};
+	const filter = { exceptions: this.selectedUsers.get().map(u => u.username) };
 	// this.onViewRead:??y(function() {
 	Deps.autorun(() => {
 		filter.exceptions = this.selectedUsers.get().map(u => u.username);
@@ -199,8 +199,7 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 			Meteor.call('roomDisplayNameExists', name, (error, result) => {
 				if (error) {
 					return;
-				}
-				if (result) {
+				} else {
 					this.inUse.set(result);
 				}
 			});
@@ -208,8 +207,9 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 			return Meteor.call('roomNameExists', name, (error, result) => {
 				if (error) {
 					return;
+				} else {
+					this.inUse.set(result);
 				}
-				this.inUse.set(result);
 			});
 		}
 		this.inUse.set(undefined);
@@ -234,7 +234,7 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 					filter,
 					doNotChangeWidth: false,
 					selector(match) {
-						return {term: match};
+						return { term: match };
 					},
 					sort: 'username'
 				}
