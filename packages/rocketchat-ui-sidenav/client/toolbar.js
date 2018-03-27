@@ -93,7 +93,7 @@ const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
 	canCreate() {
-		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
+		return RocketChat.authz.hasAtLeastOnePermission(RocketChat.roomTypes.roomTypesOrder.map((type) => `create-${ type.identifier }`));
 	},
 	results() {
 		return Template.instance().resultsList.get();
@@ -231,7 +231,7 @@ Template.toolbar.events({
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
-		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
+		if (RocketChat.authz.hasAtLeastOnePermission(RocketChat.roomTypes.roomTypesOrder.map((type) => `create-${ type.identifier }`))) {
 			// TODO: resolve this name menu/sidebar/sidebav/flex...
 			menu.close();
 			FlowRouter.go('create-channel');

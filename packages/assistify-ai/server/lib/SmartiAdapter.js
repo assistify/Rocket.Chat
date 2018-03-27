@@ -1,6 +1,6 @@
 /* globals SystemLogger, RocketChat */
 
-import {SmartiProxy, verbs} from '../SmartiProxy';
+import { SmartiProxy, verbs } from '../SmartiProxy';
 
 /**
  * The SmartiAdapter handles the interaction with Smarti triggered by Rocket.Chat hooks (not by Smarti widget).
@@ -92,8 +92,18 @@ export class SmartiAdapter {
 		} else {
 			SystemLogger.debug('Conversation not found for channel');
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
-			const supportArea = helpRequest ? helpRequest.supportArea : undefined;
 			const room = RocketChat.models.Rooms.findOneById(message.rid);
+
+			// The "support_area" in Smarti is an optional property. A historic conversation belonging to the same support_are increases relevance
+			let supportArea = room.parentRoomId || room.topic || room.expertise;
+			if (!supportArea) {
+				if (helpRequest && helpRequest.supportArea) {
+					supportArea = helpRequest.supportArea;
+				} else {
+					supportArea = room.name;
+				}
+			}
+
 			SystemLogger.debug('HelpRequest:', helpRequest);
 			SystemLogger.debug('Room:', room);
 

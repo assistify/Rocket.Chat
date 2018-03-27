@@ -6,7 +6,7 @@ branches:
   only:
   - develop
   - master
-  - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+  - "^release\\/.+.*"
 git:
   depth: 1
 node_js:
@@ -21,24 +21,24 @@ addons:
     - g++-4.8
   firefox: "latest"
 before_cache:
-- rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/log
-- rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/run
-- rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/db
+- rm -rf $TRAVIS_BUILD_DIR/.meteor/local/log
+- rm -rf $TRAVIS_BUILD_DIR/.meteor/local/run
+- rm -rf $TRAVIS_BUILD_DIR/.meteor/local/db
 cache:
   directories:
   - "$HOME/node_modules"
   - "$HOME/.meteor"
   - "$HOME/.npm"
   - "$HOME/.node-gyp"
-  - "$HOME/build/RocketChat/Rocket.Chat/node_modules"
-  - "$HOME/build/RocketChat/Rocket.Chat/.meteor/local"
-  - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/.npm"
-  - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/.app/node_modules"
-  - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/.app/.meteor/local"
+  - "$TRAVIS_BUILD_DIR/node_modules"
+  - "$TRAVIS_BUILD_DIR/.meteor/local"
+  - "$TRAVIS_BUILD_DIR/packages/rocketchat-livechat/.npm"
+  - "$TRAVIS_BUILD_DIR/packages/rocketchat-livechat/.app/node_modules"
+  - "$TRAVIS_BUILD_DIR/packages/rocketchat-livechat/.app/.meteor/local"
 before_install:
 - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 # Start X Virtual Frame Buffer for headless testing with real browsers
-- .scripts/start-xvfb.sh
+- $TRAVIS_BUILD_DIR/.scripts/start-xvfb.sh
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
@@ -54,12 +54,12 @@ before_script:
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-- chmod +x .scripts/smarti.sh
-- .scripts/smarti.sh
+- chmod +x $TRAVIS_BUILD_DIR/.scripts/smarti.sh
+- $TRAVIS_BUILD_DIR/.scripts/smarti.sh
 - meteor npm run lint
 - meteor npm run testunit
 - meteor npm run stylelint
-- travis_wait travis_retry meteor build --headless /tmp/build
+- travis_wait 30 meteor build /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
 - cd /tmp/build-test/bundle/programs/server
@@ -68,40 +68,43 @@ before_script:
 - mongo --eval 'rs.status()'
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
-- if [[ $RUN_TESTS ]]; then npm test; fi
+- shopt -s extglob
+- rm -rf ./tests/end-to-end/!(ui_smarti) # remove all non-Smarti-tests
+- if [[ ! $SKIP_TESTS ]]; then npm test; fi
+
 # - mongo meteor --eval 'db.dropDatabase()'
 # - unset MONGO_OPLOG_URL
 # - npm test
 
-before_deploy:
-- mkdir -p /tmp/build/rocketchat
-- export BUILD_FILE=Assistify_Chat_${TRAVIS_BRANCH/\//_}_${TRAVIS_COMMIT:1}.tar.gz
-- mv /tmp/build/Rocket.Chat.tar.gz /tmp/build/rocketchat/${BUILD_FILE}
+# before_deploy:
+# - mkdir -p /tmp/build/rocketchat
+# - export BUILD_FILE=Assistify_Chat_${TRAVIS_BRANCH/\//_}_${TRAVIS_COMMIT:1}.tar.gz
+# - mv /tmp/build/Rocket.Chat.tar.gz /tmp/build/rocketchat/${BUILD_FILE}
 
-deploy:
-- provider: s3
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
-  local_dir: /tmp/build/
-  skip_cleanup: true
-  on: &1
-    repo: assistify/Rocket.Chat
-    branch: develop
-  bucket: $AWS_BUCKET
-  region: $AWS_REGION
-- provider: s3
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
-  local_dir: /tmp/build/
-  skip_cleanup: true
-  on: &2
-    repo: assistify/Rocket.Chat
-    branch: master
-  bucket: $AWS_BUCKET
-  region: $AWS_REGION
+# deploy:
+# - provider: s3
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
+#   local_dir: /tmp/build/
+#   skip_cleanup: true
+#   on: &1
+#     repo: assistify/Rocket.Chat
+#     branch: develop
+#   bucket: $AWS_BUCKET
+#   region: $AWS_REGION
+# - provider: s3
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
+#   local_dir: /tmp/build/
+#   skip_cleanup: true
+#   on: &2
+#     repo: assistify/Rocket.Chat
+#     branch: master
+#   bucket: $AWS_BUCKET
+#   region: $AWS_REGION
 
-after_deploy:
-- ./scripts/check-deploy.sh
+# after_deploy:
+  # - $TRAVIS_BUILD_DIR/.scripts/deploy-assistify-chat.sh
 
 env:
   global:

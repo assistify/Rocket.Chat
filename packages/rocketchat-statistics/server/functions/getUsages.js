@@ -1,7 +1,8 @@
 
 
 export function getUsages() {
-	const lastStatistic = RocketChat.models.Statistics.findLast().createdAt;
+	const lastStatistics = RocketChat.models.Statistics.findLast();
+	const lastStatisticsCreatedAt = lastStatistics ? lastStatistics.createdAt : 0;
 	const userDB = RocketChat.models.Users;
 	const subDB = RocketChat.models.Subscriptions;
 	const messageDB = RocketChat.models.Messages;
@@ -19,7 +20,7 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ts: { $gt: lastStatistic }
+					ts: { $gt: lastStatisticsCreatedAt }
 				}
 		},
 		{
@@ -49,7 +50,7 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ls: { $gt: lastStatistic }
+					ls: { $gt: lastStatisticsCreatedAt }
 				}
 		},
 		{

@@ -47,6 +47,7 @@ Meteor.startup(function() {
 		{ _id: 'mention-all',                   roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mention-here',                  roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'pin-message', 					roles:  ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'remove-user',                   roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'run-import',                    roles : ['admin'] },
 		{ _id: 'run-migration',                 roles : ['admin'] },

@@ -54,6 +54,10 @@ class Assistify extends Page {
 		return browser.element('.create-channel__content input[name="expertise"]');
 	}
 
+	get requestTitle() {
+		return browser.element('.create-channel__content input[name="request_title"]');
+	}
+
 	get topicExperts() {
 		return browser.element('.create-channel__content input[name="experts"]');
 	}
@@ -130,7 +134,7 @@ class Assistify extends Page {
 		browser.pause(500);
 	}
 
-	createHelpRequest(topicName, message) {
+	createHelpRequest(topicName, message, requestTitle) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.tabs.waitForVisible(5000);
@@ -141,6 +145,11 @@ class Assistify extends Page {
 
 		this.topicName.waitForVisible(5000);
 		this.topicName.setValue(topicName);
+
+		if (requestTitle) {
+			this.requestTitle.waitForVisible(5000);
+			this.requestTitle.setValue(requestTitle);
+		}
 
 		browser.pause(100);
 		browser.keys(Keys.TAB);

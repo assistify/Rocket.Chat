@@ -48,3 +48,9 @@ delete-e: Delete topic
 view-r-room: View all requests
 view-e-room: View all topics
 Your_question: Question
+Thread_start: Start Thread
+Threading_about: You're about to start a new channel with the conversation you selected. All members of this channel will join you there to get things solved.
+Thread_welcome_message: __initiator__ started this thread out of __roomName__ . As soon as things have been sorted out, you can indicate that by closing it.
+Thread_started_message_self: __initiator__ started a new thread. Find the initial message below - and show your support!
+Thread_started_message: __initiator__ started a new thread for __author__'s question. Find the initial message below - and show your support!
+Thread_view: View thread

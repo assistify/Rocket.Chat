@@ -108,7 +108,7 @@ Template.SimpleRoomCreateDialog.events({
 		const openingQuestion = instance.openingQuestion.get();
 		if (expertise) {
 			instance.titleError.set(null);
-			Meteor.call('createRequest', requestTitle, expertise, openingQuestion, (err, result) => {
+			Meteor.call('createRequestFromExpertise', requestTitle, expertise, openingQuestion, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {

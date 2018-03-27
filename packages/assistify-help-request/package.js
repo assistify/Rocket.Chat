@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('startup/customRoomTypes.js');
 	api.addFiles('startup/rolesAndPermissions.js', 'server');
 	api.addFiles('lib/messageTypes/requestClosed.js');
+	api.addFiles('lib/messageTypes/threadMessage.js');
 
 	// Libraries
 	api.addFiles('server/inject.js', 'server');
@@ -36,6 +37,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', ['server', 'client']);
 	api.addFiles('server/models/HelpRequests.js', ['server', 'client']);
 	api.addFiles('server/models/LivechatExternalMessage.js', ['server', 'client']);
+	api.addFiles('server/models/Message.js', ['server', 'client']);
 
 	api.addFiles('server/publications/Rooms.js', 'server');
 	api.addFiles('server/publications/HelpRequests.js', 'server');
@@ -44,8 +46,11 @@ Package.onUse(function(api) {
 	//Methods
 	api.addFiles('server/methods/helpRequestByRoomId.js', 'server');
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
-	api.addFiles('server/methods/createRequest.js', 'server');
 	api.addFiles('server/methods/createExpertise.js', 'server');
+	api.addFiles('server/methods/createRequestFactory.js', 'server');
+	api.addFiles('server/methods/createRequestBase.js', 'server');
+	api.addFiles('server/methods/createRequestFromExpertise.js', 'server');
+	api.addFiles('server/methods/createRequestFromRoomId.js', 'server');
 	api.addFiles('server/methods/requestsList.js', 'server');
 	api.addFiles('server/methods/isValidExpertise.js', 'server');
 
@@ -75,7 +80,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/sideNav/expertise.js', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.html', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.js', 'client');
-
+	api.addFiles('client/views/messageActions/AssistifyMessageAction.js', 'client');
 	//Libraries
 	api.addFiles('client/lib/collections.js', 'client');
 

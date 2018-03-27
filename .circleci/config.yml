@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9.4-browsers
 
     steps:
       - checkout
@@ -57,6 +57,11 @@ jobs:
             meteor npm install
 
       - run:
+          name: Install submodules
+          command: |
+            git submodule init && git submodule update
+
+      - run:
           name: Lint
           command: |
             meteor npm run lint
@@ -82,7 +87,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           command: |
-            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
+            if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == "develop" ]] || [[ $CIRCLE_BRANCH == "master" ]]; then meteor reset; fi
             set +e
             meteor add rocketchat:lib
             set -e
@@ -134,10 +139,11 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9.4-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
-
+    # ulimits:
+    #     core: -1
     environment:
       TEST_MODE: "true"
       MONGO_URL: mongodb://localhost:27017/testwithoplog
@@ -171,20 +177,22 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
-
+            rm -rf ./tests/end-to-end/ui_smarti # Smarti tests run separately
+            npm test
       - store_artifacts:
           path: .screenshots/
 
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9.4-browsers
       - image: circleci/mongo:3.4
+    # ulimits:
+    #   core: -1
 
     environment:
       TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_URL: mongodb://localhost:27017/testwithoutplog
 
     steps:
       - attach_workspace:
@@ -200,7 +208,60 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            rm -rf ./tests/end-to-end/ui_smarti # Smarti tests run separately
+            npm test
+
+      - store_artifacts:
+          path: .screenshots/
+
+  test-smarti:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8.9.4-browsers
+      - image: circleci/mongo:3.4
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+      - image: assisitfy/smarti:0.7.0
+        environment:
+          - DOWNLOAD_NLP_LIBS=true
+          - SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/smarti
+          - SECURITY_CONFIG_MONGO_ADMIN-PASSWORD=admin
+    # ulimits:
+    #     core: -1
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testsmarti
+      SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/smarti
+      SECURITY_CONFIG_MONGO_ADMIN-PASSWORD: admin
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      # Enable remote docker host for temporary images (see https://circleci.com/docs/2.0/building-docker-images/
+      # - setup_remote_docker:
+      #     docker_layer_caching: true
+
+      # - run:
+      #     name: Build and start Smarti
+      #     command: |
+      #       docker pull assisitfy/smarti:0.7.0-RC1
+      #       docker build -t smarti-with-stanfordnlp - < .scripts/dockerfile-smarti-with-nlp
+      #       docker run -d --name smarti --net=host smarti-with-stanfordnlp  --security.config.mongo.admin-password=admin --spring.data.mongodb.uri=mongodb://localhost/smarti
+#
+      # - run:
+      #     name: NPM install
+      #     command: |
+      #       npm install
+
+      - run:
+          name: Run Tests
+          command: |
+            shopt -s extglob
+            rm -rf ./tests/end-to-end/!(ui_smarti) # remove all non-Smarti-tests
+            npm test
 
       - store_artifacts:
           path: .screenshots/
@@ -232,21 +293,7 @@ jobs:
           name: Publish assets
           command: |
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
-
-            export PATH=~/.local/bin:$PATH
-            export CIRCLE_TAG=${CIRCLE_TAG:=}
-
-            source .circleci/setartname.sh
-            source .circleci/setdeploydir.sh
-            bash .circleci/setupsig.sh
-            bash .circleci/namefiles.sh
-            # echo ".circleci/sandstorm.sh"
-
-            aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
-
-            bash .circleci/update-releases.sh
-            bash .circleci/docker.sh
-            bash .circleci/snap.sh
+            bash .scripts/deploy-assistify-chat.sh
 
 workflows:
   version: 2
@@ -255,26 +302,41 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
       - test-with-oplog:
           requires:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
       - test-without-oplog:
           requires:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
+            branches:
+              only:
+                - circle-without-oplog
+      - test-smarti:
+          requires:
+            - build
+          filters:
+            tags:
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
+            branches:
+              only:
+                - circle-smarti
       - deploy:
           requires:
             - test-with-oplog
-            - test-without-oplog
+            # - test-without-oplog
+            # - test-smarti
           filters:
             branches:
-              only: develop
+              only:
+                - develop
+                - master
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
 

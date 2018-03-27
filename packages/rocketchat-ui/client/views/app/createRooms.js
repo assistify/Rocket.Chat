@@ -20,12 +20,20 @@ const roomTypesAfterStandard = function() {
 	).filter((roomType) => roomType.creationTemplate && roomType.canBeCreated());
 };
 
-const allTemplatesOrdered = function() {
-	return roomTypesBeforeStandard()
-		.concat([{
+const standardRoomType = function() {
+	if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
+		return [{
 			creationLabel: 'Create_A_New_Channel',
 			creationTemplate: 'createChannel'
-		}])
+		}];
+	} else {
+		return [];
+	}
+};
+
+const allTemplatesOrdered = function() {
+	return roomTypesBeforeStandard()
+		.concat(standardRoomType())
 		.concat(roomTypesAfterStandard())
 		.map((roomtype) => {
 			return {
