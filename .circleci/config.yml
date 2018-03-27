@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9.4-browsers
 
     steps:
       - checkout
@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           command: |
-            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
+            if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == "develop" ]] || [[ $CIRCLE_BRANCH == "master" ]]; then meteor reset; fi
             set +e
             meteor add rocketchat:lib
             set -e
@@ -139,10 +139,11 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9.4-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
-
+    # ulimits:
+    #     core: -1
     environment:
       TEST_MODE: "true"
       MONGO_URL: mongodb://localhost:27017/testwithoplog
@@ -184,8 +185,10 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9.4-browsers
       - image: circleci/mongo:3.4
+    # ulimits:
+    #   core: -1
 
     environment:
       TEST_MODE: "true"
@@ -214,9 +217,16 @@ jobs:
   test-smarti:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9.4-browsers
       - image: circleci/mongo:3.4
-      - image: assisitfy/smarti:0.7.0-RC1
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+      - image: assisitfy/smarti:0.7.0
+        environment:
+          - DOWNLOAD_NLP_LIBS=true
+          - SPRING_DATA_MONGODB_URI=mongodb://localhost:27017/smarti
+          - SECURITY_CONFIG_MONGO_ADMIN-PASSWORD=admin
+    # ulimits:
+    #     core: -1
 
     environment:
       TEST_MODE: "true"
@@ -292,19 +302,19 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
       - test-with-oplog:
           requires:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
       - test-without-oplog:
           requires:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
             branches:
               only:
                 - circle-without-oplog
@@ -313,7 +323,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
             branches:
               only:
                 - circle-smarti
@@ -328,5 +338,5 @@ workflows:
                 - develop
                 - master
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: ^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
 

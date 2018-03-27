@@ -10,7 +10,7 @@ branches:
 git:
   depth: 1
 node_js:
-- '8'
+- '8.9.4'
 addons:
   apt:
     sources:
