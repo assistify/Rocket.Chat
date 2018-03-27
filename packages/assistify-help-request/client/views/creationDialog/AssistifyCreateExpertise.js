@@ -35,7 +35,7 @@ const validateChannelName = (name) => {
 		return true;
 	}
 
-	const reg = new RegExp(`^${RocketChat.settings.get('UTF8_Names_Validation')}$`);
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return name.length === 0 || reg.test(name);
 };
 const filterNames = (old) => {
@@ -43,7 +43,7 @@ const filterNames = (old) => {
 		return old;
 	}
 
-	const reg = new RegExp(`^${RocketChat.settings.get('UTF8_Names_Validation')}$`);
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
 };
 
@@ -63,9 +63,9 @@ Template.AssistifyCreateExpertise.helpers({
 			noMatchTemplate: 'userSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
-				return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get()), function (part) {
-					return `<strong>${part}</strong>`;
-				})}`;
+				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
 			}
 		};
 	},
@@ -147,7 +147,7 @@ Template.AssistifyCreateExpertise.events({
 			return instance.find('input[name="expertise"]').focus();
 		}
 
-		Meteor.call('createExpertise', name, instance.selectedUsers.get().map(user => user.username), function (err, result) {
+		Meteor.call('createExpertise', name, instance.selectedUsers.get().map(user => user.username), function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -165,20 +165,20 @@ Template.AssistifyCreateExpertise.events({
 	}
 });
 
-Template.AssistifyCreateExpertise.onRendered(function () {
+Template.AssistifyCreateExpertise.onRendered(function() {
 	const users = this.selectedUsers;
 
 	this.firstNode.parentNode.querySelector('[name="expertise"]').focus();
 	this.ac.element = this.firstNode.parentNode.querySelector('[name="experts"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function (e, { item }) {
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
 	});
 });
 
-Template.AssistifyCreateExpertise.onCreated(function () {
+Template.AssistifyCreateExpertise.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
 	const filter = { exceptions: this.selectedUsers.get().map(u => u.username) };
