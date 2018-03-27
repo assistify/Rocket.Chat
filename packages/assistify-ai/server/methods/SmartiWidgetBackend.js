@@ -229,6 +229,9 @@ Meteor.methods({
 		const messageDB = RocketChat.models.Messages;
 		const messages = messageDB.find({ lastSync: { $exists: false }, rid }).fetch();
 		for (let i=0; i < messages.length; i++) {
+			if (messages[i].t) {
+				continue;
+			}
 			console.log(messages[i]._id);
 			knowledgeAdapter.onMessage(messages[i]);
 		}

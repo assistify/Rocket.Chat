@@ -11,6 +11,19 @@ const Keys = {
 };
 class Assistify extends Page {
 
+	//Settings
+	get assitifyLink() {
+		return browser.element('[href="/admin/Assistify"]');
+	}
+
+	get expandKnowledgebaseSettings() {
+		return browser.element('#rocket-chat > div.main-content.content-background-color.rc-old > section > div > div > div:nth-child(2) > div.section-title > div.section-title-right > button');
+	}
+
+	get resyncBtn() {
+		return browser.element('[data-setting="Assistify_AI_Resync"]');
+	}
+
 	get knowledgebaseTab() {
 		return browser.element('.tab-button:not(.hidden) .tab-button-icon--lightbulb');
 	}
