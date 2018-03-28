@@ -508,19 +508,19 @@ describe('[Test Sync]', function() {
 			it('Remove sync Request', (done)=> {
 				console.log('TopicName for cleanup', sync_request1);
 				assistify.closeTopic(sync_request1);
-				done()
+				done();
 			});
 
 			it('Remove 1. unsync Request', (done)=> {
 				console.log('TopicName for cleanup', unsync_request1);
 				assistify.closeTopic(unsync_request1);
-				done()
+				done();
 			});
 
 			it('Remove 2. unsync Request', (done)=> {
 				console.log('TopicName for cleanup', unsync_request2);
 				assistify.closeTopic(unsync_request2);
-				done()
+				done();
 			});
 
 			it('Cleanup all Conversations in Smarti', (done)=> {
