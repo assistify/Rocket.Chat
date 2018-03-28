@@ -20,7 +20,7 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ts: { $gt: new Date(String(lastStatisticsCreatedAt).replace('T', ' ')) }
+					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) }
 				}
 		},
 		{
@@ -50,7 +50,7 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ts: { $gt: new Date(String(lastStatisticsCreatedAt).replace('T', ' ')) }
+					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) }
 				}
 		},
 		{
