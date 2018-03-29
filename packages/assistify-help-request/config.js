@@ -37,6 +37,6 @@ Meteor.startup(() => {
 	_createExpertsChannel();
 
 	RocketChat.theme.addPackageAsset(() => {
-		return Assets.getText('assets/stylesheets/helpRequest.less');
+		return Assets.getText('assets/stylesheets/helpRequestContext.less');
 	});
 });

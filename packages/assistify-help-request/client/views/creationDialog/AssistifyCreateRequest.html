@@ -59,8 +59,8 @@
 						<div class="rc-input__icon">
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</div>
-						<textarea name="first_question" class="help-request-context rc-input__textarea autogrow-short" placeholder="{{_ 'New_request_first_question'}}" maxlength="{{maxMessageLength}}"
-								  id="first_question"  rows="1"></textarea>
+						<input name="first_question" type="text" class="rc-input__element" id="first_question"
+							   placeholder={{_ "New_request_first_question"}} autocomplete="off">
 					</div>
 				</label>
 			</div>
@@ -68,14 +68,9 @@
 				<input class="rc-button rc-button--primary js-save-request" type="submit" data-button="create"
 					   value="{{_ "Create"}}" {{createIsDisabled}}>
 			</div>
-
 		</div>
-
 	</form>
-
 </template>
-
-
 
 <template name="AssistifyCreateRequestAutocomplete">
 	<li class="rc-popup-list__item">

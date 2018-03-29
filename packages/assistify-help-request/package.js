@@ -88,7 +88,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/hooks/openAiTab.js', 'client');
 
 	//Assets
-	api.addAssets('assets/stylesheets/helpRequest.less', 'server'); //has to be done on the server, it exposes the completed css to the client
+	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client
 	api.addFiles('client/public/stylesheets/help-request.css', 'client');
 
 	//global UI modifications
