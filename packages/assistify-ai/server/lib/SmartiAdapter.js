@@ -94,54 +94,56 @@ export class SmartiAdapter {
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
 			const room = RocketChat.models.Rooms.findOneById(message.rid);
 
+			if (helpRequest.resolutionStatus === 'open') {
 			// The "support_area" in Smarti is an optional property. A historic conversation belonging to the same support_are increases relevance
-			let supportArea = room.parentRoomId || room.topic || room.expertise;
-			if (!supportArea) {
-				if (helpRequest && helpRequest.supportArea) {
-					supportArea = helpRequest.supportArea;
-				} else {
-					supportArea = room.name;
+				let supportArea = room.topic || room.expertise || room.parentRoomId ;
+				if (!supportArea) {
+					if (helpRequest && helpRequest.supportArea) {
+						supportArea = helpRequest.supportArea;
+					} else {
+						supportArea = room.name;
+					}
 				}
-			}
 
-			SystemLogger.debug('HelpRequest:', helpRequest);
-			SystemLogger.debug('Room:', room);
+				SystemLogger.debug('HelpRequest:', helpRequest);
+				SystemLogger.debug('Room:', room);
 
-			const requestBodyConversation = {
-				'meta': {
-					'support_area': [supportArea],
-					'channel_id': [message.rid]
-				},
-				'user': {
-					'id': room.u._id
-				},
-				'messages': [requestBodyMessage],
-				'context': {
-					'contextType': 'rocket.chat'
+				const requestBodyConversation = {
+					'meta': {
+						'support_area': [supportArea],
+						'channel_id': [message.rid]
+					},
+					'user': {
+						'id': room.u._id
+					},
+					'messages': [requestBodyMessage],
+					'context': {
+						'contextType': 'rocket.chat'
 					/*
 					"domain" : "test",
 					"environment" : {
 
 					}
 					*/
+					}
+				};
+
+				SystemLogger.debug('Creating conversation:', JSON.stringify(requestBodyConversation, null, '\t'));
+				// create conversation, send message along and request analysis
+
+				const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
+				if (conversation && conversation.id) {
+					conversationId = conversation.id;
+					updateMapping(message, conversationId);
 				}
-			};
-
-			SystemLogger.debug('Creating conversation:', JSON.stringify(requestBodyConversation, null, '\t'));
-			// create conversation, send message along and request analysis
-
-			const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
-			if (conversation && conversation.id) {
-				conversationId = conversation.id;
-				updateMapping(message, conversationId);
 			}
-		}
 
-		// request analysis results
-		const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`);
-		SystemLogger.debug('analysisResult:', JSON.stringify(analysisResult, null, '\t'));
-		if (analysisResult) {
-			RocketChat.Notifications.notifyRoom(message.rid, 'newConversationResult', analysisResult);
+			// request analysis results
+			const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`);
+			SystemLogger.debug('analysisResult:', JSON.stringify(analysisResult, null, '\t'));
+			if (analysisResult) {
+				RocketChat.Notifications.notifyRoom(message.rid, 'newConversationResult', analysisResult);
+			}
 		}
 	}
 
