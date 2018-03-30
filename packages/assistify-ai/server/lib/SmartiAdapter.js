@@ -1,6 +1,6 @@
 /* globals SystemLogger, RocketChat */
 
-import { SmartiProxy, verbs } from '../SmartiProxy';
+import {SmartiProxy, verbs} from '../SmartiProxy';
 
 /**
  * The SmartiAdapter handles the interaction with Smarti triggered by Rocket.Chat hooks (not by Smarti widget).
@@ -49,8 +49,6 @@ export class SmartiAdapter {
 			);
 		}
 
-
-		//TODO trigger on message update, if needed
 		const requestBodyMessage = {
 			'id': message._id,
 			'time': message.ts,
@@ -94,12 +92,12 @@ export class SmartiAdapter {
 					// 404 is expected if message doesn't exist
 					if (error.response.statusCode === 404) {
 						SystemLogger.debug('Message not found!');
-						return null;
+						SystemLogger.debug('Adding new message to conversation...');
+						SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
 					}
 				});
 			} else {
 				SystemLogger.debug('Adding new message to conversation...');
-				// add message to conversation
 				SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
 			}
 		} else {
@@ -107,9 +105,9 @@ export class SmartiAdapter {
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
 			const room = RocketChat.models.Rooms.findOneById(message.rid);
 
-			if (helpRequest.resolutionStatus === 'open') {
-			// The "support_area" in Smarti is an optional property. A historic conversation belonging to the same support_are increases relevance
-				let supportArea = room.topic || room.expertise || room.parentRoomId ;
+			if (!helpRequest || helpRequest.resolutionStatus === 'open') {
+				// The "support_area" in Smarti is an optional property. A historic conversation belonging to the same support_are increases relevance
+				let supportArea = room.topic || room.expertise || room.parentRoomId;
 				if (!supportArea) {
 					if (helpRequest && helpRequest.supportArea) {
 						supportArea = helpRequest.supportArea;
@@ -132,12 +130,6 @@ export class SmartiAdapter {
 					'messages': [requestBodyMessage],
 					'context': {
 						'contextType': 'rocket.chat'
-					/*
-					"domain" : "test",
-					"environment" : {
-
-					}
-					*/
 					}
 				};
 
@@ -157,6 +149,38 @@ export class SmartiAdapter {
 			if (analysisResult) {
 				RocketChat.Notifications.notifyRoom(message.rid, 'newConversationResult', analysisResult);
 			}
+		}
+	}
+
+
+	static afterMessageDeleted(message) {
+
+		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
+		let conversationId;
+
+		// conversation exists for channel?
+		if (m && m.conversationId) {
+			conversationId = m.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
+				`legacy/rocket.chat?channel_id=${ message.rid }`, null, (error) => {
+					// 404 is expected if no mapping exists
+					if (error.response.statusCode === 404) {
+						return null;
+					}
+				});
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+			}
+		}
+
+		if (conversationId) {
+			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
+
+			SystemLogger.debug(`Deleting message from conversation ${ conversationId } ...`);
+			// add message to conversation
+			SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }/message/${ message._id }`);
 		}
 	}
 
