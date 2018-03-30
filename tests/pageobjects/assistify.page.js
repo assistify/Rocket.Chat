@@ -11,6 +11,16 @@ const Keys = {
 };
 class Assistify extends Page {
 
+	// in order to communicate with Smarti we need the roomId.
+	// funny enough, it's available in its DOM. A bit dirty, but very efficient
+	get roomId() {
+		return browser.element('.messages-container.flex-tab-main-content').getAttribute('id').replace('chat-window-', '');
+	}
+
+	get lastMessageId() {
+		return browser.element('.message:last-child').getAttribute('id');
+	}
+
 	get knowledgebaseTab() {
 		return browser.element('.tab-button:not(.hidden) .tab-button-icon--lightbulb');
 	}
