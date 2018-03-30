@@ -138,10 +138,10 @@ describe('[Smarti Integration]', () => {
 
 					const currentConversation = res.body.content.filter((conversation) => {
 						console.log('conversation candidate', conversation);
-						return conversation.meta.channel_id === roomId;
+						return conversation.meta.channel_id[0] === roomId;
 					})[0];
 
-					currentConversation.id.should.not.be.empty;
+					currentConversation.should.not.be.empty;
 					conversationId = currentConversation.id;
 				})
 				.end(done);
