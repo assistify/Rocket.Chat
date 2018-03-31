@@ -60,7 +60,7 @@ Meteor.startup(() => {
 
 			return message;
 		}
-	}, RocketChat.callbacks.priority.LOW);
+	}, RocketChat.callbacks.priority.LOW, 'Assistify_Request_onMessage');
 });
 
 RocketChat.callbacks.add('afterDeleteMessage', function(message) {
@@ -78,3 +78,16 @@ RocketChat.callbacks.add('afterDeleteMessage', function(message) {
 	}
 
 }, RocketChat.callbacks.priority.LOW, 'Assistify_Request_afterDeleteMessage');
+
+RocketChat.callbacks.add('afterRoomErased', function(room) {
+	const knowledgeAdapter = getKnowledgeAdapter();
+	SystemLogger.debug(`Propagating delete of room ${ room._id } to knowledge-adapter`);
+	Meteor.defer(() => {
+		try {
+			SystemLogger.debug(`Calling afterRoomErased(${ room._id });`);
+			knowledgeAdapter.afterRoomErased(room);
+		} catch (e) {
+			SystemLogger.error('Error using knowledge provider ->', e);
+		}
+	});
+}, RocketChat.callbacks.priority.LOW, 'Assistify_Request_afterRoomErased');

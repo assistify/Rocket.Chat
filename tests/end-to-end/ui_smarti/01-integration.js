@@ -48,49 +48,11 @@ describe('[Smarti Integration]', () => {
 		});
 	});
 
-	describe('[Request]', () => {
-
-		describe('First request', () => {
-
-			it('create is successful', () => {
-				assistify.createHelpRequest(topicName, message);
-			});
-			it.skip('answer request', () => {
-				assistify.sendTopicMessage(answer);
-			});
-			it('close request', () => {
-				assistify.clickKnowledgebase();
-				assistify.closeRequest();
-
-			});
-		});
-		describe('Second request', () => {
-
-			it('create is successful', () => {
-				assistify.createHelpRequest(topicName, message);
-				assistify.clickKnowledgebase();
-			});
-
-			it('knowledgebase answer visible', () => {
-				assistify.clickKnowledgebase();
-				assistify.knowledgebaseContent.waitForVisible(5000);
-			});
-
-			it('post knowledgebase answer', () => {
-				assistify.knowledgebasePickAnswer.waitForVisible(5000);
-				assistify.knowledgebasePickAnswer.click();
-			});
-			it('close request', () => {
-				assistify.clickKnowledgebase();
-				assistify.closeRequest();
-			});
-		});
-	});
-
 	describe('Message lifecycle', () => {
 		let clientid;
 		let token;
 		let conversationId;
+		let requestName;
 
 		it('create is successful', () => {
 			assistify.createHelpRequest(topicName, 'Diese Nachricht soll editiert werden');
@@ -128,7 +90,10 @@ describe('[Smarti Integration]', () => {
 			const roomId = assistify.roomId;
 			roomId.should.not.be.empty;
 
-			console.log('roomId', roomId);
+			requestName = mainContent.channelTitle.getText();
+			requestName.should.not.be.empty;
+
+			console.log('roomId', roomId, 'name', requestName);
 
 			smarti.get(`/conversation?channel_id=${ roomId }`) //this does not really filter, see https://github.com/redlink-gmbh/smarti/issues/233
 				.set('Accept', 'application/json')
@@ -137,7 +102,6 @@ describe('[Smarti Integration]', () => {
 					res.body.content.should.not.be.empty;
 
 					const currentConversation = res.body.content.filter((conversation) => {
-						console.log('conversation candidate', conversation);
 						return conversation.meta.channel_id[0] === roomId;
 					})[0];
 
@@ -173,7 +137,6 @@ describe('[Smarti Integration]', () => {
 				.set('Accept', 'application/json')
 				.set('X-Auth-Token', token)
 				.expect((res) => {
-					console.log('message from smarti', res.body);
 					res.body.content.should.equal(textAfterChange);
 				})
 				.end(done);
@@ -197,12 +160,59 @@ describe('[Smarti Integration]', () => {
 				.expect(404)
 				.end(done);
 		});
+
+		it('close new Request', () => {
+			console.log('RequestName for cleanup', topicName);
+			assistify.closeTopic(topicName);
+		});
+
+		it('delete created request', (done) => {
+			sideNav.openChannel(requestName);
+			assistify.deleteRoom();
+			smarti.get(`/conversation/${ conversationId }`)
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect(404)
+				.end(done);
+		});
 	});
 
-	after(() => {
-		it('close new Topic', () => {
-			console.log('TopicName for cleanup', topicName);
-			assistify.closeTopic(topicName);
+	describe('[Request]', () => {
+
+		describe('First request', () => {
+
+			it('create is successful', () => {
+				assistify.createHelpRequest(topicName, message);
+			});
+			it.skip('answer request', () => {
+				assistify.sendTopicMessage(answer);
+			});
+			it('close request', () => {
+				assistify.clickKnowledgebase();
+				assistify.closeRequest();
+
+			});
+		});
+		describe('Second request', () => {
+
+			it('create is successful', () => {
+				assistify.createHelpRequest(topicName, message);
+				assistify.clickKnowledgebase();
+			});
+
+			it('knowledgebase answer visible', () => {
+				assistify.clickKnowledgebase();
+				assistify.knowledgebaseContent.waitForVisible(5000);
+			});
+
+			it('post knowledgebase answer', () => {
+				assistify.knowledgebasePickAnswer.waitForVisible(5000);
+				assistify.knowledgebasePickAnswer.click();
+			});
+			it('close request', () => {
+				assistify.clickKnowledgebase();
+				assistify.closeRequest();
+			});
 		});
 	});
 });

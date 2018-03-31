@@ -192,6 +192,14 @@ class Assistify extends Page {
 		global.confirmPopup();
 	}
 
+	deleteRoom() {
+		flexTab.operateFlexTab('info', true);
+		flexTab.editBtn.click();
+		flexTab.deleteBtn.click();
+		global.modal.waitForVisible(5000);
+		global.confirmPopup();
+	}
+
 	closeTopic(topicName) {
 		sideNav.openChannel(topicName);
 		flexTab.channelTab.waitForVisible(5000);

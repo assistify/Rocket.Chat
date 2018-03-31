@@ -21,7 +21,11 @@ Meteor.methods({
 		if (RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room)) {
 			RocketChat.models.Messages.removeByRoomId(rid);
 			RocketChat.models.Subscriptions.removeByRoomId(rid);
-			return RocketChat.models.Rooms.removeById(rid);
+			const result = RocketChat.models.Rooms.removeById(rid);
+			Meteor.defer(function() {
+				RocketChat.callbacks.run('afterRoomErased', room);
+			});
+			return result;
 		} else {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'eraseRoom'
