@@ -9,6 +9,10 @@ const acEvents = {
 		t.ac.onItemClick(this, e);
 		t.debounceValidateExpertise(this.item.name);
 	},
+	'click #more-topics'(e, t) {
+		e.preventDefault();
+		t.topicSearchEnable.set(true);
+	},
 	'keydown [name="expertise"]'(e, t) {
 		t.ac.onKeyDown(e);
 	},
@@ -39,7 +43,7 @@ Template.AssistifyCreateRequest.helpers({
 		return {
 			filter: filter.get(),
 			template_item: 'AssistifyCreateRequestAutocomplete',
-			noMatchTemplate: 'userSearchEmpty',
+			noMatchTemplate: 'AssistifytopicSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
@@ -68,9 +72,72 @@ Template.AssistifyCreateRequest.helpers({
 	titleError() {
 		const instance = Template.instance();
 		return instance.titleError.get();
+	},
+	topicSearchEnable() {
+		const instance = Template.instance();
+		return instance.topicSearchEnable.get();
+	},
+	getProperties() {
+		const instance = Template.instance();
+		function getRandomArbitrary(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+
+		function getWordList() {
+			const list = [];
+			RocketChat.models.Rooms.find({t: 'e'}).fetch().forEach(function(word) {
+				list.push([word.name, getRandomArbitrary(4, 10)]);
+			});
+			return list;
+		}
+
+		function setExpertise() {
+			return function(selectedExpertise) {
+				instance.expertise.set(selectedExpertise[0]);
+				if (selectedExpertise) {
+					instance.debounceValidateExpertise(selectedExpertise[0]);
+					instance.topicSearchEnable.set(''); //Search completed.
+				}
+			};
+		}
+
+		function onWordHover() {
+			return function(item) {
+				// To Do
+				return item;
+
+			};
+		}
+
+		function setFlatness() {
+			const list = getWordList();
+			return list.length < 15 ? 2 : 0.5;
+		}
+
+		return {
+			clearCanvas: true,
+			weightFactor: 8,
+			fontWeight: 'normal',
+			gridSize: 40,
+			shape: 'square',
+			rotateRatio: 0,
+			rotationSteps: 0,
+			drawOutOfBound: true,
+			shuffle: true,
+			ellipticity: setFlatness(),
+			list: getWordList(),
+			click: setExpertise(),
+			hover: onWordHover()
+			//setCanvas: getCanvas
+		};
 	}
 });
 
+Template.AssistifytopicSearchEmpty.helpers({
+	showMoreTopics() {
+		return RocketChat.models.Rooms.find({t: 'e'}).count() > 10?true:false;
+	}
+});
 
 Template.AssistifyCreateRequest.events({
 	...acEvents,
@@ -91,7 +158,6 @@ Template.AssistifyCreateRequest.events({
 		} else {
 			t.debounceValidateRequestName(input.value);
 		}
-
 	},
 	'input #first_question'(e, t) {
 		const input = e.target;
@@ -140,13 +206,14 @@ Template.AssistifyCreateRequest.events({
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
-	const expertiseElement = this.find('#expertise-search');
-	const titleElement = this.find('#request_title');
-	const questionElement = this.find('#first_question');
 
-	instance.ac.element = expertiseElement;
-	instance.ac.$element = $(instance.ac.element);
-	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+	const expertiseElement = this.find('input[name="expertise"]');
+	const titleElement = this.find('input[name="request_title"]');
+	const questionElement = this.find('input[name="first_question"]');
+	this.find('input[name="expertise"]').focus();
+	this.ac.element = this.find('input[name="expertise"]');
+	this.ac.$element = $(this.ac.element);
+	this.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
 		instance.debounceValidateExpertise(item.name);
@@ -177,14 +244,15 @@ Template.AssistifyCreateRequest.onRendered(function() {
 
 Template.AssistifyCreateRequest.onCreated(function() {
 	const instance = this;
-
 	instance.expertise = new ReactiveVar(''); //the value of the text field
 	instance.validExpertise = new ReactiveVar(false);
 	instance.expertiseError = new ReactiveVar(null);
 	instance.titleError = new ReactiveVar(null);
 	instance.requestTitle = new ReactiveVar('');
 	instance.openingQuestion = new ReactiveVar('');
+	instance.topicSearchEnable = new ReactiveVar('');
 
+	Meteor.subscribe('assistify:expertise');
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
 			return false; //expertise is mandatory

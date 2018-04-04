@@ -98,6 +98,14 @@ class Assistify extends Page {
 		return browser.element('nav.rc-tabs .rc-tabs__tab-link.AssistifyCreateRequest');
 	}
 
+	get wordCloudLink() {
+		return browser.element('[id="more-topics"]');
+	}
+
+	get wordCloudCanvas() {
+		return browser.element('[id="wc-canvas"]');
+	}
+
 	// Knowledgebase
 	get editInfoBtn() {
 		return browser.element('.rc-button.rc-button--icon.rc-button--outline.js-edit');
@@ -137,7 +145,7 @@ class Assistify extends Page {
 		this.topicExperts.setValue(expert);
 		browser.pause(500);
 		browser.keys(Keys.TAB);
-		browser.pause(500);
+		// browser.pause(500);
 
 		browser.waitUntil(function() {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
@@ -146,6 +154,22 @@ class Assistify extends Page {
 		browser.pause(500);
 		this.saveTopicBtn.click();
 		browser.pause(500);
+	}
+
+	openWordCloud(key) {
+		this.newChannelBtn.waitForVisible(10000);
+		this.newChannelBtn.click();
+		this.tabs.waitForVisible(5000);
+		if (this.tabs) {
+			this.createRequestTab.waitForVisible(5000);
+			this.createRequestTab.click();
+		}
+
+		this.topicName.waitForVisible(5000);
+		this.topicName.setValue(key);
+
+		this.wordCloudLink.waitForVisible(5000);
+		this.wordCloudLink.click();
 	}
 
 	createHelpRequest(topicName, message, requestTitle) {

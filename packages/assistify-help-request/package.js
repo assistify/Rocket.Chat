@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 	api.use(['nimble:restivus', 'rocketchat:api'], 'server');
 	api.use('templating', 'client');
 	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
+	//api.use('overture8:wordcloud2');
 
 	api.addFiles('help-request.js', 'server');
 	api.addFiles('server/types.js', 'server');
@@ -74,13 +75,20 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/AssistifyCreateExpertise.html', 'client');
 	api.addFiles('client/views/creationDialog/AssistifyCreateExpertise.js', 'client');
 	api.addFiles('client/views/creationDialog/AssistifyCreateInputError.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyWordCloud.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyWordCloud.js', 'client');
 	api.addFiles('client/views/sideNav/requests.html', 'client');
 	api.addFiles('client/views/sideNav/requests.js', 'client');
 	api.addFiles('client/views/sideNav/expertise.html', 'client');
 	api.addFiles('client/views/sideNav/expertise.js', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.html', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.js', 'client');
+<<<<<<< HEAD
 	api.addFiles('client/views/messageActions/AssistifyMessageAction.js', 'client');
+=======
+
+
+>>>>>>> e5a605d20371cf39e718db41a0a75629127425f5
 	//Libraries
 	api.addFiles('client/lib/collections.js', 'client');
 

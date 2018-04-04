@@ -17,23 +17,25 @@ Meteor.publish('autocompleteExpertise', function(selector) {
 		},
 		limit: 10
 	};
-
-	const cursorHandle = RocketChat.models.Rooms.findByNameContainingTypesAndTags(selector.term, [{type: 'e'}], options)
-		.observeChanges({
-			added(_id, record) {
-				return pub.added('autocompleteRecords', _id, record);
-			},
-			changed(_id, record) {
-				return pub.changed('autocompleteRecords', _id, record);
-			},
-			removed(_id, record) {
-				return pub.removed('autocompleteRecords', _id, record);
-			}
-		});
+	let cursorHandle = RocketChat.models.Rooms.findByNameContainingTypesAndTags(selector.term, [{type: 'e'}], options);
+	if (RocketChat.models.Rooms.find({t: 'e'}).count() < 10 && cursorHandle.count() === 0) {
+		cursorHandle = RocketChat.models.Rooms.findByNameContainingTypesAndTags('', [{type: 'e'}], options);
+	}
+	const observeChangesHandle = cursorHandle.observeChanges({
+		added(_id, record) {
+			return pub.added('autocompleteRecords', _id, record);
+		},
+		changed(_id, record) {
+			return pub.changed('autocompleteRecords', _id, record);
+		},
+		removed(_id, record) {
+			return pub.removed('autocompleteRecords', _id, record);
+		}
+	});
 
 	this.ready();
 
 	this.onStop(function() {
-		return cursorHandle.stop();
+		return observeChangesHandle.stop();
 	});
 });
