@@ -83,12 +83,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/sideNav/expertise.js', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.html', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.js', 'client');
-<<<<<<< HEAD
 	api.addFiles('client/views/messageActions/AssistifyMessageAction.js', 'client');
-=======
 
-
->>>>>>> e5a605d20371cf39e718db41a0a75629127425f5
 	//Libraries
 	api.addFiles('client/lib/collections.js', 'client');
 
