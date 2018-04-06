@@ -28,7 +28,7 @@ function isMessageRelevant(message, room) {
 		return false;
 	}
 
-
+	return true;
 }
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
