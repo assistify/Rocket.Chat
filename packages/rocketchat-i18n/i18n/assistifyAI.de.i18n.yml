@@ -10,6 +10,8 @@ Assistify_AI_Smarti_Domain: Smarti Client-Name
 Assistify_AI_Smarti_Domain_Description: Trage hier den Smarti Client-Name ein, der zu dieser Rocket.Chat Instanz gehört.
 Assistify_AI_Smarti_Auth_Token: Smarti Client-Token
 Assistify_AI_Smarti_Auth_Token_Description: Trage hier den Smarti Client-Token ein, damit sich Rocket.Chat gegenüber Smarti authentifizieren kann.
+Assistify_AI_Smarti_Widget_i18n: Texte des Smarti-Widgets
+Assistify_AI_Smarti_Widget_i18n_Description: "Ein JSON-Objekt, {KEY: {LANGUAGE1: TEXT1, LANGUAGE2: TEXT2}}"
 Assistify_AI_Widget_Posting_Type: Posting-Verhalten des Widgets
 Assistify_AI_Widget_Posting_Type_Description: Wähle wie die Vorschläge von Smarti in den Chat übernommen werden sollen.
 Assistify_AI_Widget_Posting_Type_SuggestText: Plain Text vorschlagen
