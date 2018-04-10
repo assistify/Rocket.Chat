@@ -75,7 +75,7 @@ export class SmartiAdapter {
 			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
 				`legacy/rocket.chat?channel_id=${ message.rid }`, null, (error) => {
 					// 404 is expected if no mapping exists
-					if (error.response.statusCode === 404) {
+					if (!error.response || error.response.statusCode === 404) {
 						return null;
 					}
 				});
@@ -93,6 +93,8 @@ export class SmartiAdapter {
 			if (res) {
 				SystemLogger.debug('Conversation found and message will be synced now');
 				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
+			} else {
+				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', message.rid));
 			}
 		} else {
 			SystemLogger.debug('Conversation not found for channel');
@@ -141,6 +143,8 @@ export class SmartiAdapter {
 				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
 				conversationId = conversation.id;
 				updateMapping(message, conversationId);
+			} else {
+				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', message.rid));
 			}
 		}
 
