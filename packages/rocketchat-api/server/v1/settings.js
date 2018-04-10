@@ -3,8 +3,8 @@ import _ from 'underscore';
 // settings endpoints
 RocketChat.API.v1.addRoute('settings.public', {authRequired: false}, {
 	get() {
-		const {offset, count} = this.getPaginationItems();
-		const {sort, fields, query} = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
 
 		let ourQuery = {
 			hidden: {$ne: true},
