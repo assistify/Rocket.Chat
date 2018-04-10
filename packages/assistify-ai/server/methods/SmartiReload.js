@@ -54,6 +54,7 @@ Meteor.methods({
 Meteor.methods({
 	tryResync(rid) {
 		SystemLogger.debug('Sync all unsynced messages in room: ', rid);
+		const room = RocketChat.models.Rooms.findOneById(rid);
 		const messageDB = RocketChat.models.Messages;
 		const unsync = messageDB.find({ lastSync: { $exists: false }, rid, t: { $exists: false } }).fetch();
 		if (unsync.length === 0) {
@@ -84,7 +85,6 @@ Meteor.methods({
 			return false;
 		} else if (!conversation) {
 			SystemLogger.debug('Conversation not found - create new conversation');
-			const room = RocketChat.models.Rooms.findOneById(rid);
 			const supportArea = room.parentRoomId || room.topic || room.expertise;
 			conversation = {
 				'meta': {
@@ -105,7 +105,13 @@ Meteor.methods({
 			SystemLogger.debug('Deleted old conversation - ready to sync');
 		}
 
-		const messages = messageDB.find({rid}).fetch();
+		let messages;
+		if (room.closedAt) {
+			messages = messageDB.find({rid, ts: {$lt: room.closedAt}}).fetch();
+			conversation.meta.status = 'Complete';
+		} else {
+			messages = messageDB.find({rid}).fetch();
+		}
 
 		conversation.messages = [];
 		for (let i=0; i < messages.length; i++) {
