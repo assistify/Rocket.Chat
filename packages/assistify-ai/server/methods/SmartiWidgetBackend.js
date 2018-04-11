@@ -1,7 +1,6 @@
 /* globals SystemLogger, RocketChat */
 
 import {SmartiProxy, verbs} from '../SmartiProxy';
-import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 
 const querystring = require('querystring');
 
