@@ -1,6 +1,5 @@
 /* globals SystemLogger, RocketChat */
 
-import {getKnowledgeAdapter} from '../lib/KnowledgeAdapterProvider';
 import {SmartiProxy, verbs} from '../SmartiProxy';
 
 Meteor.methods({
