@@ -128,7 +128,7 @@
 		"clipboard": "1.7.1",
 		"codemirror": "^5.33.0",
 		"coffeescript": "1.12.7",
-		"connect": "2.7.10",
+	  	"connect": "^2.7.10",
 		"core-js": "^2.5.3",
 		"csv-parse": "1.2.0",
 		"emailreplyparser": "^0.0.5",

@@ -14,8 +14,7 @@
 								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-lock"></use>
 							</svg>
 						</div>
-						<input name="expertise" type="text" class="rc-input__element" id="expertise-search"
-							   placeholder={{_ "New_request_for_expertise"}}  autocomplete=off value={{expertise}}>
+						<input name="expertise" id="expertise-search" type="text" class="rc-input__element" placeholder={{_ "New_request_for_expertise"}}  autocomplete=off value={{expertise}}>
 					</div>
 					{{#unless autocomplete 'isShowing'}}
 						{{#if expertise}}
@@ -44,8 +43,7 @@
 								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-flag"></use>
 							</svg>
 						</div>
-						<input name="request_title" type="text" class="rc-input__element" id="request_title"
-							   placeholder={{_ "New_request_title"}} autocomplete="off">
+						<input name="request_title" id="request_title" type="text" class="rc-input__element" placeholder={{_ "New_request_title"}} autocomplete="off">
 					</div>
 				</label>
 				{{#if titleError}}
@@ -59,8 +57,7 @@
 						<div class="rc-input__icon">
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</div>
-						<input name="first_question" type="text" class="rc-input__element" id="first_question"
-							   placeholder={{_ "New_request_first_question"}} autocomplete="off">
+						<textarea name="first_question" id="first_question" class="rc-input__textarea" placeholder="{{_ 'New_request_first_question'}}" maxlength="{{maxMessageLength}}"></textarea>
 					</div>
 				</label>
 			</div>
