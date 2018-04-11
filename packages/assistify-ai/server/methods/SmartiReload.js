@@ -5,16 +5,26 @@ import {SmartiProxy, verbs} from '../SmartiProxy';
 
 Meteor.methods({
 	triggerFullResync() {
-		const requests = RocketChat.models.Rooms.model.find({t:'r', outOfSync: true}).fetch();
+
+		const query = {$or: [{outOfSync: true}, {outOfSync: {$exists: false}}]};
+
+		query.t = 'r';
+		const requests = RocketChat.models.Rooms.model.find(query).fetch();
 		SystemLogger.debug('Number of Requests to sync: ', requests.length);
 		for (let i=0; i < requests.length; i++) {
-			Meteor.call('tryResync', requests[i]._id);
+			Meteor.defer(()=>Meteor.call('tryResync', requests[i]._id));
 		}
-		const topics = RocketChat.models.Rooms.model.find({t:'e', outOfSync: true}).fetch();
+
+		query.t = 'e';
+		const topics = RocketChat.models.Rooms.model.find(query).fetch();
 		SystemLogger.debug('Number of Topics to sync: ', topics.length);
 		for (let i=0; i < topics.length; i++) {
-			Meteor.call('tryResync', topics[i]._id);
+			Meteor.defer(()=>Meteor.call('tryResync', topics[i]._id));
 		}
+
+		return {
+			message: 'sync-triggered-successfully'
+		};
 	}
 });
 
