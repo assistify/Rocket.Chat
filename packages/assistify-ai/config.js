@@ -72,7 +72,7 @@ Meteor.startup(() => {
 
 			this.add('Assistify_AI_Resync', 'triggerFullResync', {
 				type: 'action',
-				actionText: 'Resync Smarti'
+				i18nLabel: 'Assistify_AI_Resync_Smarti'
 			});
 		});
 	};

@@ -116,10 +116,10 @@ Meteor.methods({
 
 		let messages;
 		if (room.closedAt) {
-			messages = messageDB.find({rid, ts: {$lt: room.closedAt}}).fetch();
+			messages = messageDB.find({rid, ts: {$lt: room.closedAt}}, { sort: { ts: 1 } }).fetch();
 			conversation.meta.status = 'Complete';
 		} else {
-			messages = messageDB.find({rid}).fetch();
+			messages = messageDB.find({rid}, { sort: { ts: 1 } }).fetch();
 		}
 
 		conversation.messages = [];
