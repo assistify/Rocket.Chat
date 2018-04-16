@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* eslint-disable no-unused-vars,new-cap */
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { WordCloud } from 'meteor/overture8:wordcloud2';
