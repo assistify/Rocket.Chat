@@ -262,11 +262,12 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	}, 250);
 
 	instance.debounceWordCloudSelect = _.debounce((expertise) => {
+		/*
+		 * Update the expertise html reference to autocomplete
+		 */
 		instance.ac.element = this.find('#expertise-search');
 		instance.ac.$element = $(instance.ac.element);
-		instance.expertise.set(expertise.name);
-		$('input[name="expertise"]').val(expertise.name);
-		instance.debounceValidateExpertise(expertise.name); // invoke validation*/
+		$('input[name="expertise"]').val(expertise.name); // copy the selected value to screen field
 		instance.ac.$element.on('autocompleteselect', function(e, {item}) {
 			instance.expertise.set(item.name);
 			$('input[name="expertise"]').val(item.name);
@@ -274,6 +275,8 @@ Template.AssistifyCreateRequest.onCreated(function() {
 
 			return instance.find('.js-save-request').focus();
 		});
+		instance.expertise.set(expertise.name);
+		instance.debounceValidateExpertise(expertise.name); // invoke validation*/
 	}, 200);
 
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
