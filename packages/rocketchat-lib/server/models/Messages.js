@@ -487,6 +487,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	addMessageAttachments(_id, attachments) {
+		const query =	{_id};
+
+		const update = {
+			$addToSet: { tags: { $each: attachments } }
+		};
+
+		return this.update(query, update);
+	}
+
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
 		const query =	{_id};
 

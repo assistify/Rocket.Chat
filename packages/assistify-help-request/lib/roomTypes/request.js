@@ -39,7 +39,8 @@ export class RequestRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		return roomData.fname || roomData.name;
+		return RocketChat.settings.get('UI_Use_Real_Name') && roomData.fname ? roomData.fname : roomData.name;
+		//return roomData.fname || roomData.name;
 	}
 
 	condition() {

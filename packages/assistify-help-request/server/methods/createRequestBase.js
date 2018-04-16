@@ -52,9 +52,9 @@ export class CreateRequestBase {
 			}
 		});
 	}
-	_postMessage(room, user, msg) {
-		const msgObject = {_id: Random.id(), rid: room.rid, msg};
-		return RocketChat.sendMessage(user, msgObject, room);
+	_postMessage(room, user, message, attachments) {
+		const newMessage = { _id: Random.id(), rid: room.rid, msg: message, attachments: attachments || [] };
+		return RocketChat.sendMessage(user, newMessage, room);
 	}
 
 	//abstract method must be implemented.

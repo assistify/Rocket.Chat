@@ -42,7 +42,7 @@ export class SmartiProxy {
 		try {
 			SystemLogger.debug('Sending request to Smarti', method, 'to', url, 'body', JSON.stringify(body));
 			const response = HTTP.call(method, url, {data: body, headers: header});
-			if (response.statusCode === 200 || response.statusCode === 201) {
+			if (response.statusCode < 400) {
 				return response.data || response.content; //.data if it's a json-response
 			} else {
 				SystemLogger.debug('Got unexpected result from Smarti', method, 'to', url, 'response', JSON.stringify(response));

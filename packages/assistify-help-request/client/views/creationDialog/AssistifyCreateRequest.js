@@ -140,9 +140,9 @@ Template.AssistifyCreateRequest.events({
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
-	const expertiseElement = this.find('input[name="expertise"]');
-	const titleElement = this.find('input[name="request_title"]');
-	const questionElement = this.find('input[name="first_question"]');
+	const expertiseElement = this.find('#expertise-search');
+	const titleElement = this.find('#request_title');
+	const questionElement = this.find('#first_question');
 
 	instance.ac.element = expertiseElement;
 	instance.ac.$element = $(instance.ac.element);

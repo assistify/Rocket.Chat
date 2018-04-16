@@ -1,3 +1,16 @@
+# Assistify Chat
+
+This is the chat-component of Assistify, bringing your team state-of-the art collaboration with integrated, AI powered knowledge management.
+
+It is based on the awesome Rocket.Chat-project and extends some capabilities.
+
+We love Open Source - too :heart:
+
+<img src=https://github.com/assistify/assistify.github.io/raw/master/images/58103614.png width=300 />
+
+
+In order to honor the work of the awesome Rocket.Chat-project, we keep the Readme of the origin project below. Enjoy!
+
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
 # The Ultimate Open Source WebChat Platform

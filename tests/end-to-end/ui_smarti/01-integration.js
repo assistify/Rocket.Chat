@@ -2,6 +2,8 @@
 
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
+import mainContent from '../../pageobjects/main-content.page';
+import Global from '../../pageobjects/global';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
 const topicName = 'smarti-test-topic';
@@ -11,7 +13,14 @@ const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick 
 const answer = 'Das ist die Antwort auf diese Anfrage!';
 
 import { checkIfUserIsAdmin } from '../../data/checks';
+import supertest from 'supertest';
 
+// the following should actually be imported from 00-preparation
+const smarti = supertest.agent('http://localhost:8080');
+const credentials = {
+	username: 'admin',
+	password: 'admin'
+};
 
 describe('[Smarti Integration]', () => {
 
@@ -36,6 +45,135 @@ describe('[Smarti Integration]', () => {
 				assistify.clickKnowledgebase();
 				assistify.sendTopicMessage(shortTopicMessage);
 			});
+		});
+	});
+
+	describe('Message lifecycle', () => {
+		let clientid;
+		let token;
+		let conversationId;
+		let requestName;
+
+		it('create is successful', () => {
+			assistify.createHelpRequest(topicName, 'Diese Nachricht soll editiert werden');
+		});
+		it('check if client already exists', function(done) {
+			smarti.get('/client')
+				.auth(credentials['username'], credentials['password'])
+				.expect(200)
+				.expect(function(res) {
+					for (const cl in res.body) {
+						if (res.body[cl].name === 'testclient') {
+							clientid = res.body[cl].id;
+							console.log('check if client exists', clientid);
+						}
+					}
+				})
+				.end(done);
+		});
+
+		it('post access token', function(done) {
+			const code = `/client/${ clientid }/token`;
+			smarti.post(code)
+				.auth(credentials['username'], credentials['password'])
+				.set('Content-Type', 'application/json')
+				.send({})
+				.end(function(err, res) {
+					token = res.body.token;
+					res.status.should.be.equal(201);
+					console.log('token', res.body.token);
+					done();
+				});
+		});
+
+		it('shall find the conversation in Smarti', (done) => {
+			const roomId = assistify.roomId;
+			roomId.should.not.be.empty;
+
+			requestName = mainContent.channelTitle.getText();
+			requestName.should.not.be.empty;
+
+			console.log('roomId', roomId, 'name', requestName);
+
+			smarti.get(`/conversation?channel_id=${ roomId }`) //this does not really filter, see https://github.com/redlink-gmbh/smarti/issues/233
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect((res) => {
+					res.body.content.should.not.be.empty;
+
+					const currentConversation = res.body.content.filter((conversation) => {
+						return conversation.meta.channel_id[0] === roomId;
+					})[0];
+
+					currentConversation.should.not.be.empty;
+					conversationId = currentConversation.id;
+				})
+				.end(done);
+		});
+
+		it('shall find the message in Smarti', (done) => {
+			const messageId = assistify.lastMessageId;
+			messageId.should.not.be.empty;
+			console.log(`finding  /conversation/${ conversationId }/message/${ messageId }`);
+			smarti.get(`/conversation/${ conversationId }/message/${ messageId }`)
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect(200)
+				.end(done);
+		});
+
+		it('shall modify an edited message in Smarti', (done) => {
+			const textAfterChange = 'Diese Nachricht soll bearbeitet worden sein';
+
+			mainContent.openMessageActionMenu();
+			mainContent.messageEdit.click();
+			mainContent.setTextToInput(textAfterChange);
+			mainContent.sendBtn.click();
+
+			const messageId = assistify.lastMessageId;
+			messageId.should.not.be.empty;
+
+			smarti.get(`/conversation/${ conversationId }/message/${ messageId }`)
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect((res) => {
+					res.body.content.should.equal(textAfterChange);
+				})
+				.end(done);
+		});
+
+		it('shall delete the message in Smarti', (done) => {
+			const messageId = assistify.lastMessageId;
+			messageId.should.not.be.empty;
+
+			mainContent.openMessageActionMenu();
+			mainContent.messageDelete.click();
+
+			Global.modal.waitForVisible(5000);
+			Global.confirmPopup();
+
+			console.log(`deleted /conversation/${ conversationId }/message/${ messageId }`);
+
+			smarti.get(`/conversation/${ conversationId }/message/${ messageId }`)
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect(404)
+				.end(done);
+		});
+
+		it('close new Request', () => {
+			console.log('RequestName for cleanup', topicName);
+			assistify.closeTopic(topicName);
+		});
+
+		it('delete created request', (done) => {
+			sideNav.openChannel(requestName);
+			assistify.deleteRoom();
+			smarti.get(`/conversation/${ conversationId }`)
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect(404)
+				.end(done);
 		});
 	});
 
@@ -75,13 +213,6 @@ describe('[Smarti Integration]', () => {
 				assistify.clickKnowledgebase();
 				assistify.closeRequest();
 			});
-		});
-	});
-
-	describe('Cleanup', () => {
-		it('close new Topic', () => {
-			console.log('TopicName for cleanup', topicName);
-			assistify.closeTopic(topicName);
 		});
 	});
 });

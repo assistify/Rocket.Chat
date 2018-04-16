@@ -1,7 +1,7 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { CreateRequestFactory } from './createRequestFactory';
-import { CreateRequestBase} from './createRequestBase';
+import { CreateRequestBase } from './createRequestBase';
 
 /*
  * When a message is eligible to be answered as a independent question then it can be threaded into a new channel.
@@ -15,9 +15,7 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 	}
 
 	_getMessageUrl(msgId) {
-		const message = RocketChat.models.Messages.findOneById(msgId);
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
-		return FlowRouter.path(RocketChat.roomTypes.getRouteLink(room.t, room), '', {msg: msgId});
+		return FlowRouter.path('message', { id: msgId });
 	}
 
 	_linkMessages(roomCreated, parentRoom) {
@@ -37,7 +35,14 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 							_id: Meteor.user()._id, // Thread Initiator
 							name: Meteor.user().username
 						}]
-				});
+				}
+			);
+
+			// The follwing lines would have the attachment remain at the original message.
+			// if (this._openingQuestion.attachments) {
+			// 	RocketChat.models.Messages.addMessageAttachments(this._openingQuestion._id, this._openingQuestion.attachments);
+			// }
+
 			/*
 			 * Child Room
 			 */
@@ -48,15 +53,15 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 						name: Meteor.user().username // Use @Name field for navigation
 					}],
 					channels: [{
-						_id: parentRoom._id, // Parent Room ID
-						name: parentRoom.fname || parentRoom.name
+						_id: parentRoom._id // Parent Room ID
 					}]
 				});
 			// Re-post message in the new room
 			const msgAuthor = RocketChat.models.Users.findOneByUsername(this._openingQuestion.u.username); // Search with the technical username
-			const msgRePosted = this._postMessage(roomCreated, msgAuthor, this._openingQuestion.msg);
+			const msgRePosted = this._postMessage(roomCreated, msgAuthor, this._openingQuestion.msg, this._openingQuestion.attachments);
+
 			if (msgRePosted) {
-				/* Attach the child room */
+				/* Add a reference to the original message which can be rendered for navigation */
 				RocketChat.models.Messages.setMessageAttachments(this._openingQuestion._id, [{
 					author_name: this._openingQuestion.u.username || this._openingQuestion.u.name,
 					author_icon: `/avatar/${ this._openingQuestion.u.username }?_dc=0`,
@@ -75,7 +80,7 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 		const parentRoom = CreateRequestBase.getRoom(this._parentRoomId);
 		// Generate RoomName for the new room to be created.
 		this.name = `${ parentRoom.name }-${ CreateRequestBase.getNextId() }`;
-		const roomCreateResult = RocketChat.createRoom('r', this.name, Meteor.user() && Meteor.user().username, parentRoom.usernames, false, {parentRoomId: this._parentRoomId});
+		const roomCreateResult = RocketChat.createRoom('r', this.name, Meteor.user() && Meteor.user().username, parentRoom.usernames, false, { parentRoomId: this._parentRoomId });
 		if (parentRoom.t === 'e') {
 			parentRoom.usernames.concat([Meteor.user().username]);
 		}
@@ -96,7 +101,7 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 Meteor.methods({
 	createRequestFromRoomId(parentRoomId, openingQuestion) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'createRequestFromRoomId'});
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createRequestFromRoomId' });
 		}
 		const config = {
 			parentRoomId,

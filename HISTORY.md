@@ -1,11 +1,20 @@
-<a name="assistify-0.6.9"></a>
+<a name="assistify-0.7.0"></a>
+## Assistify-0.7.0
+
+This release brings *threading*. You can now start a new discussion from any given message. Wath a small [video introduction](https://youtu.be/zX5tFyq6se8) how it works ([hier in Deutsch](https://www.youtube.com/watch?v=Dh0xRuJ0mkk&index=2&list=PLp8cLPN9MpKr13V5fUkuLYZ-K1G0Cl7QD&t=0s)) :party:
+
+There has been a lot of tweaking and fixing under the hood - we hope you enjoy a smoother experience!
+
+Also, there's another feature already in which can be activated on demand: A fulltext search across all your channels! Let us know if you want to join the beta-testing!
+
+<a name="assistify-0.6.0"></a>
 ## Assistify-0.6.0
 
 This release brings not only the very latest Rocket.Chat version, but
 *a completely revamped Smarti-widget*.
 We heavily tuned not only the look, but also the search features. You have not seen it yet? Create a new request (from the create dialog), ask a question and see the implicitly found knowledge.
 
-You may not have know:
+You may not have known:
 
 - You can customize the sources that are being searched. Got an own wiki-space? Great, let us know!
 - You can add terms you know should be searched for yourself - and thus refine the search results

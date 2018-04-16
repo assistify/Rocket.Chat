@@ -1,9 +1,10 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
 import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
+
 const common = {
 	canLeaveRoom() {
-		const { cl: canLeave, t: roomType } = Template.instance().room;
+		const {cl: canLeave, t: roomType} = Template.instance().room;
 		return roomType !== 'd' && canLeave !== false;
 	},
 	canDeleteRoom() {
@@ -17,11 +18,11 @@ const common = {
 		return roomType && RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room);
 	},
 	canEditRoom() {
-		const { _id } = Template.instance().room;
+		const {_id} = Template.instance().room;
 		return RocketChat.authz.hasAllPermission('edit-room', _id);
 	},
 	isDirectMessage() {
-		const { room } = Template.instance();
+		const {room} = Template.instance();
 		return room.t === 'd';
 	}
 };
@@ -34,11 +35,11 @@ Template.channelSettingsEditing.events({
 		this.value.set(e.currentTarget.checked);
 	},
 	'click .js-reset'(e, t) {
-		const { settings } = t;
+		const {settings} = t;
 		Object.keys(settings).forEach(key => settings[key].value.set(settings[key].default.get()));
 	},
 	async 'click .js-save'(e, t) {
-		const { settings } = t;
+		const {settings} = t;
 		Object.keys(settings).forEach(async name => {
 			const setting = settings[name];
 			const value = setting.value.get();
@@ -356,7 +357,7 @@ Template.channelSettingsEditing.helpers({
 		return this.value.get();// ? '' : 'checked';
 	},
 	modified(text = '') {
-		const { settings } = Template.instance();
+		const {settings} = Template.instance();
 		return !Object.keys(settings).some(key => settings[key].default.get() !== settings[key].value.get()) ? text : '';
 	},
 	equal(text = '', text2 = '', ret = '*') {
@@ -408,12 +409,12 @@ Template.channelSettings.events({
 		t.editing.set(true);
 	},
 	'click .js-leave'(e, instance) {
-		const { name, t: type } = instance.room;
+		const {name, t: type} = instance.room;
 		const rid = instance.room._id;
 		leave(type, rid, name);
 	},
 	'click .js-hide'(e, instance) {
-		const { name, t: type } = instance.room;
+		const {name, t: type} = instance.room;
 		const rid = instance.room._id;
 		hide(type, rid, name);
 	},
@@ -431,9 +432,9 @@ Template.channelSettingsInfo.onCreated(function() {
 
 Template.channelSettingsInfo.helpers({
 	...common,
-	channelName() {
-		return `@${ Template.instance().room.name }`;
-	},
+	/*	channelName() {
+			return `@${ Template.instance().room.name }`;
+		},*/
 	archived() {
 		return Template.instance().room.archived;
 	},
@@ -444,7 +445,8 @@ Template.channelSettingsInfo.helpers({
 		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
 	name() {
-		return Template.instance().room.name;
+		return RocketChat.settings.get('UI_Use_Real_Name') ? Template.instance().room.fname : Template.instance().room.name;
+		//return RocketChat.settings.get('UI_Use_Real_Name');//Template.instance().room.name;
 	},
 	description() {
 		return Template.instance().room.description;

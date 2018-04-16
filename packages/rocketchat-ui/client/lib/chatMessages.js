@@ -133,7 +133,7 @@ this.ChatMessages = class ChatMessages {
 		element.classList.add('editing');
 		this.$input.closest('.message-form').addClass('editing');
 
-		if (message.attachments && message.attachments[0].description) {
+		if (message.attachments && message.attachments.length > 0 && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
 		} else {
 			this.input.value = msg;

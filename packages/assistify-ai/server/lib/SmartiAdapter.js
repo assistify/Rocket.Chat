@@ -1,6 +1,6 @@
 /* globals SystemLogger, RocketChat */
 
-import { SmartiProxy, verbs } from '../SmartiProxy';
+import {SmartiProxy, verbs} from '../SmartiProxy';
 
 /**
  * The SmartiAdapter handles the interaction with Smarti triggered by Rocket.Chat hooks (not by Smarti widget).
@@ -18,6 +18,53 @@ export class SmartiAdapter {
 		return RocketChat.settings.get('Assistify_AI_Smarti_Domain');
 	}
 
+	static _updateMapping(roomId, conversationId, timestamp) {
+		// update/insert channel/conversation specific timestamp
+		RocketChat.models.LivechatExternalMessage.update(
+			{
+				_id: roomId
+			}, {
+				rid: roomId,
+				knowledgeProvider: 'smarti',
+				conversationId,
+				ts: timestamp
+			}, {
+				upsert: true
+			}
+		);
+	}
+
+	/**
+	 *
+	 * @param {*} roomId - the room for which the Smarti conversationId shall be retrieved
+	 * @param {*} message - An optional message for detsailed mapping information
+	 */
+	static _getConversationId(roomId, message) {
+		const smartiResponse = RocketChat.models.LivechatExternalMessage.findOneById(roomId);
+		let conversationId;
+
+		// conversation exists for channel?
+		if (smartiResponse && smartiResponse.conversationId) {
+			conversationId = smartiResponse.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
+				`legacy/rocket.chat?channel_id=${ roomId }`, null, (error) => {
+					// 404 is expected if no mapping exists
+					if (error.response.statusCode === 404) {
+						return null;
+					}
+				});
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+				const timestamp = message ? message.ts : Date.now();
+				SmartiAdapter._updateMapping(roomId, conversationId, timestamp);
+			}
+		}
+
+		return conversationId;
+	}
+
 	/**
 	 * Event implementation that posts the message to Smarti.
 	 *
@@ -33,24 +80,6 @@ export class SmartiAdapter {
 	 * @returns {*}
 	 */
 	static onMessage(message) {
-		function updateMapping(message, conversationId) {
-			// update/insert channel/conversation specific timestamp
-			RocketChat.models.LivechatExternalMessage.update(
-				{
-					_id: message.rid
-				}, {
-					rid: message.rid,
-					knowledgeProvider: 'smarti',
-					conversationId,
-					ts: message.ts
-				}, {
-					upsert: true
-				}
-			);
-		}
-
-
-		//TODO trigger on message update, if needed
 		const requestBodyMessage = {
 			'id': message._id,
 			'time': message.ts,
@@ -64,33 +93,27 @@ export class SmartiAdapter {
 
 		SystemLogger.debug('Message:', requestBodyMessage);
 
-		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
-		let conversationId;
-
-		// conversation exists for channel?
-		if (m && m.conversationId) {
-			conversationId = m.conversationId;
-		} else {
-			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
-			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
-				`legacy/rocket.chat?channel_id=${ message.rid }`, null, (error) => {
-					// 404 is expected if no mapping exists
-					if (!error.response || error.response.statusCode === 404) {
-						return null;
-					}
-				});
-			if (conversation && conversation.id) {
-				conversationId = conversation.id;
-				updateMapping(message, conversationId);
-			}
-		}
+		let conversationId = SmartiAdapter._getConversationId(message.rid, message);
 
 		if (conversationId) {
 			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
-			// add message to conversation
-			const res = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
-			// mark message as synced
-			if (res) {
+			let request_result;
+			if (message.editedAt) {
+				SystemLogger.debug('Trying to update existing message...');
+				// update existing message
+				request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
+					// 404 is expected if message doesn't exist
+					if (!error.response || error.response.statusCode === 404) {
+						SystemLogger.debug('Message not found!');
+						SystemLogger.debug('Adding new message to conversation...');
+						request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+					}
+				});
+			} else {
+				SystemLogger.debug('Adding new message to conversation...');
+				request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			}
+			if (request_result) {
 				SystemLogger.debug('Conversation found and message will be synced now');
 				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
 			} else {
@@ -104,7 +127,9 @@ export class SmartiAdapter {
 			// The "support_area" in Smarti is an optional property. A historic conversation belonging to the same support_are increases relevance
 			let supportArea = room.parentRoomId || room.topic || room.expertise;
 			if (!supportArea) {
-				if (helpRequest && helpRequest.supportArea) {
+				if (room.t === '') {
+					supportArea = 'livechat';
+				} else if (helpRequest && helpRequest.supportArea) {
 					supportArea = helpRequest.supportArea;
 				} else {
 					supportArea = room.name;
@@ -120,17 +145,11 @@ export class SmartiAdapter {
 					'channel_id': [message.rid]
 				},
 				'user': {
-					'id': room.u._id
+					'id': room.u ? room.u._id : room.v._id
 				},
 				'messages': [requestBodyMessage],
 				'context': {
 					'contextType': 'rocket.chat'
-					/*
-					"domain" : "test",
-					"environment" : {
-
-					}
-					*/
 				}
 			};
 
@@ -142,7 +161,7 @@ export class SmartiAdapter {
 				SystemLogger.debug('Conversation not found - create conversation and message will be synced now');
 				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
 				conversationId = conversation.id;
-				updateMapping(message, conversationId);
+				SmartiAdapter._updateMapping(message.rid, conversationId);
 			} else {
 				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', message.rid));
 			}
@@ -157,6 +176,37 @@ export class SmartiAdapter {
 	}
 
 	/**
+	 * Event implementation for deletion of messages
+	 * @param message  - the message which has just been deleted
+	 */
+	static afterMessageDeleted(message) {
+
+		const conversationId = SmartiAdapter._getConversationId(message.rid, message);
+
+		if (conversationId) {
+			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
+
+			SystemLogger.debug(`Deleting message from conversation ${ conversationId } ...`);
+			// add message to conversation
+			SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }/message/${ message._id }`);
+		}
+	}
+
+	/**
+	 * Propagates the deletion of a complete conversation to Smarti
+	 * @param room - the room just deleted
+	 */
+	static afterRoomErased(room) { //async
+		const conversationId = SmartiAdapter._getConversationId(room._id);
+
+		if (conversationId) {
+			SmartiProxy.propagateToSmarti(verbs.delete, `/conversation/${ conversationId }`);
+		} else {
+			SystemLogger.error(`Smarti - closing room failed: No conversation id for room: ${ room._id }`);
+		}
+	}
+
+	/**
 	 * Event implementation that publishes the conversation in Smarti.
 	 *
 	 * @param room - the room to close
@@ -164,26 +214,13 @@ export class SmartiAdapter {
 	 * @returns {*}
 	 */
 	static onClose(room) { //async
-		let conversationId;
-		// get conversation id
-		const m = RocketChat.models.LivechatExternalMessage.findOneById(room._id);
-		if (m && m.conversationId) {
-			conversationId = m.conversationId;
-		} else {
-			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
-			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
-				`legacy/rocket.chat?channel_id=${ room._id }`, null, (error) => {
-					// 404 is expected if no mapping exists
-					if (error.response.statusCode === 404) {
-						return null;
-					}
-				});
-			if (conversation && conversation.id) {
-				conversationId = conversation.id;
-			}
-		}
+		const conversationId = SmartiAdapter._getConversationId(room._id);
+
 		if (conversationId) {
-			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
+			const res = SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
+			if (!res) {
+				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', room._id));
+			}
 		} else {
 			SystemLogger.error(`Smarti - closing room failed: No conversation id for room: ${ room._id }`);
 		}

@@ -66,7 +66,7 @@ Meteor.methods({
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const messageDB = RocketChat.models.Messages;
 		const unsync = messageDB.find({ lastSync: { $exists: false }, rid, t: { $exists: false } }).fetch();
-		if (unsync.length === 0) {
+		if (unsync.length === 0 && !room.outOfSync) {
 			SystemLogger.debug('Room is already in sync');
 			return true;
 		} else {
