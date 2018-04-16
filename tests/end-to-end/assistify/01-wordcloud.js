@@ -15,7 +15,7 @@ describe('[Word-cloud Test]', () => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 	});
 
-	it(`create ${ numTopics } topics for word-cloud`, function(done) {
+	it(`create ${ numTopics } topics for word-cloud`, function() {
 		this.timeout(100000);
 		for (let i=1; i <= numTopics; i++) {
 			try {
@@ -25,7 +25,7 @@ describe('[Word-cloud Test]', () => {
 				console.log('New topic created: ', topicName+i);
 			}
 		}
-		done();
+		//done();
 	});
 
 	it('open word-cloud', function(done) {

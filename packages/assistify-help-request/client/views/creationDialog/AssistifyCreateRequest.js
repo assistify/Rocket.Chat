@@ -9,6 +9,13 @@ const acEvents = {
 		t.ac.onItemClick(this, e);
 		t.debounceValidateExpertise(this.item.name);
 	},
+	'click [name="expertise"]'(e, t) {
+		if (t.expertise.get() === '' && t.showDropDown.get() === '') {
+			t.showDropDown.set('isShowing');
+		} else {
+			t.showDropDown.set('');
+		}
+	},
 	'click #more-topics'(e, t) {
 		e.preventDefault();
 		t.topicSearchEnable.set(true);
@@ -25,6 +32,7 @@ const acEvents = {
 	'blur [name="expertise"]'(e, t) {
 		t.ac.onBlur(e);
 		t.debounceValidateExpertise(e.target.value);
+		t.debounceDropDown();
 	}
 };
 
@@ -33,9 +41,15 @@ Template.AssistifyCreateRequest.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
+		if (!Template.instance().expertise.get() && Template.instance().showDropDown.get() === 'isShowing') {
+			return true; // show the expertise auto complete drop down
+		}
 		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
+		if (Template.instance().expertise.get() === '') {
+			return RocketChat.models.Rooms.find({t: 'e'}).fetch();
+		}
 		return Template.instance().ac.filteredList();
 	},
 	config() {
@@ -54,7 +68,6 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
-
 		if (instance.validExpertise.get() && !instance.titleError.get()) {
 			return '';
 		} else {
@@ -79,25 +92,27 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	getProperties() {
 		const instance = Template.instance();
+		const expertises = RocketChat.models.Rooms.find({t: 'e'}).fetch();
+
 		function getRandomArbitrary(min, max) {
 			return Math.random() * (max - min) + min;
 		}
 
 		function getWordList() {
 			const list = [];
-			RocketChat.models.Rooms.find({t: 'e'}).fetch().forEach(function(word) {
-				list.push([word.name, getRandomArbitrary(4, 10)]);
+			expertises.forEach(function(expertise) {
+				list.push([expertise.name, getRandomArbitrary(4, 10)]);
 			});
 			return list;
 		}
 
 		function setExpertise() {
 			return function(selectedExpertise) {
-				instance.expertise.set(selectedExpertise[0]);
-				if (selectedExpertise) {
-					instance.debounceValidateExpertise(selectedExpertise[0]);
-					instance.topicSearchEnable.set(''); //Search completed.
+				const expertise = expertises.find(expertise => expertise.name === selectedExpertise[0]);
+				if (expertise) {
+					instance.debounceWordCloudSelect(expertise);
 				}
+				instance.topicSearchEnable.set(''); //Search completed.
 			};
 		}
 
@@ -110,15 +125,14 @@ Template.AssistifyCreateRequest.helpers({
 		}
 
 		function setFlatness() {
-			const list = getWordList();
-			return list.length < 15 ? 2 : 0.5;
+			return 0.5;
 		}
 
 		return {
 			clearCanvas: true,
 			weightFactor: 8,
 			fontWeight: 'normal',
-			gridSize: 40,
+			gridSize: 55,
 			shape: 'square',
 			rotateRatio: 0,
 			rotationSteps: 0,
@@ -130,12 +144,6 @@ Template.AssistifyCreateRequest.helpers({
 			hover: onWordHover()
 			//setCanvas: getCanvas
 		};
-	}
-});
-
-Template.AssistifytopicSearchEmpty.helpers({
-	showMoreTopics() {
-		return RocketChat.models.Rooms.find({t: 'e'}).count() > 10?true:false;
 	}
 });
 
@@ -206,21 +214,19 @@ Template.AssistifyCreateRequest.events({
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
+	const expertiseElement = this.find('#expertise-search');
+	const titleElement = this.find('#request_title');
+	const questionElement = this.find('#first_question');
 
-	const expertiseElement = this.find('input[name="expertise"]');
-	const titleElement = this.find('input[name="request_title"]');
-	const questionElement = this.find('input[name="first_question"]');
-	this.find('input[name="expertise"]').focus();
-	this.ac.element = this.find('input[name="expertise"]');
-	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	instance.ac.element = expertiseElement;
+	instance.ac.$element = $(instance.ac.element);
+	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
 		instance.debounceValidateExpertise(item.name);
 
 		return instance.find('.js-save-request').focus();
 	});
-
 	if (instance.requestTitle.get()) {
 		titleElement.value = instance.requestTitle.get();
 	}
@@ -251,8 +257,26 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	instance.requestTitle = new ReactiveVar('');
 	instance.openingQuestion = new ReactiveVar('');
 	instance.topicSearchEnable = new ReactiveVar('');
+	instance.showDropDown = new ReactiveVar('');
+	instance.debounceDropDown = _.debounce(() => {
+		instance.showDropDown.set('');
+	}, 250);
 
-	Meteor.subscribe('assistify:expertise');
+	instance.debounceWordCloudSelect = _.debounce((expertise) => {
+		instance.ac.element = this.find('#expertise-search');
+		instance.ac.$element = $(instance.ac.element);
+		instance.expertise.set(expertise.name);
+		$('input[name="expertise"]').val(expertise.name);
+		instance.debounceValidateExpertise(expertise.name); // invoke validation*/
+		instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+			instance.expertise.set(item.name);
+			$('input[name="expertise"]').val(item.name);
+			instance.debounceValidateExpertise(item.name);
+
+			return instance.find('.js-save-request').focus();
+		});
+	}, 200);
+
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
 			return false; //expertise is mandatory
@@ -302,7 +326,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 			}
 		}
 	}, 500);
-
 	this.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
@@ -345,5 +368,11 @@ Template.AssistifyCreateRequest.onCreated(function() {
 		if (question) {
 			instance.openingQuestion.set(question);
 		}
+	}
+});
+
+Template.AssistifytopicSearchEmpty.helpers({
+	showMoreTopics() {
+		return RocketChat.models.Rooms.find({t: 'e'}).count() > 10 ? true : false;
 	}
 });

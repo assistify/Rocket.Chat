@@ -1,14 +1,13 @@
 /* eslint-disable new-cap */
-import {ReactiveVar} from 'meteor/reactive-var';
+import { ReactiveVar } from 'meteor/reactive-var';
 
-//const WordCloud= require('meteor/overture8:wordcloud2');
 import { WordCloud } from 'meteor/overture8:wordcloud2';
 
 function drawWords() {
 	const instance = Template.instance();
 	const properties = instance.data.properties;
 	//properties.setCanvas(instance.canvasToDraw.get());
-	WordCloud(instance.canvasToDraw.get(), properties);
+	window.WordCloud(instance.canvasToDraw.get(), properties);
 }
 
 Template.AssistifyWordCloud.events({
