@@ -48,7 +48,7 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	items() {
 		if (Template.instance().expertise.get() === '') {
-			return RocketChat.models.Rooms.find({t: 'e'}).fetch();
+			return RocketChat.models.Rooms.find({t: 'e'}, { fields: { name: 1}, limit:10 }).fetch();
 		}
 		return Template.instance().ac.filteredList();
 	},
@@ -224,7 +224,6 @@ Template.AssistifyCreateRequest.onRendered(function() {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
 		instance.debounceValidateExpertise(item.name);
-
 		return instance.find('.js-save-request').focus();
 	});
 	if (instance.requestTitle.get()) {
