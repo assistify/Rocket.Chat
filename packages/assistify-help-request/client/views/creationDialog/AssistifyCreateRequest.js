@@ -48,7 +48,7 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	items() {
 		if (Template.instance().expertise.get() === '') {
-			return RocketChat.models.Rooms.find({t: 'e'}, { fields: { name: 1}, limit:10 }).fetch();
+			return RocketChat.models.Rooms.find({t: 'e'}, {fields: {name: 1}, limit: 10}).fetch();
 		}
 		return Template.instance().ac.filteredList();
 	},
@@ -244,25 +244,25 @@ Template.AssistifyCreateRequest.onRendered(function() {
 	} else {
 		questionElement.focus();
 	}
-	instance.debounceWordCloudSelect = _.debounce((expertise) => {
-		/*
-		 * Update the expertise html reference to autocomplete
-		 */
-		instance.ac.element = this.find('#expertise-search');
-		instance.ac.$element = $(instance.ac.element);
-		$('input[name="expertise"]').val(expertise.name); // copy the selected value to screen field
-		instance.ac.$element.on('autocompleteselect', function(e, {item}) {
-			instance.expertise.set(item.name);
-			$('input[name="expertise"]').val(item.name);
-			instance.debounceValidateExpertise(item.name);
+	this.autorun(() => {
+		instance.debounceWordCloudSelect = _.debounce((expertise) => {
+			/*
+			 * Update the expertise html reference to autocomplete
+			 */
+			instance.ac.element = this.find('#expertise-search');
+			instance.ac.$element = $(instance.ac.element);
+			$('input[name="expertise"]').val(expertise.name); // copy the selected value to screen field
+			instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+				instance.expertise.set(item.name);
+				$('input[name="expertise"]').val(item.name);
+				instance.debounceValidateExpertise(item.name);
 
-			return instance.find('.js-save-request').focus();
-		});
-		instance.expertise.set(expertise.name);
-		instance.debounceValidateExpertise(expertise.name); // invoke validation*/
-	}, 200);
-
-
+				return instance.find('.js-save-request').focus();
+			});
+			instance.expertise.set(expertise.name);
+			instance.debounceValidateExpertise(expertise.name); // invoke validation*/
+		}, 200);
+	});
 });
 
 Template.AssistifyCreateRequest.onCreated(function() {
