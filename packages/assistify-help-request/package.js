@@ -54,6 +54,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/createRequestFromRoomId.js', 'server');
 	api.addFiles('server/methods/requestsList.js', 'server');
 	api.addFiles('server/methods/isValidExpertise.js', 'server');
+	api.addFiles('server/methods/expertiseList.js', 'server');
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');

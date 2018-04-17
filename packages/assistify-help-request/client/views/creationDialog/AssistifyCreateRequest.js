@@ -9,12 +9,9 @@ const acEvents = {
 		t.ac.onItemClick(this, e);
 		t.debounceValidateExpertise(this.item.name);
 	},
-	'click [name="expertise"]'(e, t) {
-		if (t.expertise.get() === '' && t.showDropDown.get() === '') {
-			t.showDropDown.set('isShowing');
-		} else {
-			t.showDropDown.set('');
-		}
+	'click .rc-input__icon-svg--book-alt'(e, t) {
+		e.preventDefault();
+		t.topicSearchEnable.set(true);
 	},
 	'click #more-topics'(e, t) {
 		e.preventDefault();
@@ -27,6 +24,9 @@ const acEvents = {
 		t.ac.onKeyUp(e);
 	},
 	'focus [name="expertise"]'(e, t) {
+		if (t.expertise.get() === '' && t.showDropDown.get() === '') {
+			t.showDropDown.set('isShowing');
+		}
 		t.ac.onFocus(e);
 	},
 	'blur [name="expertise"]'(e, t) {
@@ -47,10 +47,14 @@ Template.AssistifyCreateRequest.helpers({
 		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
-		if (Template.instance().expertise.get() === '') {
-			return RocketChat.models.Rooms.find({t: 'e'}, {fields: {name: 1}, limit: 10}).fetch();
+		const instance = Template.instance();
+		if (instance.expertise.get() === '') {
+			if (instance.expertisesCount.get() <= 10) {
+				return instance.expertisesList.get();
+			}
+			instance.showDropDown.set('');
 		}
-		return Template.instance().ac.filteredList();
+		return instance.ac.filteredList();
 	},
 	config() {
 		const filter = Template.instance().expertise;
@@ -92,7 +96,7 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	getProperties() {
 		const instance = Template.instance();
-		const expertises = RocketChat.models.Rooms.find({t: 'e'}).fetch();
+		const expertises = instance.expertisesList.get();
 
 		function getRandomArbitrary(min, max) {
 			return Math.random() * (max - min) + min;
@@ -275,9 +279,11 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	instance.openingQuestion = new ReactiveVar('');
 	instance.topicSearchEnable = new ReactiveVar('');
 	instance.showDropDown = new ReactiveVar('');
+	instance.expertisesCount = new ReactiveVar('');
+	instance.expertisesList = new ReactiveVar('');
 	instance.debounceDropDown = _.debounce(() => {
 		instance.showDropDown.set('');
-	}, 250);
+	}, 200);
 
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
@@ -353,7 +359,7 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	});
 	this.ac.tmplInst = this;
 
-	//prefill form based on query parameters if passed
+	//pre-fill form based on query parameters if passed
 	if (FlowRouter.current().queryParams) {
 		const expertise = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('expertise');
 		if (expertise) {
@@ -371,10 +377,26 @@ Template.AssistifyCreateRequest.onCreated(function() {
 			instance.openingQuestion.set(question);
 		}
 	}
+	Meteor.call('expertiseList', {sort: 'name'}, function(err, result) {
+		if (result) {
+			instance.expertisesCount.set(result.channels.length);
+			instance.expertisesList.set(result.channels);
+		}
+	});
 });
 
 Template.AssistifytopicSearchEmpty.helpers({
 	showMoreTopics() {
-		return RocketChat.models.Rooms.find({t: 'e'}).count() > 10 ? true : false;
+		const instance = Template.instance();
+		return instance.expertisesCount.get() > 10 ? true : false;
 	}
+});
+Template.AssistifytopicSearchEmpty.onCreated(function() {
+	const instance = this;
+	instance.expertisesCount = new ReactiveVar('');
+	Meteor.call('expertiseList', {sort: 'name'}, function(err, result) {
+		if (result) {
+			instance.expertisesCount.set(result.channels.length);
+		}
+	});
 });
