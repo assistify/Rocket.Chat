@@ -158,7 +158,7 @@ export class SmartiAdapter {
 
 			const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
 			if (conversation && conversation.id) {
-				SystemLogger.debug('Conversation not found - create conversation and message will be synced now');
+				SystemLogger.debug('New conversation created and message will be synced now');
 				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
 				conversationId = conversation.id;
 				SmartiAdapter._updateMapping(message.rid, conversationId);
