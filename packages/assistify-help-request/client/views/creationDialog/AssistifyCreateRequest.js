@@ -244,23 +244,6 @@ Template.AssistifyCreateRequest.onRendered(function() {
 	} else {
 		questionElement.focus();
 	}
-
-});
-
-Template.AssistifyCreateRequest.onCreated(function() {
-	const instance = this;
-	instance.expertise = new ReactiveVar(''); //the value of the text field
-	instance.validExpertise = new ReactiveVar(false);
-	instance.expertiseError = new ReactiveVar(null);
-	instance.titleError = new ReactiveVar(null);
-	instance.requestTitle = new ReactiveVar('');
-	instance.openingQuestion = new ReactiveVar('');
-	instance.topicSearchEnable = new ReactiveVar('');
-	instance.showDropDown = new ReactiveVar('');
-	instance.debounceDropDown = _.debounce(() => {
-		instance.showDropDown.set('');
-	}, 250);
-
 	instance.debounceWordCloudSelect = _.debounce((expertise) => {
 		/*
 		 * Update the expertise html reference to autocomplete
@@ -278,6 +261,23 @@ Template.AssistifyCreateRequest.onCreated(function() {
 		instance.expertise.set(expertise.name);
 		instance.debounceValidateExpertise(expertise.name); // invoke validation*/
 	}, 200);
+
+
+});
+
+Template.AssistifyCreateRequest.onCreated(function() {
+	const instance = this;
+	instance.expertise = new ReactiveVar(''); //the value of the text field
+	instance.validExpertise = new ReactiveVar(false);
+	instance.expertiseError = new ReactiveVar(null);
+	instance.titleError = new ReactiveVar(null);
+	instance.requestTitle = new ReactiveVar('');
+	instance.openingQuestion = new ReactiveVar('');
+	instance.topicSearchEnable = new ReactiveVar('');
+	instance.showDropDown = new ReactiveVar('');
+	instance.debounceDropDown = _.debounce(() => {
+		instance.showDropDown.set('');
+	}, 250);
 
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
