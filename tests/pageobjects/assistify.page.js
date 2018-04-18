@@ -10,11 +10,13 @@ const Keys = {
 	'ENTER': '\uE007',
 	'ESCAPE': 'u\ue00c'
 };
+
 class Assistify extends Page {
 
 	get knowledgebaseIcon() {
 		return browser.element('.tab-button-icon--lightbulb');
 	}
+
 	// in order to communicate with Smarti we need the roomId.
 	// funny enough, it's available in its DOM. A bit dirty, but very efficient
 	get roomId() {
@@ -102,6 +104,10 @@ class Assistify extends Page {
 		return browser.element('[id="more-topics"]');
 	}
 
+	get wordCloudButton() {
+		return browser.element('.rc-input__icon-svg--book-alt');
+	}
+
 	get wordCloudCanvas() {
 		return browser.element('[id="wc-canvas"]');
 	}
@@ -123,11 +129,14 @@ class Assistify extends Page {
 		return browser.element('#newTagInput');
 	}
 
-	get numberOfRequests() { return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge'); }
+	get numberOfRequests() {
+		return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge');
+	}
 
 	escape() {
 		browser.keys(Keys.ESCAPE);
 	}
+
 	createTopic(topicName, expert) {
 		this.escape();
 		this.newChannelBtn.waitForVisible(3000);
@@ -168,8 +177,8 @@ class Assistify extends Page {
 		this.topicName.waitForVisible(5000);
 		this.topicName.setValue(key);
 
-		this.wordCloudLink.waitForVisible(5000);
-		this.wordCloudLink.click();
+		this.wordCloudButton.waitForVisible(5000);
+		this.wordCloudButton.click();
 	}
 
 	createHelpRequest(topicName, message, requestTitle) {
@@ -232,15 +241,15 @@ class Assistify extends Page {
 		global.confirmPopup();
 	}
 
-	// closeTopic(topicName) {
-	// 	flexTab.channelTab.waitForVisible(5000);
-	// 	flexTab.channelTab.click();
-	// 	this.editInfoBtn.waitForVisible(5000);
-	// 	this.editInfoBtn.click();
-	// 	this.closeTopicBtn.waitForVisible(5000);
-	// 	this.closeTopicBtn.click();
-	// 	global.confirmPopup();
-	// }
+	/*	closeTopic(topicName) {
+			flexTab.channelTab.waitForVisible(5000);
+			flexTab.channelTab.click();
+			this.editInfoBtn.waitForVisible(5000);
+			this.editInfoBtn.click();
+			this.closeTopicBtn.waitForVisible(5000);
+			this.closeTopicBtn.click();
+			global.confirmPopup();
+		}*/
 
 	clickKnowledgebase() {
 		this.knowledgebaseIcon.waitForVisible(5000);

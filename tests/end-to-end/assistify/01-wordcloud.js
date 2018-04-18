@@ -36,9 +36,10 @@ describe('[Word-cloud Test]', () => {
 
 	it('cleanup all topics', function(done) {
 		this.timeout(100000);
+		console.log('Topics cleaning started.');
 		for (let i=1; i <= numTopics; i++) {
-			console.log('TopicName for cleanup', topicName+i);
-			assistify.closeTopic(topicName+i);
+			console.log('Topic Deleted', topicName+i);
+			assistify.deleteRoom(topicName+i);
 		}
 		done();
 	});
