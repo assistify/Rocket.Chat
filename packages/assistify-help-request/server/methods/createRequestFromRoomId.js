@@ -84,6 +84,9 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 		if (parentRoom.t === 'e') {
 			parentRoom.usernames.concat([Meteor.user().username]);
 		}
+		if (parentRoom.name) {
+			RocketChat.saveRoomTopic(roomCreateResult.rid, parentRoom.name, Meteor.user());
+		}
 		// Invoke create notifications
 		this._createNotifications(roomCreateResult.rid, parentRoom.usernames);
 		// Instance of newly created room.
