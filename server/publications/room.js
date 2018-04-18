@@ -33,7 +33,8 @@ const fields = {
 	ro: 1,
 	reactWhenReadOnly: 1,
 	sentiment: 1,
-	tokenpass: 1
+	tokenpass: 1,
+	streamingOptions: 1
 };
 
 const roomMap = (record) => {

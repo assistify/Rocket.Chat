@@ -8,6 +8,9 @@
 	animation-duration: 1s;
 
 	&__wrapper {
+		overflow-x: hidden;
+		overflow-y: auto;
+
 		height: 100%;
 	}
 

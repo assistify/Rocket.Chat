@@ -35,7 +35,7 @@ function getEmailContent({ messageContent, message, user, room }) {
 	}
 
 	if (message.attachments.length > 0) {
-		const [attachment] = message.attachments;
+		const [ attachment ] = message.attachments;
 
 		let content = '';
 

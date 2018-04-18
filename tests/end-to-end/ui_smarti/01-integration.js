@@ -104,7 +104,6 @@ describe('[Smarti Integration]', () => {
 					const currentConversation = res.body.content.filter((conversation) => {
 						return conversation.meta.channel_id[0] === roomId;
 					})[0];
-
 					currentConversation.should.not.be.empty;
 					conversationId = currentConversation.id;
 				})
@@ -161,13 +160,21 @@ describe('[Smarti Integration]', () => {
 				.end(done);
 		});
 
-		it('close new Request', () => {
-			console.log('RequestName for cleanup', topicName);
-			assistify.closeTopic(topicName);
+		it('close new Request', (done) => {
+			sideNav.openChannel(requestName);
+			assistify.closeRequest();
+			smarti.get(`/conversation/${ conversationId }`)
+				.set('Accept', 'application/json')
+				.set('X-Auth-Token', token)
+				.expect(200)
+				.expect((res) => {
+					res.body.meta.status.should.equal('Complete');
+				})
+				.end(done);
 		});
 
 		it('delete created request', (done) => {
-			sideNav.openChannel(requestName);
+			sideNav.searchChannel(requestName); //closing the request hides it, so we need to re-search it
 			assistify.deleteRoom();
 			smarti.get(`/conversation/${ conversationId }`)
 				.set('Accept', 'application/json')
@@ -188,9 +195,7 @@ describe('[Smarti Integration]', () => {
 				assistify.sendTopicMessage(answer);
 			});
 			it('close request', () => {
-				assistify.clickKnowledgebase();
 				assistify.closeRequest();
-
 			});
 		});
 		describe('Second request', () => {
@@ -201,7 +206,6 @@ describe('[Smarti Integration]', () => {
 			});
 
 			it('knowledgebase answer visible', () => {
-				assistify.clickKnowledgebase();
 				assistify.knowledgebaseContent.waitForVisible(5000);
 			});
 

@@ -22,14 +22,15 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
-	api.use('rocketchat:authorization', {unordered: true});
-	api.use('rocketchat:push-notifications', {unordered: true});
+	api.use('rocketchat:authorization', { unordered: true });
+	api.use('rocketchat:push-notifications', { unordered: true });
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -42,7 +43,6 @@ Package.onUse(function(api) {
 	// ROOM TYPES
 	api.addFiles('lib/RoomTypeConfig.js');
 	api.addFiles([
-		'lib/roomTypes/channels.js',
 		'lib/roomTypes/conversation.js',
 		'lib/roomTypes/direct.js',
 		'lib/roomTypes/favorite.js',
@@ -128,6 +128,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
+	api.addFiles('server/oauth/facebook.js', 'server');
+	api.addFiles('server/oauth/twitter.js', 'server');
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
@@ -198,6 +200,7 @@ Package.onUse(function(api) {
 	// CLIENT LIB
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/RestApiClient.js', 'client');
@@ -208,6 +211,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
+
+	// CLIENT LIB STARTUP
+	api.addFiles('client/lib/startup/commands.js', 'client');
 
 	// COMMON ROUTES
 	api.addFiles('lib/routes.js'); // those routes might be used on the server to calculate a URL

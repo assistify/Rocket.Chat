@@ -1,5 +1,4 @@
 /*globals OAuth*/
-/*eslint complexity: ["error", 40]*/
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
@@ -222,6 +221,13 @@ export class CustomOAuth {
 				// Fix general 'userid' instead of 'id' from provider
 				if (identity.userid && !identity.id) {
 					identity.id = identity.userid;
+				}
+
+				// Fix Nextcloud provider
+				if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+					identity.id = identity.ocs.data.id;
+					identity.name = identity.ocs.data.displayname;
+					identity.email = identity.ocs.data.email;
 				}
 
 				// Fix when authenticating from a meteor app with 'emails' field

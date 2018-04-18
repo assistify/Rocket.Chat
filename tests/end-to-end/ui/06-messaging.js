@@ -259,13 +259,13 @@ function messageActionsTest() {
 describe('[Message]', () => {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
 	});
 
 
 	describe('[GENERAL Channel]', () => {
 		before(()=>{
+			checkIfUserIsValid(username, email, password);
+			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel('general');
 			currentTest = 'general';
@@ -305,6 +305,7 @@ describe('[Message]', () => {
 	describe('[Direct Message]', () => {
 		before(()=>{
 			if (!directMessageCreated) {
+				sideNav.spotlightSearchIcon.click();
 				sideNav.searchChannel(targetUser);
 				setDirectMessageCreated(true);
 				console.log('	Direct message not found, creating one...');

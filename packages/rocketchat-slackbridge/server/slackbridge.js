@@ -1,5 +1,4 @@
 /* globals logger */
-/*eslint complexity: ["error", 50]*/
 import _ from 'underscore';
 import util from 'util';
 import url from 'url';

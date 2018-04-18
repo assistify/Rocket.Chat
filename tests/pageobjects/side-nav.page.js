@@ -2,100 +2,52 @@ import Page from './Page';
 
 class SideNav extends Page {
 	// New channel
-	get channelType() {
-		return browser.element('.create-channel__content .rc-switch__button');
-	}
-
-	get channelReadOnly() {
-		return browser.elements('.create-channel__switches .rc-switch__button').value[1];
-	}
-
-	get channelName() {
-		return browser.element('.create-channel__content input[name="name"]');
-	}
-
-	get saveChannelBtn() {
-		return browser.element('.create-channel__content [data-button="create"]');
-	}
+	get channelType() { return browser.element('.create-channel__content .rc-switch__button'); }
+	get channelReadOnly() { return browser.elements('.create-channel__switches .rc-switch__button').value[1]; }
+	get channelName() { return browser.element('.create-channel__content input[name="name"]'); }
+	get saveChannelBtn() { return browser.element('.create-channel__content [data-button="create"]'); }
 
 	// Account box
 	getPopOverContent() { return browser.element('.rc-popover__content'); }
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
-	get accountMenu() { return browser.element('.sidebar__account'); }
+	get accountMenu() { return browser.element('.avatar-image'); }
+	get sidebarHeader() { return browser.element('.sidebar__header'); }
+	get sidebarUserMenu() { return browser.element('.sidebar__header .avatar'); }
+	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
-	get statusOnline() { return browser.element('[data-id="online"]'); }
-	get statusAway() { return browser.element('[data-id="away"]'); }
-	get statusBusy() { return browser.element('[data-id="busy"]'); }
-	get statusOffline() { return browser.element('[data-id="offline"]'); }
+	get statusOnline() { return browser.element('.rc-popover__item--online'); }
+	get statusAway() { return browser.element('.rc-popover__item--away'); }
+	get statusBusy() { return browser.element('.rc-popover__item--busy'); }
+	get statusOffline() { return browser.element('.rc-popover__item--offline'); }
 	get account() { return browser.element('[data-id="account"][data-type="open"]'); }
 	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
 	get logout() { return browser.element('[data-id="logout"][data-type="open"]'); }
 	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
-	get spotlightSearch() {
-		return browser.element('.toolbar__search input');
-	}
-
-	get spotlightSearchPopUp() {
-		return browser.element('.rooms-list__toolbar-search');
-	}
-
-	get newChannelBtn() {
-		return browser.element('.toolbar .toolbar__search-create-channel');
-	}
-
-	get newChannelIcon() {
-		return browser.element('.toolbar__icon.toolbar__search-create-channel');
-	}
+	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--inbox'); }
+	get spotlightSearch() { return browser.element('.toolbar__search input'); }
+	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
+	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
+	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
 
 	// Rooms List
-	get general() {
-		return this.getChannelFromList('general');
-	}
-
-	get channelLeave() {
-		return browser.element('.leave-room');
-	}
-
-	get channelHoverIcon() {
-		return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off');
-	}
-
-	get moreChannels() {
-		return browser.element('.rooms-list .more-channels');
-	}
+	get general() { return this.getChannelFromList('general'); }
+	get channelLeave() { return browser.element('.leave-room'); }
+	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
+	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
 
 	// Account
-	get preferences() {
-		return browser.element('[href="/account/preferences"]');
-	}
+	get preferences() { return browser.element('[href="/account/preferences"]'); }
+	get profile() { return browser.element('[href="/account/profile"]'); }
+	get avatar() { return browser.element('[href="/changeavatar"]'); }
+	get preferencesClose() { return browser.element('.sidebar-flex__close-button[data-action="close"]'); }
 
-	get profile() {
-		return browser.element('[href="/account/profile"]');
-	}
+	get discovery() { return browser.element('.sidebar__toolbar-button-icon--globe'); }
 
-	get avatar() {
-		return browser.element('[href="/changeavatar"]');
-	}
-
-	get preferencesClose() {
-		return browser.element('.sidebar-flex__close-button[data-action="close"]');
-	}
-
-	get burgerBtn() {
-		return browser.element('.burger');
-	}
-
-	get tabs() {
-		return browser.element('nav.rc-tabs');
-	}
-
-	get createChannelTab() {
-		return browser.element('nav.rc-tabs .rc-tabs__tab-link.createChannel');
-	}
-
+	get burgerBtn() { return browser.element('.burger'); } get tabs() { return browser.element('nav.rc-tabs'); }
+	get createChannelTab() { return browser.element('nav.rc-tabs .rc-tabs__tab-link.createChannel'); }
 	// Opens a channel via rooms list
 	openChannel(channelName) {
 		browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
@@ -116,8 +68,14 @@ class SideNav extends Page {
 			currentRoom = browser.element('.rc-header__name').getText();
 		}
 		if (currentRoom !== channelName) {
-			this.spotlightSearch.waitForVisible(5000);
-			this.spotlightSearch.click();
+			try {
+				this.spotlightSearchIcon.waitForVisible(1000);
+				this.spotlightSearchIcon.click();
+				this.spotlightSearch.waitForVisible(5000);
+				this.spotlightSearch.click();
+			} catch (e) {
+				//probably, the search was already opened
+			}
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[title='${ channelName }']`, 5000);
 			browser.click(`[title='${ channelName }']`);

@@ -12,6 +12,7 @@ class LoginPage extends Page {
 	get emailField() { return browser.element('[name=email]'); }
 	get passwordField() { return browser.element('[name=pass]'); }
 	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
+	get reasonField() { return browser.element('[name=reason]'); }
 	get inputUsername() { return browser.element('form#login-card input#username'); }
 
 	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
@@ -21,7 +22,7 @@ class LoginPage extends Page {
 	get confirmPasswordInvalidText() { return browser.element('[name=confirm-pass]~.input-error'); }
 	get registrationSucceededCard() { return browser.element('#login-card h2'); }
 
-	get GlobalAnnouncement() { return browser.element('body > section > div > div.global-announcement'); }
+	get GlobalAnnouncement() { return browser.element('.global-announcement'); }
 
 	open() {
 		super.open('');

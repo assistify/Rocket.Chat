@@ -12,9 +12,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 	describe('Give User Permissions', function() {
 		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-			sideNav.spotlightSearch.waitForVisible(10000);
-			sideNav.accountMenu.waitForVisible(5000);
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
 			admin.permissionsLink.waitForVisible(5000);
@@ -57,8 +55,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 
 		before(() => {
 			checkIfUserIsValid(username, email, password);
-			sideNav.accountMenu.waitForVisible(5000);
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
 		});
@@ -83,18 +80,14 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			checkIfUserIsValid(username, email, password);
-			sideNav.spotlightSearch.waitForVisible(10000);
-			sideNav.accountMenu.waitForVisible(5000);
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
 		});
 
 		it('Cleanup permissions', function(done) {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-			sideNav.spotlightSearch.waitForVisible(10000);
-			sideNav.accountMenu.waitForVisible(5000);
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
 			admin.permissionsLink.waitForVisible(5000);

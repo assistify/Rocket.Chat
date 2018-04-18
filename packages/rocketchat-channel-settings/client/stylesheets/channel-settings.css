@@ -69,7 +69,7 @@ html.rtl .flex-tab {
 
 		& .button {
 			display: inline-block;
-			visibility: visible;
+			visibility: hidden;
 
 			padding: 8px;
 

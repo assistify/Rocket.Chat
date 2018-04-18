@@ -101,6 +101,7 @@ jobs:
             tar czf /tmp/build/Rocket.Chat.tar.gz bundle
             cd /tmp/build-test/bundle/programs/server
             npm install
+            npm install pseudomap
 
       # - save_cache:
       #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
@@ -269,7 +270,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8
+      - image: circleci/node:8
 
     steps:
       - attach_workspace:

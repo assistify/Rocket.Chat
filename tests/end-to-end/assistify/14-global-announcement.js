@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import supertest from 'supertest';
-import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+import {adminUsername, adminPassword, username, email, password} from '../../data/user.js';
 import loginPage from '../../pageobjects/login.page';
 import mainContent from '../../pageobjects/main-content.page';
 import {checkIfUserIsValid} from '../../data/checks';
@@ -46,7 +46,7 @@ describe('[Rocket.Chat Global Announcement Tests]', function() {
 	});
 
 	it('Home-Page announcement should be there', function() {
-		checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
+		checkIfUserIsValid(username, email, password);
 		mainContent.GlobalAnnouncement.isVisible().should.equal(true);
 		mainContent.GlobalAnnouncement.getText().should.equal(`OK, GOT IT\n${ message }`);
 		mainContent.GlobalAnnouncementBtn.isVisible().should.equal(true);
@@ -67,6 +67,7 @@ describe('[Rocket.Chat Global Announcement Tests]', function() {
 	});
 
 	it('Login-Page announcement should not be there', function() {
+		checkIfUserIsValid(username, email, password);
 		loginPage.open();
 		loginPage.GlobalAnnouncement.isVisible().should.equal(false);
 	});

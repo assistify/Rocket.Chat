@@ -154,9 +154,9 @@
       "integrity": "sha1-fYa9VmefWM5qhHBKZX3TkruoGnk="
     },
     "lodash": {
-      "version": "4.17.5",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.5.tgz",
-      "integrity": "sha512-svL3uiZf1RwhH+cWrfZn3A4+U58wbP0tGVTLQPbjplZxZ8ROD9VLuNgsRniTlLe7OlSqR79RUehXgpBW/s0IQw=="
+      "version": "4.17.4",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz",
+      "integrity": "sha1-eCA6TRwyiuHYbcpkYONptX9AVa4="
     },
     "lodash.once": {
       "version": "4.1.1",
@@ -181,14 +181,14 @@
       "integrity": "sha1-G/3t9qbjRfMi/pVtXfW9CKjOhNw="
     },
     "mongodb": {
-      "version": "2.2.34",
-      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.34.tgz",
-      "integrity": "sha1-o09Zu+thdUrsQy3nLD/iFSakTBo="
+      "version": "2.2.33",
+      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.33.tgz",
+      "integrity": "sha1-tTfEcdNKZlG0jzb9vyl1A0Dgi1A="
     },
     "mongodb-core": {
-      "version": "2.1.18",
-      "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-2.1.18.tgz",
-      "integrity": "sha1-TEYTm986HwMt7ZHbSfOO7AFlkFA="
+      "version": "2.1.17",
+      "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-2.1.17.tgz",
+      "integrity": "sha1-pBizN6FKFJkPtRC5I97mqBMXPfg="
     },
     "ms": {
       "version": "2.1.1",
@@ -226,9 +226,9 @@
       "integrity": "sha512-kKvNJn6Mm93gAczWVJg7wH+wGYWNrDHdWvpUmHyEsgCtIwwo3bqPtV4tR5tuPaUhTOo/kvhVwd8XwwOllGYkbg=="
     },
     "semver": {
-      "version": "5.5.0",
-      "resolved": "https://registry.npmjs.org/semver/-/semver-5.5.0.tgz",
-      "integrity": "sha512-4SJ3dm0WAwWy/NVeioZh5AntkdJoWKxHxcmyP622fOkgHa4z3R0TdBJICINyaSDE6uNwVc8gZr+ZinwZAH4xIA=="
+      "version": "5.4.1",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-5.4.1.tgz",
+      "integrity": "sha512-WfG/X9+oATh81XtllIo/I8gOiY9EXRdv1cQdyykeXK17YcUW3EXUAi2To4pcH6nZtJPr7ZOpM5OMyWJZm+8Rsg=="
     },
     "starttls": {
       "version": "1.0.1",

@@ -5,13 +5,13 @@ class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
 
-		this.tryEnsureIndex({'roles': 1}, {sparse: 1});
-		this.tryEnsureIndex({'name': 1});
-		this.tryEnsureIndex({'lastLogin': 1});
-		this.tryEnsureIndex({'status': 1});
-		this.tryEnsureIndex({'active': 1}, {sparse: 1});
-		this.tryEnsureIndex({'statusConnection': 1}, {sparse: 1});
-		this.tryEnsureIndex({'type': 1});
+		this.tryEnsureIndex({ 'roles': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'name': 1 });
+		this.tryEnsureIndex({ 'lastLogin': 1 });
+		this.tryEnsureIndex({ 'status': 1 });
+		this.tryEnsureIndex({ 'active': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'statusConnection': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'type': 1 });
 
 		this.cache.ensureIndex('username', 'unique');
 	}
@@ -447,11 +447,26 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
-	setPreferences(_id, preferences) {
+	clearSettings(_id) {
 		const update = {
 			$set: {
-				'settings.preferences': preferences
+				settings: {}
 			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	setPreferences(_id, preferences) {
+		const settings = Object.assign(
+			{},
+			...Object.keys(preferences).map(key => {
+				return {[`settings.preferences.${ key }`]: preferences[key]};
+			})
+		);
+
+		const update = {
+			$set: settings
 		};
 
 		return this.update(_id, update);
@@ -527,6 +542,46 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		return this.update({_id}, update);
+	}
+
+	setReason(_id, reason) {
+		const update = {
+			$set: {
+				reason
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetReason(_id) {
+		const update = {
+			$unset: {
+				reason: true
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	addBannerById(_id, banner) {
+		const update = {
+			$set: {
+				[`banners.${ banner.id }`]: banner
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	removeBannerById(_id, banner) {
+		const update = {
+			$unset: {
+				[`banners.${ banner.id }`]: true
+			}
+		};
+
+		return this.update({ _id }, update);
 	}
 
 	// INSERT

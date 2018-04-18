@@ -1,0 +1,14 @@
+/* Hack: The user-info-class is also used in the channel settings, we want to suppress the bottom-padding there */
+.channel-settings .rc-user-info__row {
+	padding: 0;
+	border-bottom: 0;
+
+	&.edit {
+		margin-bottom: 15px;
+	}
+}
+
+.channel-settings .rc-button {
+    padding-left: 15px;
+    padding-right: 15px;
+}
