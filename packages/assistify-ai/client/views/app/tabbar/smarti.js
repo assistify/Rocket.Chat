@@ -62,6 +62,14 @@ Template.AssistifySmarti.onRendered(function() {
 				},
 				lang: localStorage.getItem('userLanguage').split('-')[0]
 			};
+
+			//propagate i18n - support formatted strings while doing that
+			const i18nSetting = RocketChat.settings.get('Assistify_AI_Smarti_Widget_i18n');
+			const i18n = i18nSetting.search('\n') > -1 ? JSON.parse(i18nSetting) : i18nSetting;
+			if (i18n) {
+				smartiOptions.i18n = i18n;
+			}
+
 			console.debug('Initializing Smarti with options: ', JSON.stringify(smartiOptions, null, 2));
 			instance.smarti = new window.SmartiWidget(instance.find('.smarti #widgetContainer'), smartiOptions);
 		}
@@ -74,14 +82,14 @@ Template.AssistifySmarti.onRendered(function() {
 Template.AssistifySmarti.helpers({
 	isLivechat() {
 		const instance = Template.instance();
-		return ChatSubscription.findOne({rid: instance.data.rid}).t === 'l';
+		return ChatSubscription.findOne({ rid: instance.data.rid }).t === 'l';
 	},
 	/**
 	 This helper is needed in order to create an object which matches the actions bar importing parameters
 	 */
 	liveChatActions() {
 		const instance = Template.instance();
-		return {roomId: instance.data.rid};
+		return { roomId: instance.data.rid };
 	},
 	helpRequestByRoom() {
 		const instance = Template.instance();

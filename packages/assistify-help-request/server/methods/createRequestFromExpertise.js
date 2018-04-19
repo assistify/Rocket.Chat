@@ -29,7 +29,7 @@ export class CreateRequestFromExpertise extends CreateRequestBase {
 			this._members = CreateRequestFromExpertise.getExperts(this._expertise);
 		}
 		const roomCreateResult = RocketChat.createRoom('r', this.name, Meteor.user() && Meteor.user().username, this._members, false, {expertise: this._expertise});
-		if (this._requestTitle) {
+		if (this._expertise) {
 			RocketChat.saveRoomTopic(roomCreateResult.rid, this._expertise, Meteor.user());
 		}
 		this._createNotifications(roomCreateResult.rid, this._members.concat([Meteor.user().username]));
