@@ -49,10 +49,10 @@ Template.AssistifyCreateRequest.helpers({
 	items() {
 		const instance = Template.instance();
 		if (instance.expertise.get() === '') {
-			if (instance.expertisesCount.get() <= 10) {
+			if (instance.expertisesList.get() && instance.expertisesList.get().length <= 10) {
 				return instance.expertisesList.get();
 			}
-			instance.showDropDown.set('');
+			// instance.showDropDown.set('');
 		}
 		return instance.ac.filteredList();
 	},
@@ -240,7 +240,9 @@ Template.AssistifyCreateRequest.onRendered(function() {
 
 	// strategy for setting the focus (yac!)
 	if (!expertiseElement.value) {
-		expertiseElement.focus();
+		Meteor.setTimeout(()=>{
+			expertiseElement.focus();
+		}, 1500);
 	} else if (!questionElement.value) {
 		questionElement.focus();
 	} else if (!titleElement.value) {
@@ -279,7 +281,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	instance.openingQuestion = new ReactiveVar('');
 	instance.topicSearchEnable = new ReactiveVar('');
 	instance.showDropDown = new ReactiveVar('');
-	instance.expertisesCount = new ReactiveVar('');
 	instance.expertisesList = new ReactiveVar('');
 	instance.debounceDropDown = _.debounce(() => {
 		instance.showDropDown.set('');
@@ -379,7 +380,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	}
 	Meteor.call('expertiseList', {sort: 'name'}, function(err, result) {
 		if (result) {
-			instance.expertisesCount.set(result.channels.length);
 			instance.expertisesList.set(result.channels);
 		}
 	});
