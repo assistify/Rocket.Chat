@@ -1,0 +1,13 @@
+<template name="privateNoPermission">
+	<section class="page-container page-list content-background-color">
+		{{> header sectionName="no_permission_to_enter_group"}}
+		<div class="content room-not-found error-color">
+			<i class="icon-attention"></i>
+			<div>
+        {{#with data}}
+					<button class="button askJoin"><span><i class="icon-login"></i> {{_ "ask_to_join_room"}}</span></button>
+				{{/with}}
+			</div>
+		</div>
+	</section>
+</template>

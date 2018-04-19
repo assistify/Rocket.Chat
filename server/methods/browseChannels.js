@@ -27,7 +27,7 @@ Meteor.methods({
 	browseChannels({text='', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users'].includes(type)) {
+		if (!['channels', 'users', 'private'].includes(type)) {
 			return;
 		}
 
@@ -35,7 +35,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', ...type === 'channels'? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', ...type === 'channels'? ['usernames'] : [], ...type === 'users' ? ['username'] : [], ...type === 'private'? ['usernames'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -56,6 +56,22 @@ Meteor.methods({
 				return;
 			}
 			return RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
+				...options,
+				sort,
+				fields: {
+					description: 1,
+					name: 1,
+					ts: 1,
+					archived: 1,
+					usernames: 1
+				}
+			}).fetch();
+		} else if (type === 'private') {
+			const sort = sortChannels(sortBy, sortDirection);
+			if (!RocketChat.authz.hasPermission(user._id, 'view-p-room')) {
+				return;
+			}
+			return RocketChat.models.Rooms.findByNameAndType(regex, 'p', {
 				...options,
 				sort,
 				fields: {

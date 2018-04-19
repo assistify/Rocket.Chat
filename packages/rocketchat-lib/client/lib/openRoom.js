@@ -39,8 +39,13 @@ function openRoom(type, name) {
 				} else {
 					Meteor.call('getRoomByTypeAndName', type, name, function(err, record) {
 						if (err) {
-							Session.set('roomNotFound', {type, name});
-							return BlazeLayout.render('main', {center: 'roomNotFound'});
+							if (type === 'p' && err.error === 'error-no-permission') {
+								Session.set('privateNoPermission', {type, name});
+								return BlazeLayout.render('main', {center: 'privateNoPermission'});
+							} else {
+								Session.set('roomNotFound', {type, name});
+								return BlazeLayout.render('main', {center: 'roomNotFound'});
+							}
 						} else {
 							delete record.$loki;
 							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));

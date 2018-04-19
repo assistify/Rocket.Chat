@@ -33,3 +33,21 @@ Meteor.methods({
 		return RocketChat.addUserToRoom(rid, user);
 	}
 });
+
+Meteor.methods({
+	askJoin(name, user) {
+		check(name, String);
+
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
+		}
+
+		const room = RocketChat.models.Rooms.findOneByName(name);
+
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
+		}
+
+		console.log(RocketChat.sendMessage(user, {msg: `@${ user.username } wants to join this room`}, room));
+	}
+});

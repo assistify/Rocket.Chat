@@ -31,6 +31,16 @@ function directorySearch(config, cb) {
 					createdAt: timeAgo(result.createdAt)
 				};
 			}
+
+			if (config.type === 'private') {
+				return {
+					name: result.name,
+					users: result.usernames.length,
+					createdAt: timeAgo(result.ts),
+					description: result.description,
+					archived: result.archived
+				};
+			}
 		}));
 	});
 }
@@ -62,6 +72,9 @@ Template.directory.events({
 		let routeConfig;
 		if (Template.instance().searchType.get() === 'channels') {
 			searchType = 'c';
+			routeConfig = {name: this.name};
+		} else if (Template.instance().searchType.get() === 'private') {
+			searchType = 'p';
 			routeConfig = {name: this.name};
 		} else {
 			searchType = 'd';

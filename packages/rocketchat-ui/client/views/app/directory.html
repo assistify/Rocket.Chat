@@ -5,6 +5,7 @@
 		<select class="rc-input__element rc-directory-selector js-typeSelector" name="type">
 				<option value="channels">{{_ 'Channels'}}</option>
 				<option value="users">{{_ 'Users' }}</option>
+				<option value="private">{{_ 'Private' }}</option>
 			</select>
 			<div class="rc-input rc-input--small rc-directory-search">
 				<label class="rc-input__label">
@@ -77,6 +78,41 @@
 									</div>
 								</td>
 								<td class="rc-table-td rc-table-td--username">{{username}}</td>
+								<td class="rc-table-td rc-table-td--createdAt">
+									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			{{/if}}
+			{{#if $eq searchType 'private'}}
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td js-sort" data-sort="name">{{_ 'Name'}} {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="usernames">{{_ 'Users'}} {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">{{_ 'Created_At'}} {{> icon icon="sort" }}</td>
+						</tr>
+					</thead>
+					<tbody class="rc-table-body">
+						{{#each searchResults}}
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">
+												{{>icon icon="hashtag"}}
+												{{name}}
+											</span>
+											{{#if description}}
+												<span class="rc-directory-channel-description">{{description}}</span>
+											{{/if}}
+										</div>
+									</div>
+								</td>
+								<td class="rc-table-td rc-table-td--users">{{users}}</td>
 								<td class="rc-table-td rc-table-td--createdAt">
 									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
 								</td>
