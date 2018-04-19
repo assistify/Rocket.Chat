@@ -1,5 +1,5 @@
 <template name="AssistifyCreateRequest">
-	{{#if not topicSearchEnable}}
+	{{#unless topicSearchEnable}}
 		<header class="create-channel__header">
 			<h1 class="create-channel__title">{{_ "Requests"}}</h1>
 			<p class="create-channel__description">{{_ "Request_description"}}</p>
@@ -79,23 +79,6 @@
 			</div>
 		</form>
 	{{else}}
-		{{> AssistifyWordCloud properties=getProperties}}
-	{{/if}}
-</template>
-
-
-<template name="AssistifyCreateRequestAutocomplete">
-	<li class="rc-popup-list__item">
-		<span class="rc-popup-list__item-name">{{{modifier item.name}}}</span>
-	</li>
-</template>
-
-<template name="AssistifytopicSearchEmpty">
-	<div>
-		{{#if showMoreTopics}}
-				<a id="more-topics" href='#'>{{_ "Topic_Search"}}</a>
-		{{else}}
-			<a>{{_ "Nothing_found"}}.</a>
-		{{/if}}
-	</div>
+		{{> AssistifyWordCloud properties=getWordcloudProperties}}
+	{{/unless}}
 </template>

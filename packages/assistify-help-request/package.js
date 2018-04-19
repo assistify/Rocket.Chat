@@ -78,6 +78,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/AssistifyCreateInputError.html', 'client');
 	api.addFiles('client/views/creationDialog/AssistifyWordCloud.html', 'client');
 	api.addFiles('client/views/creationDialog/AssistifyWordCloud.js', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyCreateRequestAutocomplete.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.js', 'client');
 	api.addFiles('client/views/sideNav/requests.html', 'client');
 	api.addFiles('client/views/sideNav/requests.js', 'client');
 	api.addFiles('client/views/sideNav/expertise.html', 'client');

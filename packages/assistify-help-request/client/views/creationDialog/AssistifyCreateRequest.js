@@ -61,7 +61,7 @@ Template.AssistifyCreateRequest.helpers({
 		return {
 			filter: filter.get(),
 			template_item: 'AssistifyCreateRequestAutocomplete',
-			noMatchTemplate: 'AssistifytopicSearchEmpty',
+			noMatchTemplate: 'AssistifyTopicSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
@@ -94,7 +94,7 @@ Template.AssistifyCreateRequest.helpers({
 		const instance = Template.instance();
 		return instance.topicSearchEnable.get();
 	},
-	getProperties() {
+	getWordcloudProperties() {
 		const instance = Template.instance();
 		const expertises = instance.expertisesList.get();
 
@@ -381,22 +381,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	Meteor.call('expertiseList', {sort: 'name'}, function(err, result) {
 		if (result) {
 			instance.expertisesList.set(result.channels);
-		}
-	});
-});
-
-Template.AssistifytopicSearchEmpty.helpers({
-	showMoreTopics() {
-		const instance = Template.instance();
-		return instance.expertisesCount.get() > 10 ? true : false;
-	}
-});
-Template.AssistifytopicSearchEmpty.onCreated(function() {
-	const instance = this;
-	instance.expertisesCount = new ReactiveVar('');
-	Meteor.call('expertiseList', {sort: 'name'}, function(err, result) {
-		if (result) {
-			instance.expertisesCount.set(result.channels.length);
 		}
 	});
 });
