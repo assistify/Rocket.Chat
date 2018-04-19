@@ -103,7 +103,8 @@ describe('[Threading]', function() {
 
 		it('It should create a new request from chat Room', function() {
 			globalObject.confirmPopup();
-			helpRequestThreaded = browser.getText('.rc-header__name');
+			mainContent.channelTitle.waitForVisible(3000);
+			helpRequestThreaded = mainContent.channelTitle.getText();
 			sideNav.discovery.waitForVisible(3000);
 		});
 
