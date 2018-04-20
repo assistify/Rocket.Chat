@@ -10,11 +10,13 @@ const Keys = {
 	'ENTER': '\uE007',
 	'ESCAPE': 'u\ue00c'
 };
+
 class Assistify extends Page {
 
 	get knowledgebaseIcon() {
 		return browser.element('.tab-button-icon--lightbulb');
 	}
+
 	// in order to communicate with Smarti we need the roomId.
 	// funny enough, it's available in its DOM. A bit dirty, but very efficient
 
@@ -99,6 +101,18 @@ class Assistify extends Page {
 		return browser.element('nav.rc-tabs .rc-tabs__tab-link.AssistifyCreateRequest');
 	}
 
+	get wordCloudLink() {
+		return browser.element('[id="more-topics"]');
+	}
+
+	get wordCloudButton() {
+		return browser.element('.rc-input__icon-svg--book-alt');
+	}
+
+	get wordCloudCanvas() {
+		return browser.element('[id="wc-canvas"]');
+	}
+
 	// Knowledgebase
 	get editInfoBtn() {
 		return browser.element('.rc-button.rc-button--icon.rc-button--outline.js-edit');
@@ -116,11 +130,14 @@ class Assistify extends Page {
 		return browser.element('#newTagInput');
 	}
 
-	get numberOfRequests() { return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge'); }
+	get numberOfRequests() {
+		return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge');
+	}
 
 	escape() {
 		browser.keys(Keys.ESCAPE);
 	}
+
 	createTopic(topicName, expert) {
 		this.escape();
 		this.newChannelBtn.waitForVisible(3000);
@@ -138,7 +155,7 @@ class Assistify extends Page {
 		this.topicExperts.setValue(expert);
 		browser.pause(500);
 		browser.keys(Keys.TAB);
-		browser.pause(500);
+		// browser.pause(500);
 
 		browser.waitUntil(function() {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
@@ -147,6 +164,22 @@ class Assistify extends Page {
 		browser.pause(500);
 		this.saveTopicBtn.click();
 		browser.pause(500);
+	}
+
+	openWordCloud(key) {
+		this.newChannelBtn.waitForVisible(10000);
+		this.newChannelBtn.click();
+		this.tabs.waitForVisible(5000);
+		if (this.tabs) {
+			this.createRequestTab.waitForVisible(5000);
+			this.createRequestTab.click();
+		}
+
+		this.topicName.waitForVisible(5000);
+		this.topicName.setValue(key);
+
+		this.wordCloudButton.waitForVisible(5000);
+		this.wordCloudButton.click();
 	}
 
 	createHelpRequest(topicName, message, requestTitle) {
@@ -209,15 +242,15 @@ class Assistify extends Page {
 		global.confirmPopup();
 	}
 
-	// closeTopic(topicName) {
-	// 	flexTab.channelTab.waitForVisible(5000);
-	// 	flexTab.channelTab.click();
-	// 	this.editInfoBtn.waitForVisible(5000);
-	// 	this.editInfoBtn.click();
-	// 	this.closeTopicBtn.waitForVisible(5000);
-	// 	this.closeTopicBtn.click();
-	// 	global.confirmPopup();
-	// }
+	/*	closeTopic(topicName) {
+			flexTab.channelTab.waitForVisible(5000);
+			flexTab.channelTab.click();
+			this.editInfoBtn.waitForVisible(5000);
+			this.editInfoBtn.click();
+			this.closeTopicBtn.waitForVisible(5000);
+			this.closeTopicBtn.click();
+			global.confirmPopup();
+		}*/
 
 	clickKnowledgebase() {
 		this.knowledgebaseIcon.waitForVisible(5000);

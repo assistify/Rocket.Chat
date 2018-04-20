@@ -1,4 +1,6 @@
+About-help-channel: Um die Übersicht zu behalten wird deine Frage in einer neuen Anfrage gestellt. Experten werden automatisch hinzugefügt. Hier kannst du ungestört weiterreden.
 application: Anwendung
+ask_help: Frage stellen
 Assistify_room_count: Letzte Raumnummer
 Choose_experts: Experten auswählen
 Close_HelpRequest: Chat beenden
@@ -6,9 +8,9 @@ Close_request_comment: Platz für (berühmte) letzten Worte
 Close_request_warning: Ist die Frage beantwortet? Wenn Du jetzt bestätigst, werden wir aus dem Geschriebenen lernen.
 create-e: Thema anlegen
 create-r: Anfrage anlegen
+Deactivate_close_comment: Kommentieren beim Schließen von Anfragen verhindern
 delete-e: Thema löschen
 delete-r: Anfrage löschen
-Deactivate_close_comment: Kommentieren beim Schließen von Anfragen verhindern
 Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Experten beantworten hierzu Anfragen
 Expertise_does_not_exist: Das Thema gibt es nicht
 Expertise_explanation: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
@@ -23,37 +25,36 @@ Hide_expertise_warning: Bist Du Dir sicher, dass Du das Thema "%s" ausblenden m�
 Hide_request_warning: Bist Du Dir sicher, dass Du die Anfrage "%s" ausblenden möchtest? Du kannst sie danach immer noch einsehen, wenn Du möchtest.
 Leave_expertise_warning: Bist Du Dir sicher, dass Du das Thema "%s" verlassen möchtest? Du bist danach kein Experte zu dem Thema mehr. Bei einer neuen Anfrage wirst Du nicht mehr gefragt werden!
 Leave_request_warning: Bist Du Dir sicher, dass Du die Anfrage "%s" verlassen möchtest? Du kannst sie danach nicht mehr einsehen und auch nicht in der Suche finden!
+Link-requests: Hier geht es weiter zum Raum __roomName__
 More_requests: Weitere Anfragen
 New_expertise: Neues Thema
-New_request_for_expertise: Wähle das Thema Deiner Frage aus
-New_request: Neue Anfrage
 New_request_created: Die neue Anfrage wurde erstellt
 New_request_first_question: Was möchtest Du fragen?
+New_request_for_expertise: Wähle das Thema Deiner Frage aus
 New_request_title: Ein Titel hilft, die Anfrage wieder zu finden
+New_request: Neue Anfrage
 No_expertise_yet: Keinem Thema zugeordnet
 No_requests_yet: Keine Anfragen bisher
 release: Version
 Request_already_exists: Eine Anfrage mit diesem Namen existiert bereits.
-Request_closed: Anfrage geschlossen__comment__
 Request_closed_explanation: Die Anfrage wurde geschlossen. Ihr könnt weiter schreiben, aber daraus wird nicht gelernt. Sollte es weitere Fragen geben, bitte eine neue Anfrage eröffnen.
+Request_closed: Anfrage geschlossen__comment__
 Request_description: Eine Anfrage richtet sich automatisch an die Experten eines Themas. Eine KI hilft dabei.
-Request_explanation: Eine Anfrage richtet sich an Experten eines Themas: Gemeinsam mit dem Fragesteller wird versucht, eine Frage aus dem Wissensgebiet zu beantworten. Eine KI beschleunigt den Problemlösungsprozess. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
+Request_explanation: "Eine Anfrage richtet sich an Experten eines Themas: Gemeinsam mit dem Fragesteller wird versucht, eine Frage aus dem Wissensgebiet zu beantworten. Eine KI beschleunigt den Problemlösungsprozess. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten."
 Request_no_special_char: Der Titel der Anfrage darf keine Sonderzeichen enthalten
 Request: Anfrage
 Requests: Anfragen
 Search_Requests: Anfragen suchen
 system: System
 SystemContext: System-Kontext
+Thread_start: Thread starten
+Thread_started_message_self: __initiator__ hat einen neuen Thread gestartet. Hilf dabei, die Sache geklärt zu bekommen!
+Thread_started_message: __initiator__ hat einen neuen Thread zur Nachricht von __author__ gestartet. Hilf dabei, die Sachezu klären!
+Thread_view: Thread anzeigen
+Thread_welcome_message: __initiator__ hat aus __roomName__ heraus diesen Thread begonnen. Sobald sich die Sache erledigt hat, kannst Du den Kanal schließen.
+Threading_about: Du erstellst einen neuen Kanal, der mit dieser Nachricht beginnt. Alle Mitglieder des alten Raums werden dort rein eingeladen, um die Sache zu klären.
+Topic_Search: Weitere Themen
 transaction: Transaktion
 view-e-room: Alle Themen einsehen
 view-r-room: Alle Anfragen einsehen
 Your_question: Frage
-ask_help: Frage stellen
-About-help-channel: Um die Übersicht zu behalten wird deine Frage in einer neuen Anfrage gestellt. Experten werden automatisch hinzugefügt. Hier kannst du ungestört weiterreden.
-Link-requests: Hier geht es weiter zum Raum __roomName__
-Thread_start: Thread starten
-Thread_started_message_self: __initiator__ hat einen neuen Thread gestartet. Hilf dabei, die Sache geklärt zu bekommen!
-Thread_started_message: __initiator__ hat einen neuen Thread zur Nachricht von __author__ gestartet. Hilf dabei, die Sachezu klären!
-Thread_welcome_message: __initiator__ hat aus __roomName__ heraus diesen Thread begonnen. Sobald sich die Sache erledigt hat, kannst Du den Kanal schließen.
-Threading_about: Du erstellst einen neuen Kanal, der mit dieser Nachricht beginnt. Alle Mitglieder des alten Raums werden dort rein eingeladen, um die Sache zu klären.
-Thread_view: Thread anzeigen

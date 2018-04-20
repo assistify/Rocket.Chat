@@ -15,3 +15,18 @@ Meteor.publish('assistify:room', function({rid: roomId}) {
 
 	return RocketChat.models.Rooms.findOneById(roomId, {fields: {helpRequestId: 1}});
 });
+
+
+Meteor.publish('assistify:expertise', function() {
+	if (!this.userId) {
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized'));
+	}
+	return RocketChat.models.Rooms.find({
+		fields: {
+			_id: 1,
+			roomId: 1,
+			helpRequestId: 1,
+			expertise: 1
+		}
+	});
+});

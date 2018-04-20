@@ -4,7 +4,11 @@ Choose_experts: Choose experts
 Close_HelpRequest: Close chat
 Close_request_comment: You can add (famous) last words
 Close_request_warning: Please do close the request once you are finished answering the questions asked. This way, we can learn from what you have written.
+create-e: Create topic
+create-r: Create request
 Deactivate_close_comment: Don't allow closing comments
+delete-e: Delete topic
+delete-r: Delete request
 Expertise_description: A topic is an area of knowledge with known experts.
 Expertise_does_not_exist: Expertise does not exist
 Expertise_explanation: A topic is an area of knowledge. Experts join a topic in order to help others solve their question in that area.
@@ -21,17 +25,17 @@ Leave_expertise_warning: Are you sure you want to leave the topic "%s"? You'll n
 Leave_request_warning: Are you sure you want to leave the request "%s"? You'll not be able to see and join the conversation lateron, neither you'll find it searching for it!
 More_requests: Other requests
 New_expertise: New topic
-New_request_for_expertise: The topic of the new request
-New_request: New request
 New_request_created: Request created successfully
 New_request_first_question: What do you want to ask
+New_request_for_expertise: The topic of the new request
 New_request_title: A title helps to find the request later on
+New_request: New request
 No_expertise_yet: No topics yet
 No_requests_yet: No requests yet
 release: Version
 Request_already_exists: A request with this name already exists.
-Request_closed: Request closed__comment__
 Request_closed_explanation: You can keep on chatting, but we'll not learn from that. In case of additional questions, please create new requests.
+Request_closed: Request closed__comment__
 Request_description: A request is a conversation starting with a question on a particular topic. When finishing such a conversation, our system is going to learn from it in order to accelerate further request-solutions on that topic.
 Request_explanation: A request is automatically being adressed towards topic experts. AI helps solving it.
 Request_no_special_char: Request title cannot contain special characters
@@ -40,17 +44,14 @@ Requests: Requests
 Search_Requests: Search requests
 system: System
 SystemContext: System context
-transaction: Transaction
-create-r: Create request
-create-e: Create topic
-delete-r: Delete request
-delete-e: Delete topic
-view-r-room: View all requests
-view-e-room: View all topics
-Your_question: Question
 Thread_start: Start Thread
-Threading_about: You're about to start a new channel with the conversation you selected. All members of this channel will join you there to get things solved.
-Thread_welcome_message: __initiator__ started this thread out of __roomName__ . As soon as things have been sorted out, you can indicate that by closing it.
 Thread_started_message_self: __initiator__ started a new thread. Find the initial message below - and show your support!
 Thread_started_message: __initiator__ started a new thread for __author__'s question. Find the initial message below - and show your support!
 Thread_view: View thread
+Thread_welcome_message: __initiator__ started this thread out of __roomName__ . As soon as things have been sorted out, you can indicate that by closing it.
+Threading_about: You're about to start a new channel with the conversation you selected. All members of this channel will join you there to get things solved.
+Topic_Search: More topics
+transaction: Transaction
+view-e-room: View all topics
+view-r-room: View all requests
+Your_question: Question

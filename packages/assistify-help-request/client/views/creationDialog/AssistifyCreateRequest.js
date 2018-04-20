@@ -9,6 +9,14 @@ const acEvents = {
 		t.ac.onItemClick(this, e);
 		t.debounceValidateExpertise(this.item.name);
 	},
+	'click .rc-input__icon-svg--book-alt'(e, t) {
+		e.preventDefault();
+		t.topicSearchEnable.set(true);
+	},
+	'click #more-topics'(e, t) {
+		e.preventDefault();
+		t.topicSearchEnable.set(true);
+	},
 	'keydown [name="expertise"]'(e, t) {
 		t.ac.onKeyDown(e);
 	},
@@ -16,11 +24,15 @@ const acEvents = {
 		t.ac.onKeyUp(e);
 	},
 	'focus [name="expertise"]'(e, t) {
+		if (t.expertise.get() === '' && t.showDropDown.get() === '') {
+			t.showDropDown.set('isShowing');
+		}
 		t.ac.onFocus(e);
 	},
 	'blur [name="expertise"]'(e, t) {
 		t.ac.onBlur(e);
 		t.debounceValidateExpertise(e.target.value);
+		t.debounceDropDown();
 	}
 };
 
@@ -29,17 +41,27 @@ Template.AssistifyCreateRequest.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
+		if (!Template.instance().expertise.get() && Template.instance().showDropDown.get() === 'isShowing') {
+			return true; // show the expertise auto complete drop down
+		}
 		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
-		return Template.instance().ac.filteredList();
+		const instance = Template.instance();
+		if (instance.expertise.get() === '') {
+			if (instance.expertisesList.get() && instance.expertisesList.get().length <= 10) {
+				return instance.expertisesList.get();
+			}
+			// instance.showDropDown.set('');
+		}
+		return instance.ac.filteredList();
 	},
 	config() {
 		const filter = Template.instance().expertise;
 		return {
 			filter: filter.get(),
 			template_item: 'AssistifyCreateRequestAutocomplete',
-			noMatchTemplate: 'userSearchEmpty',
+			noMatchTemplate: 'AssistifyTopicSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
@@ -50,7 +72,6 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
-
 		if (instance.validExpertise.get() && !instance.titleError.get()) {
 			return '';
 		} else {
@@ -68,9 +89,67 @@ Template.AssistifyCreateRequest.helpers({
 	titleError() {
 		const instance = Template.instance();
 		return instance.titleError.get();
+	},
+	topicSearchEnable() {
+		const instance = Template.instance();
+		return instance.topicSearchEnable.get();
+	},
+	getWordcloudProperties() {
+		const instance = Template.instance();
+		const expertises = instance.expertisesList.get();
+
+		function getRandomArbitrary(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+
+		function getWordList() {
+			const list = [];
+			expertises.forEach(function(expertise) {
+				list.push([expertise.name, getRandomArbitrary(4, 10)]);
+			});
+			return list;
+		}
+
+		function setExpertise() {
+			return function(selectedExpertise) {
+				const expertise = expertises.find(expertise => expertise.name === selectedExpertise[0]);
+				if (expertise) {
+					instance.debounceWordCloudSelect(expertise);
+				}
+				instance.topicSearchEnable.set(''); //Search completed.
+			};
+		}
+
+		function onWordHover() {
+			return function(item) {
+				// To Do
+				return item;
+
+			};
+		}
+
+		function setFlatness() {
+			return 0.5;
+		}
+
+		return {
+			clearCanvas: true,
+			weightFactor: 8,
+			fontWeight: 'normal',
+			gridSize: 55,
+			shape: 'square',
+			rotateRatio: 0,
+			rotationSteps: 0,
+			drawOutOfBound: true,
+			shuffle: true,
+			ellipticity: setFlatness(),
+			list: getWordList(),
+			click: setExpertise(),
+			hover: onWordHover()
+			//setCanvas: getCanvas
+		};
 	}
 });
-
 
 Template.AssistifyCreateRequest.events({
 	...acEvents,
@@ -91,7 +170,6 @@ Template.AssistifyCreateRequest.events({
 		} else {
 			t.debounceValidateRequestName(input.value);
 		}
-
 	},
 	'input #first_question'(e, t) {
 		const input = e.target;
@@ -150,10 +228,8 @@ Template.AssistifyCreateRequest.onRendered(function() {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
 		instance.debounceValidateExpertise(item.name);
-
 		return instance.find('.js-save-request').focus();
 	});
-
 	if (instance.requestTitle.get()) {
 		titleElement.value = instance.requestTitle.get();
 	}
@@ -164,7 +240,9 @@ Template.AssistifyCreateRequest.onRendered(function() {
 
 	// strategy for setting the focus (yac!)
 	if (!expertiseElement.value) {
-		expertiseElement.focus();
+		Meteor.setTimeout(()=>{
+			expertiseElement.focus();
+		}, 1500);
 	} else if (!questionElement.value) {
 		questionElement.focus();
 	} else if (!titleElement.value) {
@@ -172,18 +250,41 @@ Template.AssistifyCreateRequest.onRendered(function() {
 	} else {
 		questionElement.focus();
 	}
+	this.autorun(() => {
+		instance.debounceWordCloudSelect = _.debounce((expertise) => {
+			/*
+			 * Update the expertise html reference to autocomplete
+			 */
+			instance.ac.element = this.find('#expertise-search');
+			instance.ac.$element = $(instance.ac.element);
+			$('input[name="expertise"]').val(expertise.name); // copy the selected value to screen field
+			instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+				instance.expertise.set(item.name);
+				$('input[name="expertise"]').val(item.name);
+				instance.debounceValidateExpertise(item.name);
 
+				return instance.find('.js-save-request').focus();
+			});
+			instance.expertise.set(expertise.name);
+			instance.debounceValidateExpertise(expertise.name); // invoke validation*/
+		}, 200);
+	});
 });
 
 Template.AssistifyCreateRequest.onCreated(function() {
 	const instance = this;
-
 	instance.expertise = new ReactiveVar(''); //the value of the text field
 	instance.validExpertise = new ReactiveVar(false);
 	instance.expertiseError = new ReactiveVar(null);
 	instance.titleError = new ReactiveVar(null);
 	instance.requestTitle = new ReactiveVar('');
 	instance.openingQuestion = new ReactiveVar('');
+	instance.topicSearchEnable = new ReactiveVar('');
+	instance.showDropDown = new ReactiveVar('');
+	instance.expertisesList = new ReactiveVar('');
+	instance.debounceDropDown = _.debounce(() => {
+		instance.showDropDown.set('');
+	}, 200);
 
 	instance.debounceValidateExpertise = _.debounce((expertise) => {
 		if (!expertise) {
@@ -234,7 +335,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 			}
 		}
 	}, 500);
-
 	this.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
@@ -260,7 +360,7 @@ Template.AssistifyCreateRequest.onCreated(function() {
 	});
 	this.ac.tmplInst = this;
 
-	//prefill form based on query parameters if passed
+	//pre-fill form based on query parameters if passed
 	if (FlowRouter.current().queryParams) {
 		const expertise = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('expertise');
 		if (expertise) {
@@ -278,4 +378,9 @@ Template.AssistifyCreateRequest.onCreated(function() {
 			instance.openingQuestion.set(question);
 		}
 	}
+	Meteor.call('expertiseList', {sort: 'name'}, function(err, result) {
+		if (result) {
+			instance.expertisesList.set(result.channels);
+		}
+	});
 });

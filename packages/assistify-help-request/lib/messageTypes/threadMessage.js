@@ -39,11 +39,11 @@ RocketChat.MessageTypes.registerType({
 	message: 'Thread_welcome_message',
 	data(message) {
 		/* Thread Welcome Message
-		  * @Returns
+		 * @Returns
 		 * Thread Initiator
 		 * Parent Room Name
 		 * Original Message
-		  * */
+		 * */
 		const room = RocketChat.models.Rooms.findOne({_id: message.channels[0]._id});
 		let attachEvents = true;
 		for (const e of Template.room.__eventMaps) {

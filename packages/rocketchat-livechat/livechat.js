@@ -51,7 +51,24 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 			${ head }
 		</head>
 		<body>
-			<script type="text/javascript" src="${ baseUrl }livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
+			<script type="text/javascript"  src="${ baseUrl }/livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
+			<script>
+				/**
+				 * The following lines enable a more mobile-friendly styling.
+				 * Using a pure javascript device detection based on UserAgent check.
+				 * Reason: @media-Query does not work within iframes having a fixed width.
+				 * The user agent check has been taken from:
+				 * https://stackoverflow.com/questions/3514784/
+				 *
+				 * @TODO Knowing this is not the best solution, we should check alternatives here.
+				 * E.g. check https://stackoverflow.com/questions/27227214/
+				 */
+				$(document).ready(function() {
+    				if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+ 						$("body").addClass("mobile-view");
+ 					}
+				});
+			</script>
 		</body>
 	</html>`;
 
