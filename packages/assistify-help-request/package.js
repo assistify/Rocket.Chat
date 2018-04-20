@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 	api.use(['nimble:restivus', 'rocketchat:api'], 'server');
 	api.use('templating', 'client');
 	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
+	//api.use('overture8:wordcloud2');
 
 	api.addFiles('help-request.js', 'server');
 	api.addFiles('server/types.js', 'server');
@@ -27,6 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('startup/customRoomTypes.js');
 	api.addFiles('startup/rolesAndPermissions.js', 'server');
 	api.addFiles('lib/messageTypes/requestClosed.js');
+	api.addFiles('lib/messageTypes/threadMessage.js');
 
 	// Libraries
 	api.addFiles('server/inject.js', 'server');
@@ -36,6 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', ['server', 'client']);
 	api.addFiles('server/models/HelpRequests.js', ['server', 'client']);
 	api.addFiles('server/models/LivechatExternalMessage.js', ['server', 'client']);
+	api.addFiles('server/models/Message.js', ['server', 'client']);
 
 	api.addFiles('server/publications/Rooms.js', 'server');
 	api.addFiles('server/publications/HelpRequests.js', 'server');
@@ -44,10 +47,14 @@ Package.onUse(function(api) {
 	//Methods
 	api.addFiles('server/methods/helpRequestByRoomId.js', 'server');
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
-	api.addFiles('server/methods/createRequest.js', 'server');
 	api.addFiles('server/methods/createExpertise.js', 'server');
+	api.addFiles('server/methods/createRequestFactory.js', 'server');
+	api.addFiles('server/methods/createRequestBase.js', 'server');
+	api.addFiles('server/methods/createRequestFromExpertise.js', 'server');
+	api.addFiles('server/methods/createRequestFromRoomId.js', 'server');
 	api.addFiles('server/methods/requestsList.js', 'server');
 	api.addFiles('server/methods/isValidExpertise.js', 'server');
+	api.addFiles('server/methods/expertiseList.js', 'server');
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
@@ -69,12 +76,18 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/AssistifyCreateExpertise.html', 'client');
 	api.addFiles('client/views/creationDialog/AssistifyCreateExpertise.js', 'client');
 	api.addFiles('client/views/creationDialog/AssistifyCreateInputError.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyWordCloud.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyWordCloud.js', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyCreateRequestAutocomplete.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.js', 'client');
 	api.addFiles('client/views/sideNav/requests.html', 'client');
 	api.addFiles('client/views/sideNav/requests.js', 'client');
 	api.addFiles('client/views/sideNav/expertise.html', 'client');
 	api.addFiles('client/views/sideNav/expertise.js', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.html', 'client');
 	api.addFiles('client/views/sideNav/listRequestsFlex.js', 'client');
+	api.addFiles('client/views/messageActions/AssistifyMessageAction.js', 'client');
 
 	//Libraries
 	api.addFiles('client/lib/collections.js', 'client');

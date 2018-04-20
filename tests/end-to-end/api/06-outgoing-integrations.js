@@ -9,6 +9,8 @@ import supertest from 'supertest';
 describe('Outgoing Integrations', function() {
 	this.retries(0);
 
+	before(done => getCredentials(done));
+
 	it('/integrations.create', (done) => {
 		request.post(api('integrations.create'))
 			.set(credentials)
@@ -31,11 +33,11 @@ describe('Outgoing Integrations', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				integration._id = res.body.integration._id;
-				expect(res.body).to.have.deep.property('integration.name', 'Guggy');
-				expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
-				expect(res.body).to.have.deep.property('integration.enabled', true);
-				expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
-				expect(res.body).to.have.deep.property('integration.event', 'sendMessage');
+				expect(res.body).to.have.nested.property('integration.name', 'Guggy');
+				expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
+				expect(res.body).to.have.nested.property('integration.enabled', true);
+				expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
+				expect(res.body).to.have.nested.property('integration.event', 'sendMessage');
 			})
 			.end(done);
 	});
@@ -65,10 +67,10 @@ describe('Outgoing Integrations', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('integration.name', 'Guggy');
-				expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
-				expect(res.body).to.have.deep.property('integration.enabled', true);
-				expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
+				expect(res.body).to.have.nested.property('integration.name', 'Guggy');
+				expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
+				expect(res.body).to.have.nested.property('integration.enabled', true);
+				expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
 			})
 			.end(done);
 	});

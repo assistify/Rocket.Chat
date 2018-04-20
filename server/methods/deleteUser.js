@@ -14,7 +14,14 @@ Meteor.methods({
 			});
 		}
 
+		if (RocketChat.authz.hasRole(userId, 'admin') && !RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'deleteUser'
+			});
+		}
+
 		const user = RocketChat.models.Users.findOneById(userId);
+
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deleteUser'

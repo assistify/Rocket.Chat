@@ -9,12 +9,15 @@ Package.onUse(function(api) {
 	api.use([
 		'templating',
 		'ecmascript',
-		'underscore',
 		'rocketchat:lib'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
 	api.addFiles('client/messageAttachment.js', 'client');
+	api.addFiles('client/renderField.html', 'client');
+	api.addFiles('client/renderField.js', 'client');
+	api.addFiles('client/fieldTypeThreadReference.html', 'client');
+	api.addFiles('client/fieldTypeThreadReference.js', 'client');
 
 	// stylesheets
 	api.addFiles('client/stylesheets/messageAttachments.css', 'client');

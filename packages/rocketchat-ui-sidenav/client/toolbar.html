@@ -6,7 +6,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+								{{> icon block="rc-input__icon-svg" icon="eye"}}
 							</div>
 							<input type="text" class="rc-input__element rc-input__element--small" placeholder="{{getPlaceholder}}">
 							<div class="rc-input__icon rc-input__icon--right">
@@ -16,14 +16,9 @@
 					</label>
 				</div>
 			</div>
-			{{#if canCreate}}
-				<button class="rc-button rc-button--square rc-tooltip" aria-label="{{ _ 'Create_A_New_Channel' }}">
-					{{> icon block="toolbar__icon" icon="plus" classes="toolbar__search-create-channel"}}
-				</button>
-			{{/if}}
 		</form>
-		{{> messagePopup popupConfig}}
 	</div>
+	{{> messagePopup popupConfig}}
 </template>
 
 <template name="toolbarSearchList">

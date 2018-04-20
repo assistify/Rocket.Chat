@@ -5,11 +5,12 @@ services:
 branches:
   only:
   - develop
-  - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+  - master
+  - "^release\\/.+.*"
 git:
   depth: 1
 node_js:
-- '4'
+- '8.9.4'
 addons:
   apt:
     sources:
@@ -20,24 +21,24 @@ addons:
     - g++-4.8
   firefox: "latest"
 before_cache:
-- rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/log
-- rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/run
-- rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/db
+- rm -rf $TRAVIS_BUILD_DIR/.meteor/local/log
+- rm -rf $TRAVIS_BUILD_DIR/.meteor/local/run
+- rm -rf $TRAVIS_BUILD_DIR/.meteor/local/db
 cache:
   directories:
   - "$HOME/node_modules"
   - "$HOME/.meteor"
   - "$HOME/.npm"
   - "$HOME/.node-gyp"
-  - "$HOME/build/RocketChat/Rocket.Chat/node_modules"
-  - "$HOME/build/RocketChat/Rocket.Chat/.meteor/local"
-  - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/.npm"
-  - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/node_modules"
-  - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/.meteor/local"
+  - "$TRAVIS_BUILD_DIR/node_modules"
+  - "$TRAVIS_BUILD_DIR/.meteor/local"
+  - "$TRAVIS_BUILD_DIR/packages/rocketchat-livechat/.npm"
+  - "$TRAVIS_BUILD_DIR/packages/rocketchat-livechat/.app/node_modules"
+  - "$TRAVIS_BUILD_DIR/packages/rocketchat-livechat/.app/.meteor/local"
 before_install:
 - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 # Start X Virtual Frame Buffer for headless testing with real browsers
-- .scripts/start-xvfb.sh
+- $TRAVIS_BUILD_DIR/.scripts/start-xvfb.sh
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
@@ -47,60 +48,76 @@ before_script:
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
 - sudo service mongod restart
 - mkdir /tmp/build
+- meteor --version
+- travis_retry git submodule init
+- travis_retry git submodule update
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+- chmod +x $TRAVIS_BUILD_DIR/.scripts/smarti.sh
+- $TRAVIS_BUILD_DIR/.scripts/smarti.sh
 - meteor npm run lint
 - meteor npm run testunit
 - meteor npm run stylelint
-- travis_retry meteor build --headless /tmp/build
+- travis_wait 30 meteor build /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
 - cd /tmp/build-test/bundle/programs/server
-- meteor npm install -g node-gyp node-pre-gyp
-- meteor npm install
+- npm install
 - cd -
 - mongo --eval 'rs.status()'
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
-- travis_retry meteor npm test
-- mongo meteor --eval 'db.dropDatabase()'
-- unset MONGO_OPLOG_URL
-- travis_retry meteor npm test
-before_deploy:
-- source ".travis/setartname.sh"
-- source ".travis/setdeploydir.sh"
-- ".travis/setupsig.sh"
-- ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
-deploy:
-  - provider: s3
-    access_key_id: AKIAIKIA7H7D47KUHYCA
-    secret_access_key: "$ACCESSKEY"
-    bucket: download.rocket.chat
-    skip_cleanup: true
-    upload_dir: build
-    local_dir: "$ROCKET_DEPLOY_DIR"
-    on:
-      condition: "$TRAVIS_PULL_REQUEST=false"
-      all_branches: true
-  # - provider: releases
-  #   api-key: "$GITHUB_TOKEN"
-  #   file_glob: true
-  #   file: build/*
-  #   skip_cleanup: true
-  #   on:
-  #     tags: true
+- shopt -s extglob
+- rm -rf ./tests/end-to-end/!(ui_smarti) # remove all non-Smarti-tests
+- if [[ ! $SKIP_TESTS ]]; then npm test; fi
 
-after_deploy:
-- ".travis/docker.sh"
-- ".travis/update-releases.sh"
-- ".travis/snap.sh"
+# - mongo meteor --eval 'db.dropDatabase()'
+# - unset MONGO_OPLOG_URL
+# - npm test
+
+# before_deploy:
+# - mkdir -p /tmp/build/rocketchat
+# - export BUILD_FILE=Assistify_Chat_${TRAVIS_BRANCH/\//_}_${TRAVIS_COMMIT:1}.tar.gz
+# - mv /tmp/build/Rocket.Chat.tar.gz /tmp/build/rocketchat/${BUILD_FILE}
+
+# deploy:
+# - provider: s3
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
+#   local_dir: /tmp/build/
+#   skip_cleanup: true
+#   on: &1
+#     repo: assistify/Rocket.Chat
+#     branch: develop
+#   bucket: $AWS_BUCKET
+#   region: $AWS_REGION
+# - provider: s3
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
+#   local_dir: /tmp/build/
+#   skip_cleanup: true
+#   on: &2
+#     repo: assistify/Rocket.Chat
+#     branch: master
+#   bucket: $AWS_BUCKET
+#   region: $AWS_REGION
+
+# after_deploy:
+  # - $TRAVIS_BUILD_DIR/.scripts/deploy-assistify-chat.sh
+
 env:
   global:
-  - DISPLAY=:99.0
-  - CXX=g++-4.8
-  - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
-  - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
-  - MONGO_URL: "mongodb://localhost:27017/meteor"
-  - TEST_MODE: "true"
+    - secure: "k0mHfGtvCgxQQ44goB5wD5+HO3/s+VBguamSph/i/iRFo3bMgMFxG0xoTp7xTQP83tBK+XVJ8uO9Shiz0NaPjkiKkTFu+rfcGEHLCvypXYVh91Y3Q7Njs/A5e/3X8qwBkRYgHwp1mNrrlKCYFKnHVw5R6BBn8Yxpxe1DlCEl9Tj9uEcjyE9LiQiZEGeNMaZBKyS7ACDrZBRyLLVkCS4FDseSlozZw5r3VdJBr7aaiiY9YuA0UTdp/FvCdpkdXs8KA/lxrnjwYI/96k/n3X0m9Gckn9cxk/IMQ/bvKz3lP4Roe4S4wUfbc3bVVgzSC+AY8ZJpsJx3lEdDgCOvsCphNIH9QjPajsn1Vq/5C3z1FrLpu1XqLcaVZ9ZVclP7t2zS1obNQCpzmatjkXW3rqL+VffbWFFlVPEDWdoT+3yJYLYgGHaeMjtYyrBE+0ltCvCNLaRCfRYpnfMQWA1T+PddYGn1fGoILA5RFB5pSLHUboS1cTQxqPg0ItLWiaHfST64MahS9ymMXnEnOCaHtp7spdxKyOzMq6IWz5D+El9UqamFsT+wJWXo8EKfXNAQCTFZaJTYqS5mPLhiqGT/Vf0+YqQ8v7iwtNrKApDdQJp/SWGdscU+ngEU2Aykc/G6RBaEr8mzyrURffi0+5KevbE2wH47aITOuAlENJUCp4ycAQo="
+    - secure: "D7QSHB+4WCJae7dJU7Fv4ERObf+DwkVNBaJbn885iyct2UbNHGdd4+QxxRMIrhN1B7oi2A9I4niiRdOS2sUnbyIGh0Xz2oCMZa2nqDg25wUyWRSj4TdtftAsT7TW8LLhzHeeF3S/uMQzKIfThmFH1RsfKTUySVChrtjzUEQSNrdqBUwXBGNgyDHEig4ns1V8l4ob05Mm0UaCi556bEcTBW06yBvpTPqoxAKQTtfI4ccb2xINf5WUAh/BDD4pDf7ow1uDKaMJ/Abr/O8ZxkrctQ2U6IfDNAjfT7g/2PJSkApKyH46axNdxdfT0mgE+2hMapFpZifWYqe1vbpWwrb7VUE7jMfqjyUKBHi5U/pnqKyMxA6YUUlGtFalbRpEdEdyVDAUbH7GyEh9Vb1dr1sYri2TrLznhbDH6z2PZ0FpGcKg4EWIor3y/asYU3tF30QEa9ekYJnNZNtC79lZcGxQ+aAqNtL1Khwth264OGsIioJ+EYv+LWqx134xZzvP/2FlvNzhgjLibKUD+Wtr7Le1l+a7DG14aJM3uZHAAa5OcsxZ+QWQjNZKTYmlFpGrFNBfL/F2sVky7hvTNdEFzaOFuj/y+eNDaNr10UeE2Nb2Qu1/wSISmTlYWFsub1Vd3bmb8ZyHGMwU0Duicgbq5OUV0CqGT81drdwyovTd1vReXCw="
+    - secure: "HkVm1X3IscJsZB2++aYg118dlnM3IsId7yHTjRppHaLgfNNzfpjp723Ri+RVBH/WZKSiO/AZn9Cyq+QzJ6cv+0vOVek58OqqHwVAmwVGq8cK1c7izbcIY03uMsuagZxjvb8zUJp9lw8Y/NpQUu86rlETuWW61PM7v0v8xFw7LRgz8sCt8RHtu+yh4R4JbBDUAHA2twX1PW6tkyic/HtLOlw3v/JvahQr1/IORi2V0JJqc7vBVIEsqRM9x1MVMIhC460MPEx9dr9L6XDLGKT0qOgf1zPJfjLPItyirlFSck6xWEnEdTFuLGN9RG1W+yVyQJ+Dpp3XRqTGcfOx3hIrapvBQ/F/2Vh16NcE1JaJlWxDbqPcn35A7lIGZQbvSjAv5JxQusy4x4RJRflWzzPFdJzP5YRip5s7cerfAPfyRb4N7a8SPA9QEgwCyIPiS6Qfkr44AX269zs40/y1VufdddJfjtvWDrfp1fW4IEGjievQLb1qs+ZLvKMppfvqjLJxT3+LqfpX9hASSYAuiyo6PRHGCXT0Ld+xbwuGIxrClu/E17MkKBKddIDAosJQpB3w5mOOxYDc/G8Qg5Xx+Y9ac3zNMrQvUIWxS0/GGK7llH7AIPR6+sDjLzrmTFWceQ/ySDeazzH5ZmMyzMz09XnwQ0D1yF9M9jbczMNYACAP8RQ="
+    - secure: "g1Xa1vCDR32MnFFmSHl4IkVNecu6XA2D1C/AcI827R740R0PL9E/hJr1OZTPw9AI7RfajXDHrTiA/JlYNBiuT2MvB04bGdHWsXky/h01nVGgm1VmW5OyDWqPrKT3Aps99J+VgZRGLDDPNtPE3qrmFxf97rHB6pS6c3SZarGKZGuAE7HkZhL4Cc2jt93lpj68jbI3QwHP9GWgFB6XcKrKu0v2EJqvBEt3pP14N+F+6oC8V02+lEQreTjDRZaq/C6Gg9ufLx5IwSf2rmC5GoVkQqDS1pLX7X/U07igV5JSM4l5eJuNL6U3A0VjwYDhOpEdGop/ntJRLmdSvMQ/HHgqAwUkj5RJGePt8r3zZxCkGSkQOaH9js2FluZDcd2qKlJobM6+2sFzUDNZi6oB2aJRCvj0ip4/XyE+scgvrL9eq/oCPACivv1y8p72SZjpJhOTONeUjU7lqoL7dVhPC+upvR/h1CXcUVbMRptJXGvRVvrH30V14N7tTDbY0zKaTOE/fI4sMwHOAlOdbbY4MFo17DO0lku7umL/E/pZFoRfk+yNdQhNg87n/ToRmOmGwzTu0m3Zw9kZWoNyYKfnokgmPgKfvPruyzTvKGe7Cg/nkHMDZH2XJGQNJ+/uh3+62L+ss1TNJlTT1Dp5u0LNp5dzh91r6rvu/QcyRw9CRoAGxW8="
+    - secure: "SKMpM0eJ/epe1o2nTGIJu6vXot7T+b/LvDdFjkDFFA7ECyCBu2pzwQP6evqu04ikyDQ6Bdn32Z2J2lSchOaR5NtYaqudtjOip3GDstjhY6c+armXFG8aa4JQ5W8YECj5jD13NuUTpGlqzE42kz/nbGs1fKGwltvLjjLT/kYlc/7EzIBVlGkmtx2/Yqmm77x8CboUsIvY1AvMwUXhBGg9zZbmi24XbcGip7K94WEg4AuTLysf50e+jyIEqFrdr/c17bUe/LDPfptMjBNi7ZIiFx8QswBDuQat578eufNTiOGmLOBHxaHYqTZBWgLXEg8XQpqFkkM99hz1TZbmMDHl2zdNM5SiYnMrboEh38mVSonONsO5SVokr2HrkzMo7kTK7N2mErMah6OOgRNQDooax0zkiQ8iBCTwLdp6bJ/VWb8pE7RDck0mev+ewB1R7WiI1GiIAg9dUr8Gxl4lYbo5K/8Lpf7TcY3m2l7vTDOJUaGDicQuaz7O/MrmWIqmysMMVC7QYjkPuH6xO8FVkm2A1ZB8X7+6fkAL0KZtjmVUxR5Qjn+SV3XNlexp3iCYxKine6yXcEXpM+duMRDWfsZmM3evPp9c8Yd1Hb/v7deHYdjbkXzK3FX//3OrXLIUxEATBEi9O7/Gf2PqJXF3gTxpLjcwuv0GStigmoAPzhPOLPQ="
+    - DISPLAY=:99.0
+    - CXX=g++-4.8
+    - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
+    - MONGO_URL: "mongodb://localhost:27017/meteor"
+    - TEST_MODE: "true"
+    - TRAVIS_SECURE_ENV_VARS: "true"
+    - NODEJS_VERSION: "8.9.4"
+    - NODEJS_CHECKSUM: "21fb4690e349f82d708ae766def01d7fec1b085ce1f5ab30d9bda8ee126ca8fc"

@@ -1,7 +1,8 @@
+/* globals _ */
 /**
  * Created by OliverJaegle on 01.08.2016.
  */
-// var _ = Npm.require('underscore');
+import s from 'underscore.string';
 
 _.extend(RocketChat.models.Rooms, {
 	addHelpRequestInfo(room, helpRequestId) {
@@ -36,5 +37,9 @@ _.extend(RocketChat.models.Rooms, {
 			{$or};
 
 		return this._db.find(query, options); //do not use cache
+	},
+	findByExpertise(expertise, options) {
+		const query = {expertise};
+		return this.find(query, options);
 	}
 });

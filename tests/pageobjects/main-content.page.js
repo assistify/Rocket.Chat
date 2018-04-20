@@ -5,12 +5,12 @@ class MainContent extends Page {
 	get mainContent() { return browser.element('.main-content'); }
 
 	// Main Content Header (Channel Title Area)
-	get emptyFavoriteStar() { return browser.element('.toggle-favorite .icon-star-empty'); }
-	get favoriteStar() { return browser.element('.toggle-favorite .favorite-room'); }
-	get channelTitle() { return browser.element('.room-title'); }
+	get emptyFavoriteStar() { return browser.element('.rc-header__toggle-favorite.empty'); }
+	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
+	get channelTitle() { return browser.element('.rc-header__name'); }
 
 	//Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.rc-message-box__container textarea'); }
+	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
@@ -33,8 +33,9 @@ class MainContent extends Page {
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
-	get messageActionMenu() { return browser.element('.rc-popover__content'); }
+	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
+	get messageThread() { return browser.element('[data-id="start-thread"][data-type="message-action"]'); }
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
 	get messagePermalink() { return browser.element('[data-id="permalink"][data-type="message-action"]'); }
@@ -60,13 +61,42 @@ class MainContent extends Page {
 	get emojiPickerChangeTone() { return browser.element('.emoji-picker .change-tone'); }
 	get emojiPickerCustomIcon() { return browser.element('.emoji-picker .icon-rocket'); }
 	get emojiPickerRecentIcon() { return browser.element('.emoji-picker .icon-recent'); }
-	get emojiPickerFilter() { return browser.element('.emoji-picker .emoji-filter'); }
+	get emojiPickerFilter() { return browser.element('.emoji-picker .js-emojipicker-search'); }
 	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
 	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
 	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
 
 	// Popover
 	get popoverWrapper() { return browser.element('.rc-popover'); }
+
+	// Landing Page
+	get GlobalAnnouncement() { return browser.element('.global-announcement'); }
+	get GlobalAnnouncementBtn() { return browser.element('.global-announcement > button'); }
+
+	// Settings based permissions elements
+	get manageSettingsPerm() {
+		return browser.element('[name="perm[user][manage-selected-settings]"]');
+	}
+
+	get expandSBP() {
+		return browser.element('.button.primary.js-toggle-setting-permissions');
+	}
+
+	get layoutTitelPerm() {
+		return browser.element('[name="perm[user][change-setting-Layout_Home_Title]"');
+	}
+
+	get layoutTitelSetting() {
+		return browser.element('[name="Layout_Home_Title"]');
+	}
+
+	get contentExpand() {
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > div > div.section-title > div.section-title-right > button');
+	}
+
+	get saveSettings() {
+		return browser.element('.rc-button.rc-button--primary.save');
+	}
 
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
@@ -87,7 +117,8 @@ class MainContent extends Page {
 	// Clear and sets the text to the input
 	setTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
-		this.messageInput.setValue(text);
+		this.messageInput.clearElement();
+		this.messageInput.addValue(text);
 	}
 
 	//uploads a file in the given filepath (url).
@@ -141,6 +172,10 @@ class MainContent extends Page {
 	// Do one of the message actions, based on the "action" parameter inserted.
 	selectAction(action) {
 		switch (action) {
+			case 'thread':
+				this.messageThread.waitForVisible(5000);
+				this.messageThread.click();
+				break;
 			case 'edit':
 				this.messageEdit.waitForVisible(5000);
 				this.messageEdit.click();

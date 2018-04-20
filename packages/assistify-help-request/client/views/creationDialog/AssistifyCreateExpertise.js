@@ -1,7 +1,9 @@
+/* globals _ */
 /* globals AutoComplete, Deps */
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import {ReactiveVar} from 'meteor/reactive-var';
+/* globals _ */
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -101,8 +103,8 @@ Template.AssistifyCreateExpertise.helpers({
 
 Template.AssistifyCreateExpertise.events({
 	...acEvents,
-	'click .rc-tags__tag'({target}, t) {
-		const {username} = Blaze.getData(target);
+	'click .rc-tags__tag'({ target }, t) {
+		const { username } = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
 	'change [name="type"]'(e, t) {
@@ -157,7 +159,7 @@ Template.AssistifyCreateExpertise.events({
 				return;
 			}
 
-			return FlowRouter.go('expertise', {name: result.name}, FlowRouter.current().queryParams);
+			return FlowRouter.go('expertise', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
 	}
@@ -169,7 +171,7 @@ Template.AssistifyCreateExpertise.onRendered(function() {
 	this.firstNode.parentNode.querySelector('[name="expertise"]').focus();
 	this.ac.element = this.firstNode.parentNode.querySelector('[name="experts"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
@@ -179,7 +181,7 @@ Template.AssistifyCreateExpertise.onRendered(function() {
 Template.AssistifyCreateExpertise.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
-	const filter = {exceptions: this.selectedUsers.get().map(u => u.username)};
+	const filter = { exceptions: this.selectedUsers.get().map(u => u.username) };
 	// this.onViewRead:??y(function() {
 	Deps.autorun(() => {
 		filter.exceptions = this.selectedUsers.get().map(u => u.username);
@@ -193,12 +195,21 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 	this.error = new ReactiveVar(null);
 
 	this.checkChannel = _.debounce((name) => {
-		if (validateChannelName(name)) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			Meteor.call('roomDisplayNameExists', name, (error, result) => {
+				if (error) {
+					return;
+				} else {
+					this.inUse.set(result);
+				}
+			});
+		} else if (validateChannelName(name)) {
 			return Meteor.call('roomNameExists', name, (error, result) => {
 				if (error) {
 					return;
+				} else {
+					this.inUse.set(result);
 				}
-				this.inUse.set(result);
 			});
 		}
 		this.inUse.set(undefined);
@@ -223,7 +234,7 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 					filter,
 					doNotChangeWidth: false,
 					selector(match) {
-						return {term: match};
+						return { term: match };
 					},
 					sort: 'username'
 				}

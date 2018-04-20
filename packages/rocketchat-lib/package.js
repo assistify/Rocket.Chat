@@ -5,16 +5,6 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'bad-words': '1.3.1',
-	'object-path': '0.9.2',
-	'node-dogstatsd': '0.0.6',
-	'localforage': '1.4.2',
-	'lokijs': '1.4.1',
-	'bugsnag': '1.8.0',
-	'prom-client': '7.0.1'
-});
-
 Package.onUse(function(api) {
 	api.use('rate-limit');
 	api.use('webapp');
@@ -27,21 +17,20 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
-	api.use('underscore');
 	api.use('mongo');
 	api.use('oauth');
-	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
-	api.use('rocketchat:authorization', {unordered: true});
-	api.use('rocketchat:push-notifications', {unordered: true});
+	api.use('rocketchat:authorization', { unordered: true });
+	api.use('rocketchat:push-notifications', { unordered: true });
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -54,7 +43,6 @@ Package.onUse(function(api) {
 	// ROOM TYPES
 	api.addFiles('lib/RoomTypeConfig.js');
 	api.addFiles([
-		'lib/roomTypes/channels.js',
 		'lib/roomTypes/conversation.js',
 		'lib/roomTypes/direct.js',
 		'lib/roomTypes/favorite.js',
@@ -69,6 +57,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getAvatarColor.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
@@ -78,6 +67,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+
+	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
@@ -96,6 +87,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/getFullUserData.js', 'server');
 	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
+	api.addFiles('server/functions/loadMessageHistory.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
@@ -123,6 +115,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
+	api.addFiles('server/lib/validatePasswordPolicy.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
@@ -136,6 +129,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
+	api.addFiles('server/oauth/facebook.js', 'server');
+	api.addFiles('server/oauth/twitter.js', 'server');
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
@@ -164,6 +159,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/filterATHereTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
@@ -190,6 +186,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
 	api.addFiles('server/methods/globalAnnouncement.js', 'server');
+	api.addFiles('server/methods/getCurrentMessageRouteLink.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
@@ -204,8 +201,10 @@ Package.onUse(function(api) {
 	// CLIENT LIB
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');
@@ -213,6 +212,12 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
+
+	// CLIENT LIB STARTUP
+	api.addFiles('client/lib/startup/commands.js', 'client');
+
+	// COMMON ROUTES
+	api.addFiles('lib/routes.js'); // those routes might be used on the server to calculate a URL
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.js', 'client');
@@ -238,6 +243,12 @@ Package.onUse(function(api) {
 
 	// EXPORT
 	api.export('RocketChat');
+
+	// For enabling integration tests
+	api.addFiles('client/views/SimpleRoomCreateDialog.html', 'client');
+	api.addFiles('client/views/SimpleRoomCreateDialog.js', 'client');
+	api.addFiles('server/methods/createRoomType.js', 'server');
+	api.addFiles('server/methods/createCustomRoom.js', 'server');
 
 	// exports
 	api.mainModule('server/lib/index.js', 'server');

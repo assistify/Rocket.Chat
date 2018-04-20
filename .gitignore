@@ -73,3 +73,5 @@ pm2.json
 settings.json
 build.sh
 /public/livechat
+.screenshots
+tests/end-to-end/temporary_staged_test

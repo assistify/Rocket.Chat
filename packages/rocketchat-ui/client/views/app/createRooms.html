@@ -1,10 +1,11 @@
 <template name="createRooms">
-	<section class="create-channel">
-		{{#if tabsNeeded }}
-			{{> tabContainer tabs=tabs}}
-		{{else}}
-			{{> createChannel }}
-		{{/if}}
-	</section>
-
+	{{#if authorizationsLoaded }}
+		<section class="create-channel">
+			{{#if tabsNeeded }}
+				{{> tabContainer tabs=tabs}}
+			{{else}}
+				{{> createChannel }}
+			{{/if}}
+		</section>
+	{{/if}}
 </template>

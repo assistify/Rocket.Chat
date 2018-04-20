@@ -1,9 +1,12 @@
 /* global logger, processWebhookMessage */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
+import vm from 'vm';
 
 RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
-		this.vm = Npm.require('vm');
+		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
@@ -130,7 +133,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (typeof httpResult !== 'undefined') {
-			history.httpResult = httpResult;
+			history.httpResult = JSON.stringify(httpResult, null, 2);
 		}
 
 		if (typeof error !== 'undefined') {
@@ -381,6 +384,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
+				data.room = room;
+				data.siteUrl = RocketChat.settings.get('Site_Url');
 
 				if (message.alias) {
 					data.alias = message.alias;

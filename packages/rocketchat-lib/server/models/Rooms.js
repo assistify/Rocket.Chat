@@ -1,4 +1,5 @@
-/* globals SystemLogger */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
@@ -125,9 +126,9 @@ class ModelRooms extends RocketChat.models._Base {
 				if (item._room) {
 					return item._room;
 				}
-				SystemLogger.info('Empty Room for Subscription', item);
-				return {};
+				console.log('Empty Room for Subscription', item);
 			});
+			data = data.filter(item => item);
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
 		}
 
@@ -150,10 +151,9 @@ class ModelRooms extends RocketChat.models._Base {
 				if (item._room) {
 					return item._room;
 				}
-				SystemLogger.info('Empty Room for Subscription', item);
-				return {};
+				console.log('Empty Room for Subscription', item);
 			});
-			data = data.filter(item => item._updatedAt > _updatedAt);
+			data = data.filter(item => item && item._updatedAt > _updatedAt);
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
 		}
 
@@ -244,6 +244,16 @@ class ModelRooms extends RocketChat.models._Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findByNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			name
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findByNameAndTypeNotDefault(name, type, options) {
@@ -535,7 +545,7 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageTimestampById(_id, inc, lastMessageTimestamp) {
+	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
 		const query = {_id};
 
@@ -545,6 +555,22 @@ class ModelRooms extends RocketChat.models._Base {
 			},
 			$inc: {
 				msgs: inc
+			}
+		};
+
+		if (lastMessage) {
+			update.$set.lastMessage = lastMessage;
+		}
+
+		return this.update(query, update);
+	}
+
+	setLastMessageById(_id, lastMessage) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				lastMessage
 			}
 		};
 
