@@ -16,7 +16,6 @@ Meteor.startup(function() {
 		{ _id: 'add-user-to-any-c-room',        roles : ['admin'] },
 		{ _id: 'add-user-to-any-p-room',        roles : [] },
 		{ _id: 'archive-room',                  roles : ['admin', 'owner'] },
-		{ _id: 'assign-admin-role',             roles : ['admin'] },
 		{ _id: 'ban-user',                      roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'bulk-create-c',                 roles : ['admin'] },
 		{ _id: 'bulk-register-user',            roles : ['admin'] },

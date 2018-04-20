@@ -431,7 +431,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			group: 'admin',
 			condition: () => !hideAdminControls && hasPermission('delete-user')
 		}, () => {
-			if (hideAdminControls || !hasPermission('assign-admin-role')) {
+			if (hideAdminControls || !RocketChat.authz.hasRole(user._id, 'admin')) {
 				return;
 			}
 			if (hasAdminRole()) {

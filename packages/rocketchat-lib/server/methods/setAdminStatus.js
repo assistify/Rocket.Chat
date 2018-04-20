@@ -8,7 +8,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setAdminStatus' });
 		}
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'assign-admin-role') !== true) {
+		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setAdminStatus' });
 		}
 
