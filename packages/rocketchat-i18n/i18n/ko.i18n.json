@@ -265,8 +265,6 @@
   "Are_you_sure": "확실 합니까?",
   "Are_you_sure_you_want_to_delete_your_account": "당신은 당신의 계정을 삭제 하시겠습니까?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Facebook 통합을 사용 중지 하시겠습니까?",
-  "assign-admin-role": "관리자 역할 할당",
-  "assign-admin-role_description": "다른 사용자에게 관리 역할을 할당 할 수있는 권한",
   "Assign_admin": "관리자 지정",
   "at": "...에서",
   "At_least_one_added_token_is_required_by_the_user": "사용자가 추가 한 토큰이 하나 이상 필요합니다.",

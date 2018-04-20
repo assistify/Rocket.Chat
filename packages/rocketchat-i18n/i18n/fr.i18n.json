@@ -265,8 +265,6 @@
   "Are_you_sure": "Êtes-vous sûr(e) ?",
   "Are_you_sure_you_want_to_delete_your_account": "Êtes-vous sûr(e) de vouloir supprimer votre compte ?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Êtes-vous sûr de vouloir désactiver l'intégration de Facebook?",
-  "assign-admin-role": "Donner le rôle d'administrateur",
-  "assign-admin-role_description": "Permission de donner le rôle d'administrateur aux autres utilisateurs",
   "Assign_admin": "Attribution d'un administrateur",
   "at": "à",
   "At_least_one_added_token_is_required_by_the_user": "Au moins un jeton ajouté est requis par l'utilisateur",
