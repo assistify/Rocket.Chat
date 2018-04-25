@@ -53,6 +53,7 @@ Meteor.startup(() => {
 				}
 				try {
 					knowledgeAdapter.onMessage(message, context, room.expertise ? [room.expertise] : []);
+					Meteor.defer(()=>Meteor.call('tryResync', message.rid));
 				} catch (e) {
 					SystemLogger.error('Error using knowledge provider ->', e);
 				}

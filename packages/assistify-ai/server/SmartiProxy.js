@@ -57,6 +57,7 @@ export class SmartiProxy {
 
 			SystemLogger.error('Could not complete', method, 'to', url, error.response);
 			SystemLogger.debug(error);
+			return false;
 		}
 	}
 }

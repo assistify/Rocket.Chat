@@ -33,6 +33,7 @@ Assistify_AI_Widget_Posting_Type_PostText: Plain Text direkt posten
 Assistify_AI_Widget_Posting_Type_PostRichText: Rich Text direkt posten
 Assistify_AI_RocketChat_Webhook_Token: Rocket.Chat Token
 Assistify_AI_RocketChat_Webhook_Token_Description: Vergib einen Token für eingende Nachrichten von Smarti (z.B. key123).
+Assistify_AI_Resync_Smarti: Resync Smarti
 Widget_could_not_load: Die Wissensbasis kann nicht angezeigt werden. Das tut uns echt leid! Ein möglicher Grund ist eine fehlende Intranetverbindung. Sollte der Rest des Intranets erreichbar sein, nimm bitte Kontakt mit uns auf!
 Widget_loading: Die Wissensbasis lädt gerade - und zwar schon ungewöhnlich lange. Da scheint etwas nicht zu stimmen...
 Reload_Settings: Einstellungen neu laden

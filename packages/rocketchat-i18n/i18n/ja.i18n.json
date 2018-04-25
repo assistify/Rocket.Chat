@@ -265,8 +265,6 @@
   "Are_you_sure": "本当にいいですか?",
   "Are_you_sure_you_want_to_delete_your_account": "本当にアカウントを削除しますか?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Facebookの統合を無効にしてもよろしいですか？",
-  "assign-admin-role": "管理者ロールを割り当てる",
-  "assign-admin-role_description": "他のユーザーに管理者ロールを割り当てる権限",
   "Assign_admin": "管理者を割り当てる",
   "at": "at",
   "At_least_one_added_token_is_required_by_the_user": "少なくとも1つの追加されたトークンがユーザーに必要です",

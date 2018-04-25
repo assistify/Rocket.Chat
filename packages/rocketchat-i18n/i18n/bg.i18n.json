@@ -265,8 +265,6 @@
   "Are_you_sure": "Сигурен ли си?",
   "Are_you_sure_you_want_to_delete_your_account": "Наистина ли искате да изтриете профила си?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Наистина ли искате да деактивирате интеграцията във Facebook?",
-  "assign-admin-role": "Присвояване на ролята на администратор",
-  "assign-admin-role_description": "Разрешение за задаване на администраторската роля на други потребители",
   "Assign_admin": "Присвояване на администратор",
   "at": "при",
   "At_least_one_added_token_is_required_by_the_user": "Най-малко един допълнителен знак се изисква от потребителя",

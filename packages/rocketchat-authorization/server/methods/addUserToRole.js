@@ -15,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		if (roleName === 'admin' && !RocketChat.authz.hasPermission(Meteor.userId(), 'assign-admin-role')) {
+		if (roleName === 'admin' && !RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Assign_admin'

@@ -19,6 +19,7 @@ class Assistify extends Page {
 
 	// in order to communicate with Smarti we need the roomId.
 	// funny enough, it's available in its DOM. A bit dirty, but very efficient
+
 	get roomId() {
 		return browser.element('.messages-container.flex-tab-main-content').getAttribute('id').replace('chat-window-', '');
 	}
@@ -102,6 +103,7 @@ class Assistify extends Page {
 
 	get wordCloudLink() {
 		return browser.element('[id="more-topics"]');
+
 	}
 
 	get wordCloudButton() {

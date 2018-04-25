@@ -859,6 +859,165 @@ input:focus {
 	}
 }
 
+.mobile-view {
+
+    .button {
+		font-size: 15px;
+    }
+
+	.livechat-room {
+	  .title {
+		border-top-right-radius: 0px;
+		border-top-left-radius: 0px;
+		flex: 1 0 50px;
+		line-height: 50px;
+
+		h1 {
+		  font-size: 13pt;
+		}
+
+		.toolbar {
+		  svg {
+			width: 20px;
+
+			&:last-of-type {
+			  margin-right: 0;
+			}
+		  }
+		  svg.maximize {
+			display: none;
+		  }
+		  svg.popout {
+			display: none;
+		  }
+		}
+	  }
+
+	  .header {
+
+		ul {
+		  width: 95%;
+		  margin-right: -10px;
+
+		  h2 {
+			font-size: 16px;
+			margin-bottom: 7px;
+			margin-top: 5px;
+		  }
+
+		  li {
+			font-size: 14px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+		  }
+		}
+	  }
+
+	  .messages {
+		margin-bottom: 64px;
+
+		.wrapper {
+		  padding-bottom: 13px;
+
+		  .message {
+			line-height: 18px;
+
+			&.new-day {
+			  &::before {
+				font-size: 12px;
+			  }
+			}
+
+			.user {
+			  font-size: 15px;
+			  margin-bottom: 5px;
+			}
+
+			.info {
+			  font-size: 10px;
+			}
+			.body {
+			  font-size: 15px;
+			}
+		  }
+		}
+
+		.new-message {
+		  width: 145px;
+		  height: 34px;
+		  font-size: 14px;
+		  line-height: 33px;
+		  bottom: 30px;
+		}
+	  }
+
+	  .footer {
+		  flex: 1 0;
+		//   flex: 1 0 @footer-min-height-media;
+		  position: fixed;
+		  bottom: 0;
+		  width: 100%;
+		.message-bar {
+		  .input-wrapper {
+			textarea {
+				padding-top: 7px;
+				font-size: 15px;
+				height: 35px !important;
+			}
+		  }
+		  .buttons {
+			svg {
+				width: 23px;
+				height: 23px;
+			}
+		  }
+		}
+		.toggle-options {
+			margin-top: 5px;
+			margin-bottom: 6px;
+		}
+		.typing {
+			margin-top: 4px;
+			margin-bottom: 4px;
+		}
+		.options-menu {
+		  ul {
+			li {
+			  button {
+				  font-size: 14px;
+			  }
+			}
+		  }
+		}
+	  }
+
+	  .offline {
+		  font-size: 15px;
+		form {
+		  input,
+		  textarea {
+			  width: 85%;
+			  margin: 15px auto;
+		  }
+		  .buttons {
+			  font-size: 15px !important;
+		  }
+		}
+	  }
+	}
+	.livechat-form {
+	  form {
+		input,
+		select {
+			font-size: 15px;
+			margin: 15px auto;
+			width: 85%;
+		}
+	  }
+	}
+  }
+
 @media all and(max-height: 200px) {
 	.livechat-room {
 		.title {

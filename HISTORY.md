@@ -1,3 +1,37 @@
+# Assistify 0.63.3-0.7.2
+
+This is a bugfix release and brings only minor enhancements
+
+- A way to update the knowledge base to the latest state of the chat (synchronization)
+- A better mobile livechat experience
+
+# 0.63.3
+`2018-04-18  ·  2 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- The 'channel.messages' REST API Endpoint error ([#10485](https://github.com/RocketChat/Rocket.Chat/pull/10485))
+- Even TypeErrors with SAML ([#10475](https://github.com/RocketChat/Rocket.Chat/pull/10475))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Added one2mail.info to default blocked domains list ([#10218](https://github.com/RocketChat/Rocket.Chat/pull/10218) by [@nsuchy](https://github.com/nsuchy))
+- Release 0.63.2 ([#10476](https://github.com/RocketChat/Rocket.Chat/pull/10476))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@nsuchy](https://github.com/nsuchy)
+
+# Assistify 0.63.2-0.7.1
+
+This is a bugfix release and brings only minor enhancements
+
+- The ability to specify a password policy
+- A more convenient way to select a topic for a request :tada:
+
 # Assistify 0.63.2-0.7.0
 
 This release "only" brings an up-to-date version of Rocket.Chat - But this one has a pack full of new features:

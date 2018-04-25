@@ -97,20 +97,27 @@ export class SmartiAdapter {
 
 		if (conversationId) {
 			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
+			let request_result;
 			if (message.editedAt) {
 				SystemLogger.debug('Trying to update existing message...');
 				// update existing message
-				SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
+				request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
 					// 404 is expected if message doesn't exist
-					if (error.response.statusCode === 404) {
+					if (!error.response || error.response.statusCode === 404) {
 						SystemLogger.debug('Message not found!');
 						SystemLogger.debug('Adding new message to conversation...');
-						SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+						request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
 					}
 				});
 			} else {
 				SystemLogger.debug('Adding new message to conversation...');
-				SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+				request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			}
+			if (request_result) {
+				SystemLogger.debug('Conversation found and message will be synced now');
+				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
+			} else {
+				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', message.rid));
 			}
 		} else {
 			SystemLogger.debug('Conversation not found for channel');
@@ -151,8 +158,12 @@ export class SmartiAdapter {
 
 			const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
 			if (conversation && conversation.id) {
+				SystemLogger.debug('New conversation created and message will be synced now');
+				Meteor.defer(()=>Meteor.call('markMessageAsSynced', message._id));
 				conversationId = conversation.id;
 				SmartiAdapter._updateMapping(message.rid, conversationId);
+			} else {
+				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', message.rid));
 			}
 		}
 
@@ -206,7 +217,10 @@ export class SmartiAdapter {
 		const conversationId = SmartiAdapter._getConversationId(room._id);
 
 		if (conversationId) {
-			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
+			const res = SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
+			if (!res) {
+				Meteor.defer(()=>Meteor.call('markRoomAsUnsynced', room._id));
+			}
 		} else {
 			SystemLogger.error(`Smarti - closing room failed: No conversation id for room: ${ room._id }`);
 		}

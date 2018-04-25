@@ -265,8 +265,6 @@
   "Are_you_sure": "Oletko varma?",
   "Are_you_sure_you_want_to_delete_your_account": "Oletko varma, että haluat poistaa tilisi?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Oletko varma, että haluat poistaa Facebook-integraation käytöstä?",
-  "assign-admin-role": "Määritä admin-rooli",
-  "assign-admin-role_description": "Järjestelmänvalvojan rooli muille käyttäjille",
   "Assign_admin": "Järjestelmänvalvojan nimeäminen",
   "at": "-",
   "At_least_one_added_token_is_required_by_the_user": "Käyttäjä tarvitsee vähintään yhden lisäosan",

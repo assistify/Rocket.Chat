@@ -265,8 +265,6 @@
   "Are_you_sure": "Biztos vagy benne?",
   "Are_you_sure_you_want_to_delete_your_account": "Biztos, hogy törli a fiókot?",
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Biztosan letiltja a Facebook integrációt?",
-  "assign-admin-role": "Adminisztrátori szerep hozzárendelése",
-  "assign-admin-role_description": "Engedély az adminisztrátor szerepének a többi felhasználóhoz való hozzárendeléséhez",
   "Assign_admin": "Adminisztrátor hozzárendelése",
   "at": "nál nél",
   "At_least_one_added_token_is_required_by_the_user": "A felhasználónak legalább egy hozzáadott tokenet kell megadnia",
