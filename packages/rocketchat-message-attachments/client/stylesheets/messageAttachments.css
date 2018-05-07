@@ -91,7 +91,7 @@ html.rtl .attachment {
 		& .attachment-field {
 			&.attachment-field-short {
 				display: inline-block;
-
+				text-decoration: none;
 				margin-right: 12px;
 			}
 

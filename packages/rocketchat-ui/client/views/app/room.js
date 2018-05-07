@@ -1,5 +1,5 @@
 /* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+import {RocketChatTabBar} from 'meteor/rocketchat:lib';
 
 import _ from 'underscore';
 import moment from 'moment';
@@ -7,7 +7,7 @@ import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 
 window.chatMessages = window.chatMessages || {};
-const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
+const isSubscribed = _id => ChatSubscription.find({rid: _id}).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
@@ -17,7 +17,7 @@ const openProfileTab = (e, instance, username) => {
 	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
 
 	if (RocketChat.Layout.isEmbedded()) {
-		fireGlobalEvent('click-user-card-message', { username });
+		fireGlobalEvent('click-user-card-message', {username});
 		e.preventDefault();
 		e.stopPropagation();
 		return;
@@ -43,7 +43,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 			}
 
 			if ((result != null ? result.rid : undefined) != null) {
-				FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
+				FlowRouter.go('direct', {username}, FlowRouter.current().queryParams);
 			}
 		});
 	} else {
@@ -84,10 +84,10 @@ const mountPopover = (e, i, outerContext) => {
 	}
 
 	const [items, deleteItem] = menuItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
-	const groups = [{ items }];
+	const groups = [{items}];
 
 	if (deleteItem.length) {
-		groups.push({ items: deleteItem });
+		groups.push({items: deleteItem});
 	}
 
 	if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
@@ -125,7 +125,7 @@ const mountPopover = (e, i, outerContext) => {
 
 Template.room.helpers({
 	isTranslated() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+		const sub = ChatSubscription.findOne({rid: this._id}, {fields: {autoTranslate: 1, autoTranslateLanguage: 1}});
 		RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 
@@ -139,7 +139,7 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const hideMessagesOfType = [];
-		RocketChat.settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
+		RocketChat.settings.collection.find({_id: /Message_HideType_.+/}).forEach(function(record) {
 			let types;
 			const type = record._id.replace('Message_HideType_', '');
 			switch (type) {
@@ -161,11 +161,11 @@ Template.room.helpers({
 		});
 
 		const query =
-			{ rid: this._id };
+			{rid: this._id};
 
 		if (hideMessagesOfType.length > 0) {
 			query.t =
-				{ $nin: hideMessagesOfType };
+				{$nin: hideMessagesOfType};
 		}
 
 		const options = {
@@ -198,9 +198,9 @@ Template.room.helpers({
 	},
 
 	roomLeader() {
-		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
+		const roles = RoomRoles.findOne({rid: this._id, roles: 'leader', 'u._id': {$ne: Meteor.userId()}});
 		if (roles) {
-			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
+			const leader = RocketChat.models.Users.findOne({_id: roles.u._id}, {fields: {status: 1}}) || {};
 			return {
 				...roles.u,
 				name: RocketChat.settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
@@ -211,12 +211,14 @@ Template.room.helpers({
 	},
 
 	chatNowLink() {
-		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
+		return RocketChat.roomTypes.getRouteLink('d', {name: this.username});
 	},
 
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return false; }
+		if (!roomData) {
+			return false;
+		}
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
 
@@ -234,13 +236,17 @@ Template.room.helpers({
 
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
+		if (!roomData) {
+			return '';
+		}
 		return roomData.announcement;
 	},
 
 	roomIcon() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
+		if (!(roomData != null ? roomData.t : undefined)) {
+			return '';
+		}
 
 		const roomIcon = RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 
@@ -267,7 +273,7 @@ Template.room.helpers({
 
 	unreadData() {
 		const data =
-			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
+			{count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get()};
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
 		if (room != null) {
@@ -278,13 +284,17 @@ Template.room.helpers({
 	},
 
 	containerBarsShow(unreadData, uploading) {
-		if ((((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null)) || ((uploading != null ? uploading.length : undefined) > 0)) { return 'show'; }
+		if ((((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null)) || ((uploading != null ? uploading.length : undefined) > 0)) {
+			return 'show';
+		}
 	},
 
 	formatUnreadSince() {
-		if ((this.since == null)) { return; }
+		if ((this.since == null)) {
+			return;
+		}
 
-		return moment(this.since).calendar(null, { sameDay: 'LT' });
+		return moment(this.since).calendar(null, {sameDay: 'LT'});
 	},
 
 	flexData() {
@@ -301,11 +311,15 @@ Template.room.helpers({
 	},
 
 	adminClass() {
-		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) { return 'admin'; }
+		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+			return 'admin';
+		}
 	},
 
 	showToggleFavorite() {
-		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+		if (isSubscribed(this._id) && favoritesEnabled()) {
+			return true;
+		}
 	},
 
 	selectable() {
@@ -327,14 +341,14 @@ Template.room.helpers({
 	},
 
 	toolbarButtons() {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		const toolbar = Session.get('toolbarButtons') || {buttons: {}};
 		const buttons = Object.keys(toolbar.buttons).map(key => {
 			return {
 				id: key,
 				...toolbar.buttons[key]
 			};
 		});
-		return { buttons };
+		return {buttons};
 	},
 
 	canPreview() {
@@ -351,14 +365,14 @@ Template.room.helpers({
 			return true;
 		}
 
-		return (RocketChat.models.Subscriptions.findOne({ rid: this._id }) != null);
+		return (RocketChat.models.Subscriptions.findOne({rid: this._id}) != null);
 
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
 	},
 	hasLeader() {
-		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
+		if (RoomRoles.findOne({rid: this._id, roles: 'leader', 'u._id': {$ne: Meteor.userId()}}, {fields: {_id: 1}})) {
 			return 'has-leader';
 		}
 	}
@@ -371,6 +385,11 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
+	'click .rc-button-accept'(e, t) {
+		console.log(t);
+		Meteor.call('addUserToRoom', {rid: t.data._id, username: 'user'});
+		Meteor.call('notifyUser', t.data._id, 'user');
+	},
 	'click, touchend'(e, t) {
 		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
@@ -474,14 +493,17 @@ Template.room.events({
 	},
 
 	'click .unread-bar > button.jump-to'(e, t) {
-		const { _id } = t.data;
+		const {_id} = t.data;
 		const room = RoomHistoryManager.getRoom(_id);
 		let message = room && room.firstUnread.get();
 		if (message) {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
-			const subscription = ChatSubscription.findOne({ rid: _id });
-			message = ChatMessage.find({ rid: _id, ts: { $gt: (subscription != null ? subscription.ls : undefined) } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
+			const subscription = ChatSubscription.findOne({rid: _id});
+			message = ChatMessage.find({
+				rid: _id,
+				ts: {$gt: (subscription != null ? subscription.ls : undefined)}
+			}, {sort: {ts: 1}, limit: 1}).fetch()[0];
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		}
 	},
@@ -562,10 +584,10 @@ Template.room.events({
 			};
 		});
 		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
-		const groups = [{ items }];
+		const groups = [{items}];
 
 		if (deleteItem.length) {
-			groups.push({ items: deleteItem });
+			groups.push({items: deleteItem});
 		}
 
 		const config = {
@@ -598,10 +620,10 @@ Template.room.events({
 		const channel = $(e.currentTarget).data('channel');
 		if (channel != null) {
 			if (RocketChat.Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent('click-mention-link', {path: FlowRouter.path('channel', {name: channel}), channel});
 			}
 
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+			FlowRouter.go('channel', {name: channel}, FlowRouter.current().queryParams);
 			return;
 		}
 
@@ -611,8 +633,14 @@ Template.room.events({
 	},
 
 	'click .image-to-download'(event) {
-		ChatMessage.update({ _id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-		ChatMessage.update({ _id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
+		ChatMessage.update({
+			_id: this._arguments[1]._id,
+			'urls.url': $(event.currentTarget).data('url')
+		}, {$set: {'urls.$.downloadImages': true}});
+		ChatMessage.update({
+			_id: this._arguments[1]._id,
+			'attachments.image_url': $(event.currentTarget).data('url')
+		}, {$set: {'attachments.$.downloadImages': true}});
 	},
 
 	'click .collapse-switch'(e) {
@@ -621,11 +649,11 @@ Template.room.events({
 		const id = this._arguments[1]._id;
 
 		if ((this._arguments[1] != null ? this._arguments[1].attachments : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
+			ChatMessage.update({_id: id}, {$set: {[`attachments.${ index }.collapsed`]: !collapsed}});
 		}
 
 		if ((this._arguments[1] != null ? this._arguments[1].urls : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
+			ChatMessage.update({_id: id}, {$set: {[`urls.${ index }.collapsed`]: !collapsed}});
 		}
 	},
 
@@ -658,7 +686,7 @@ Template.room.events({
 		const filesToUpload = [];
 		for (const file of Array.from(files)) {
 			// `file.type = mime.lookup(file.name)` does not work.
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
+			Object.defineProperty(file, 'type', {value: mime.lookup(file.name)});
 			filesToUpload.push({
 				file,
 				name: file.name
@@ -754,7 +782,10 @@ Template.room.onCreated(function() {
 			const minTs = _.min([message1.ts, message2.ts]);
 			const maxTs = _.max([message1.ts, message2.ts]);
 
-			this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id');
+			this.selectedRange = _.pluck(ChatMessage.find({
+				rid: message1.rid,
+				ts: {$gte: minTs, $lte: maxTs}
+			}).fetch(), '_id');
 		}
 	};
 
@@ -803,31 +834,35 @@ Template.room.onCreated(function() {
 
 		return Array.from(results).map((record) => {
 			delete record._id;
-			RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
+			RoomRoles.upsert({rid: record.rid, 'u._id': record.u._id}, record);
 		});
 	});
-	RoomRoles.find({ rid: this.data._id }).observe({
+	RoomRoles.find({rid: this.data._id}).observe({
 		added: role => {
 			if (!role.u || !role.u._id) {
 				return;
 			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
+			ChatMessage.update({
+				rid: this.data._id,
+				'u._id': role.u._id
+			}, {$addToSet: {roles: role._id}}, {multi: true});
 		}, // Update message to re-render DOM
 		changed: (role) => {
 			if (!role.u || !role.u._id) {
 				return;
 			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
+			ChatMessage.update({rid: this.data._id, 'u._id': role.u._id}, {$inc: {rerender: 1}}, {multi: true});
 		}, // Update message to re-render DOM
 		removed: role => {
 			if (!role.u || !role.u._id) {
 				return;
 			}
-			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+			ChatMessage.update({rid: this.data._id, 'u._id': role.u._id}, {$pull: {roles: role._id}}, {multi: true});
 		}
 	});
 
-	this.sendToBottomIfNecessary = () => {};
+	this.sendToBottomIfNecessary = () => {
+	};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
@@ -888,7 +923,7 @@ Template.room.onRendered(function() {
 	} else {
 		const observer = new MutationObserver((mutations) => mutations.forEach(() => template.sendToBottomIfNecessaryDebounced()));
 
-		observer.observe(wrapperUl, { childList: true });
+		observer.observe(wrapperUl, {childList: true});
 	}
 	// observer.disconnect()
 
@@ -955,8 +990,11 @@ Template.room.onRendered(function() {
 			return template.unreadCount.set(0);
 		}
 
-		const subscription = ChatSubscription.findOne({ rid: template.data._id }, {reactive: false});
-		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
+		const subscription = ChatSubscription.findOne({rid: template.data._id}, {reactive: false});
+		const count = ChatMessage.find({
+			rid: template.data._id,
+			ts: {$lte: lastMessage.ts, $gt: subscription && subscription.ls}
+		}).count();
 		template.unreadCount.set(count);
 	}, 300);
 
@@ -995,7 +1033,7 @@ Template.room.onRendered(function() {
 		}
 	});
 	Tracker.autorun(function() {
-		const room = RocketChat.models.Rooms.findOne({ _id: template.data._id });
+		const room = RocketChat.models.Rooms.findOne({_id: template.data._id});
 		if (!room) {
 			FlowRouter.go('home');
 		}

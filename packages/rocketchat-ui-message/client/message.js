@@ -199,14 +199,14 @@ Template.message.helpers({
 		}
 
 		// check if oembed is disabled for message's sender
-		if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+		if ((RocketChat.settings.get('API_EmbedDisabledFor') || '').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
 		const userUsername = Meteor.user() && Meteor.user().username;
-		return Object.keys(this.reactions||{}).map(emoji => {
+		return Object.keys(this.reactions || {}).map(emoji => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
 			let usernames = reaction.usernames.slice(0, 15).map(username => username === userUsername ? t('You').toLowerCase() : `@${ username }`).join(', ');
@@ -309,7 +309,7 @@ Template.message.onCreated(function() {
 
 	return this.body = (() => {
 		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
-		const messageType = RocketChat.MessageTypes.getType(msg)||{};
+		const messageType = RocketChat.MessageTypes.getType(msg) || {};
 		if (messageType.render) {
 			msg = messageType.render(msg);
 		} else if (messageType.template) {

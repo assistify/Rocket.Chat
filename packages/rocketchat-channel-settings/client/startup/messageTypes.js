@@ -50,17 +50,10 @@ Meteor.startup(function() {
 	RocketChat.MessageTypes.registerType({
 		id: 'ask_for_group_invite',
 		system: true,
-		message: 'ask_for_group_invite',
+		message: 'Ask_for_group_invite',
 		data(message) {
-			Template.room.events({
-				'click .rc-button-accept'() {
-					Meteor.call('addUserToRoom', { rid: message.rid, username: message.name });
-					Meteor.call('notifyUser', message.rid, message.name);
-				}
-			});
 			return {
-				user: ` <a class="mention-link" data-username= "${ message.name }" >${ message.name } </a> `,
-				accept: '<button class="rc-button rc-button--small rc-button-accept">accept</button>'
+				user: `<a class="mention-link" data-username= "${ message.name }" >${ message.name } </a>`
 			};
 		}
 	});
