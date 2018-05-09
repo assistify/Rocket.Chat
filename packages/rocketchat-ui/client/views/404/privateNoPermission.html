@@ -8,17 +8,16 @@
 			</div>
 			<footer class="footer">
 				{{#with data}}
-					{{#if roomJoinRequest}}
-						<div class="rc-message-box rc-new">
+					<div class="rc-message-box rc-new">
+						{{#if joinRoomRequest}}
 							{{{_ "Request_to_join_room" roomName=roomName}}}
-							<button class="button roomJoinRequest"><span><i class="icon-login"></i> {{_ "Request"}}</span>
+							<button class="button joinRoomRequest"><span><i class="icon-login"></i> {{_
+									"Request"}}</span>
 							</button>
-						</div>
-					{{ else }}
-						<div class="rc-message-box rc-new">
-							<a> {{{_ "Request_to_join_status" roomName=roomName status=requestStatus}}}</a>
-						</div>
-					{{/if}}
+						{{ else }}
+							{{{_ "Request_to_join_room_status" roomName=roomName status=requestStatus}}}
+						{{/if}}
+					</div>
 				{{/with}}
 			</footer>
 		</div>

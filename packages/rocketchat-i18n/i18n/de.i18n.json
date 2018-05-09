@@ -1066,6 +1066,7 @@
   "join-without-join-code_description": "Berechtigung, Kanäle mit Zutrittscode auch ohne Code zu betreten",
   "join-without-join-code": "Ohne Code beitreten",
   "join": "Beitreten",
+  "Join-room-request": "__user__ wants to join the room __accept__",
   "Joined": "Beigetreten",
   "Jump_to_first_unread": "Erste ungelesene Nachricht anzeigen",
   "Jump_to_message": "Diese Nachricht im Chat anzeigen",

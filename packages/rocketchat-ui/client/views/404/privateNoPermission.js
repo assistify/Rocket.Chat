@@ -9,30 +9,33 @@ Template.privateNoPermission.helpers({
 		const user = Meteor.user();
 		return user && user.username === this.name;
 	},
-	roomJoinRequest() {
+	joinRoomRequest() {
 		const instance = Template.instance();
-		return instance.roomJoinRequest.get();
+		return instance.joinRoomRequest.get();
 	},
 	roomName() {
 		return this.name;
 	},
 	requestStatus() {
-		return 'pending';
+		const instance = Template.instance();
+		return instance.joinRoomStatus.get();
 	}
 });
 
 Template.privateNoPermission.events({
-	'click .roomJoinRequest'(e, t) {
-		Meteor.call('roomJoinRequest', this.name, Meteor.user(), (err) => {
-			if (err != null) {
-				console.log(err);
-				toastr.error(t(err.reason));
+	'click .joinRoomRequest'(e, t) {
+		Meteor.call('joinRoomRequest', this.name, Meteor.user(), (err, result) => {
+			if (err) {
+				return err;
 			}
+			t.joinRoomStatus.set(result.attachments[0].fields[0].status);
+			t.joinRoomRequest.set(false);
 		});
 	}
 });
 
 Template.privateNoPermission.onCreated(function() {
 	const instance = this;
-	instance.roomJoinRequest = new ReactiveVar(true);
+	instance.joinRoomRequest = new ReactiveVar(true);
+	instance.joinRoomStatus = new ReactiveVar(null);
 });

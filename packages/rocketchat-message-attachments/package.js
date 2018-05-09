@@ -17,8 +17,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/renderField.js', 'client');
 	api.addFiles('client/fieldTypeThreadReference.html', 'client');
 	api.addFiles('client/fieldTypeThreadReference.js', 'client');
-	api.addFiles('client/fieldTypeRoomJoinRequest.html', 'client');
-	api.addFiles('client/fieldTypeRoomJoinRequest.js', 'client');
+	api.addFiles('client/fieldTypeJoinRoomRequest.html', 'client');
+	api.addFiles('client/fieldTypeJoinRoomRequest.js', 'client');
 	// stylesheets
 	api.addFiles('client/stylesheets/messageAttachments.css', 'client');
 });

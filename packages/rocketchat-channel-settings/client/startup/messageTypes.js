@@ -48,12 +48,12 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.MessageTypes.registerType({
-		id: 'ask_for_group_invite',
+		id: 'join-room-request',
 		system: true,
-		message: 'Ask_for_group_invite',
+		message: 'Join-room-request',
 		data(message) {
 			return {
-				user: `<a class="mention-link" data-username= "${ message.name }" >${ message.name } </a>`
+				user: `<a class="mention-link" data-username= "${ message.attachments[0].fields[0].requester }" >${ message.attachments[0].fields[0].requester } </a>`
 			};
 		}
 	});

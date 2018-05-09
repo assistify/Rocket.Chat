@@ -36,7 +36,7 @@ Meteor.methods({
 });
 
 Meteor.methods({
-	roomJoinRequest(name, user) {
+	joinRoomRequest(name, user) {
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -50,21 +50,33 @@ Meteor.methods({
 
 		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
 		if (rocketCatUser && user) {
-			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('ask_for_group_invite', room._id, 'test', rocketCatUser,
+			const joinRequest = RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('join-room-request', room._id, 'join-room-request', rocketCatUser,
 				{
-					name: user.username,
 					rid: room._id,
 					attachments: [{
 						fields: [{
-							type: 'roomJoinRequest'
+							requester: user.username,
+							type: 'joinRoomRequest',
+							status: 'pending'
 						}]
 					}]
 				});
+			console.log(joinRequest);
+			return joinRequest;
 		}
-	}
-});
+	},
+	updateJoinRoomStatus(roomId, message, status, responder) {
+		check(status, String);
+		if (!status) {
+			return false;
+		}
+		message.attachments[0].fields[0].status = status;
+		message.attachments[0].fields[0].responder = responder;
+		return RocketChat.models.Messages.setMessageAttachments(message._id, message.attachments);
+	},
+	getJoinRoomStatus(roomId, user) {
 
-Meteor.methods({
+	},
 	notifyUser(rname, user) {
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'requestJoin'});
@@ -80,3 +92,4 @@ Meteor.methods({
 			});
 	}
 });
+
