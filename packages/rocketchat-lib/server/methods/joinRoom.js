@@ -36,7 +36,7 @@ Meteor.methods({
 });
 
 Meteor.methods({
-	joinRoomRequest(name, user) {
+	joinRoomRequest(name, user, joinReason) {
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -57,11 +57,11 @@ Meteor.methods({
 						fields: [{
 							requester: user.username,
 							type: 'joinRoomRequest',
+							reason: joinReason,
 							status: 'pending'
 						}]
 					}]
 				});
-			console.log(joinRequest);
 			return joinRequest;
 		}
 	},
@@ -74,17 +74,19 @@ Meteor.methods({
 		message.attachments[0].fields[0].responder = responder;
 		return RocketChat.models.Messages.setMessageAttachments(message._id, message.attachments);
 	},
-	getJoinRoomStatus(roomId, user) {
-
+	getJoinRoomStatus(roomName) {
+		check(roomName, String);
+		const room = RocketChat.models.Rooms.findOneByName(roomName);
+		return RocketChat.models.Messages.findLatestJoinRequestByRoom('join-room-request', room._id, Meteor.user().username).fetch();
 	},
-	notifyUser(rname, user) {
+	notifyUser(roomId, user) {
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'requestJoin'});
 		}
 		const to = RocketChat.models.Users.findOneByUsername(user);
 		const cat = RocketChat.models.Users.findOneByUsername('rocket.cat');
 		const rid = [cat._id, to._id].sort().join('');
-		const room = RocketChat.models.Rooms.findOneById(rname);
+		const room = RocketChat.models.Rooms.findOneById(roomId);
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('notify_user_that_he_was_accepted', rid, 'test', cat,
 			{
 				name: user.username,

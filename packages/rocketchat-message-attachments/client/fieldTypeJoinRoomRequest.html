@@ -1,11 +1,17 @@
 <template name="JoinRoomRequest">
-	{{# if takeAction status}}
-		<div class="join-room-request">{{reason}}</div>
-		<button name="accept" class="accept rc-button rc-button--primary attachment-field attachment-field-short">{{_
-				"Accept"}}</button>
-		<button name="decline" class="decline rc-button rc-button--secondary attachment-field attachment-field-short">{{_
-				"Decline"}}</button>
-	{{else}}
-		<div> {{{_ "Join-room-request-status" responder=responder status=status requester=requester}}}</div>
+	{{#if hasPermission}}
+		{{#if takeAction status}}
+			{{#if reason}}
+				<div class="join-room-request join-room-request-reason">{{reason}}</div>
+			{{/ if}}
+			<button name="accept"
+					class="accept rc-button rc-button--primary attachment-field attachment-field-short">{{_
+					"Accept"}}</button>
+			<button name="decline"
+					class="decline rc-button rc-button--secondary attachment-field attachment-field-short">{{_
+					"Decline"}}</button>
+		{{else}}
+			<div class=""> {{{_ "Join-room-request-status" responder=responder status=status requester=requester}}}</div>
+		{{/ if}}
 	{{/ if}}
 </template>

@@ -1658,6 +1658,8 @@
   "Report_this_message_question_mark": "Report this message?",
   "Request": "Send Request",
   "Request_to_join_room": "You are not a member of this #<strong>__roomName__</strong> room. Would you like to send request to join",
+  "Request_to_join_room_comment": "A reason, you would like to join this room",
+  "Request_to_join_room_confirm": "This request to join this room is subject to approval. You can add a reason to support this join request",
   "Request_to_join_room_status": "Your request to join room #<strong>__roomName__</strong> is <strong>__status__</strong>",
   "Require_all_tokens": "Require all tokens",
   "Require_any_token": "Require any token",

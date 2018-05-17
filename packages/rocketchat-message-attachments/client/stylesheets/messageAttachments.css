@@ -143,11 +143,14 @@ html.rtl .attachment {
 
 	  	font-weight: 500;
 	}
-    & .join-room-request {
-		color: black;
 
+	& .join-room-request {
+	    color: black;
+    }
+
+    & .join-room-request-reason {
 		font-weight: 500;
-	  }
+    }
 
 	& .field button {
 		width: fit-content;

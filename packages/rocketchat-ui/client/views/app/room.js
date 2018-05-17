@@ -385,24 +385,6 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
-	'click [name="accept"]'(e, t) {
-		const message = this._arguments[1];
-		const status = 'accepted';
-		const responder = Meteor.user().name;
-		Meteor.call('addUserToRoom', { rid: t.data._id, username: message.attachments[0].fields[0].requester}, (err) => {
-			if (err) {
-				return err;
-			}
-			Meteor.call('updateJoinRoomStatus', t.data._id, message, status, responder);
-			Meteor.call('notifyUser', t.data._id, 'user');
-		});
-	},
-	'click [name="decline"]'(e, t) {
-		const message = this._arguments[1];
-		const status = 'declined';
-		const responder = Meteor.user().name;
-		Meteor.call('updateJoinRoomStatus', t.data._id, message, status, responder);
-	},
 	'click, touchend'(e, t) {
 		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
