@@ -77,7 +77,7 @@ Meteor.methods({
 	getJoinRoomStatus(roomName) {
 		check(roomName, String);
 		const room = RocketChat.models.Rooms.findOneByName(roomName);
-		return RocketChat.models.Messages.findLatestJoinRequestByRoom('join-room-request', room._id, Meteor.user().username).fetch();
+		return RocketChat.models.Messages.findLatestJoinRequestByMsgTypeRoomAndUser('join-room-request', room._id, Meteor.user().username).fetch();
 	},
 	notifyUser(roomId, user) {
 		if (!user) {

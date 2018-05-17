@@ -32,7 +32,7 @@ function directorySearch(config, cb) {
 				};
 			}
 
-			if (config.type === 'private' && RocketChat.authz.hasAllPermission('view-p-room')) {
+			if (config.type === 'private' && RocketChat.authz.hasAllPermission('view-outside-room')) {
 				return {
 					name: result.name,
 					users: result.usernames.length,

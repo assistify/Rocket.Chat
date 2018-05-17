@@ -6,7 +6,7 @@ Template.JoinRoomRequest.helpers({
 		return status === 'pending';
 	},
 	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission('add-user-to-any-p-room');
+		return RocketChat.authz.hasAtLeastOnePermission('add-user-to-joined-room');
 	}
 });
 

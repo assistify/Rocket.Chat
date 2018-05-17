@@ -23,7 +23,7 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 				const event = property.substr(0, property.indexOf(' '));
 				const selector = property.substr(property.indexOf(' ') + 1);
 				Object.defineProperty(uniqueEvents,
-					`${ event }` + ` .${ fieldType } ` + `${ selector }`,
+					`${ event } .${ fieldType } ${ selector }`,
 					{
 						value: events[property],
 						enumerable: true //assign as a own property
