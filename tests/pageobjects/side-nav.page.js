@@ -37,6 +37,9 @@ class SideNav extends Page {
 	get channelLeave() { return browser.element('.leave-room'); }
 	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
 	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
+	get userAndRoomList() { return browser.element('[class="rc-icon sidebar__toolbar-button-icon sidebar__toolbar-button-icon--globe"]'); }
+	get roomFilter() { return browser.element('.rc-input__element.rc-directory-selector.js-typeSelector'); }
+	get privateRoomFilter() { return browser.element('[value="private"]'); }
 
 	// Account
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
@@ -151,6 +154,20 @@ class SideNav extends Page {
 		this.accountMenu.click();
 		this.logout.waitForVisible(5000);
 		this.logout.click();
+	}
+
+	showPrivateRooms() {
+		this.userAndRoomList.waitForVisible(5000);
+		this.userAndRoomList.click();
+		this.roomFilter.waitForVisible(5000);
+		this.roomFilter.click();
+		this.privateRoomFilter.waitForVisible(5000);
+		this.privateRoomFilter.click();
+	}
+
+	selectPrivateRoomFromList(name) {
+		browser.element(`[data-name="${ name }"]`).waitForVisible(5000);
+		browser.element(`[data-name="${ name }"]`).click();
 	}
 }
 

@@ -203,6 +203,19 @@ class MainContent extends Page {
 		return browser.element('[name="perm[user][auto-translate]"]');
 	}
 
+	// request room join
+	get requestToJoinRoom() {
+		return browser.element('.button.joinRoomRequest');
+	}
+
+	get acceptJoinRequest() {
+		return browser.element('.accept.rc-button.rc-button--primary.attachment-field.attachment-field-short');
+	}
+
+	get declineJoinRequest() {
+		return browser.element('.decline.rc-button.rc-button--secondary.attachment-field.attachment-field-short');
+	}
+
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
 		this.setTextToInput(text);
