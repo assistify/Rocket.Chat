@@ -267,7 +267,7 @@ jobs:
       - store_artifacts:
           path: .screenshots/
 
-  deploy:
+  aws-upload-artifact:
     <<: *defaults
     docker:
       - image: circleci/node:8
@@ -295,6 +295,26 @@ jobs:
           command: |
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
             bash .scripts/deploy-assistify-chat.sh
+  
+  publish-docker:
+    <<: *defaults
+    docker:
+      - image: docker:17.05.0-ce-git
+    
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -f .docker/Dockerfile.local .
+      - run:
+          command: docker login -u assistify -p ${DOCKER_LOGIN}
+      - run:
+          command: docker push assistify/assistify-${BRANCH}:${CIRCLE_TAG}
 
 workflows:
   version: 2
@@ -328,7 +348,7 @@ workflows:
             branches:
               only:
                 - circle-smarti
-      - deploy:
+      - aws-upload-artifact:
           requires:
             - test-with-oplog
             # - test-without-oplog
@@ -342,3 +362,16 @@ workflows:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
 
+      - publish-docker:
+          requires:
+            - test-with-oplog
+            # - test-without-oplog
+            # - test-smarti
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                - /^release\/v?[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
