@@ -312,7 +312,7 @@ jobs:
           command: |
             docker build -f .docker/Dockerfile.local .
       - run:
-          command: docker login -u assistify -p ${DOCKER_LOGIN}
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
       - run:
           command: docker push assistify/assistify-${BRANCH}:${CIRCLE_TAG}
 
