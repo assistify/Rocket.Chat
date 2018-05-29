@@ -41,13 +41,13 @@ export class RoomTypeRouteConfig {
 
 export class RoomTypeConfig {
 	constructor({
-					identifier = Random.id(),
-					order,
-					icon,
-					header,
-					label,
-					route
-				}) {
+		identifier = Random.id(),
+		order,
+		icon,
+		header,
+		label,
+		route
+	}) {
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');
 		}
@@ -193,7 +193,7 @@ export class RoomTypeConfig {
 	}
 
 	listInDirectory() {
-		return false;
+		return false; // default: not available for the directory search.
 	}
 
 
