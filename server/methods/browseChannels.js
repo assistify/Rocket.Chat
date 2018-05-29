@@ -24,18 +24,20 @@ const sortUsers = function(field, direction) {
 
 
 Meteor.methods({
-	browseChannels({text='', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
+	browseChannels({text = '', type = 'Channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
-
-		if (!['channels', 'users', 'private'].includes(type)) {
-			return;
+		let roomType;
+		if (type !== 'users') {
+			roomType = Object.keys(RocketChat.roomTypes.roomTypes).find(key => RocketChat.roomTypes.roomTypes[key]._label === type);
+			if (!roomType) {
+				return;
+			}
 		}
-
 		if (!['asc', 'desc'].includes(sortDirection)) {
 			return;
 		}
 
-		if (!['name', 'createdAt', ...type === 'channels'? ['usernames'] : [], ...type === 'users' ? ['username'] : [], ...type === 'private'? ['usernames'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', ...type === 'Channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : [], ...type === 'Private_Groups' ? ['usernames'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -49,54 +51,36 @@ Meteor.methods({
 		};
 
 		const user = Meteor.user();
-		if (type === 'channels') {
+		const sort = sortUsers(sortBy, sortDirection);
 
-			const sort = sortChannels(sortBy, sortDirection);
-			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
+		if (type === 'users') {
+			// type === users
+			if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
 				return;
 			}
-			return RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
+			return RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
 				...options,
 				sort,
 				fields: {
-					description: 1,
+					username: 1,
 					name: 1,
-					ts: 1,
-					archived: 1,
-					usernames: 1
-				}
-			}).fetch();
-		} else if (type === 'private') {
-			const sort = sortChannels(sortBy, sortDirection);
-			if (!RocketChat.authz.hasPermission(user._id, 'view-p-room')) {
-				return;
-			}
-			return RocketChat.models.Rooms.findByNameAndType(regex, 'p', {
-				...options,
-				sort,
-				fields: {
-					description: 1,
-					name: 1,
-					ts: 1,
-					archived: 1,
-					usernames: 1
+					createdAt: 1,
+					emails: 1
 				}
 			}).fetch();
 		}
-
-		// type === users
-		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		if (!RocketChat.roomTypes.roomTypes[roomType].listInDirectory()) {
 			return;
 		}
-		const sort = sortUsers(sortBy, sortDirection);
-		return RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
+		return RocketChat.models.Rooms.findByNameAndType(regex, roomType, {
 			...options,
 			sort,
 			fields: {
-				username: 1,
+				description: 1,
 				name: 1,
-				createdAt: 1,
-				emails: 1
+				ts: 1,
+				archived: 1,
+				usernames: 1
 			}
 		}).fetch();
 	}

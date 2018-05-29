@@ -89,5 +89,8 @@ export class RequestRoomType extends RoomTypeConfig {
 				return '';
 		}
 	}
+	listInDirectory() {
+		return true;
+	}
 }
 

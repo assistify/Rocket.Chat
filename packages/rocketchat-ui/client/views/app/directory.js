@@ -14,15 +14,6 @@ function timeAgo(time) {
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, results) => {
 		cb(results && results.length && results.map(result => {
-			if (config.type === 'channels') {
-				return {
-					name: result.name,
-					users: result.usernames.length,
-					createdAt: timeAgo(result.ts),
-					description: result.description,
-					archived: result.archived
-				};
-			}
 
 			if (config.type === 'users') {
 				return {
@@ -31,16 +22,13 @@ function directorySearch(config, cb) {
 					createdAt: timeAgo(result.createdAt)
 				};
 			}
-
-			if (config.type === 'private' && RocketChat.authz.hasAllPermission('view-outside-room')) {
-				return {
-					name: result.name,
-					users: result.usernames.length,
-					createdAt: timeAgo(result.ts),
-					description: result.description,
-					archived: result.archived
-				};
-			}
+			return {
+				name: result.name,
+				users: result.usernames.length,
+				createdAt: timeAgo(result.ts),
+				description: result.description,
+				archived: result.archived
+			};
 		}));
 	});
 }
@@ -51,6 +39,20 @@ Template.directory.helpers({
 	},
 	searchType() {
 		return Template.instance().searchType.get();
+	},
+	customRoomTypes() {
+		const room = [];
+		const excludeRoom = ['c', 'd', 'unread', 'f', 'l', 'merged', 'p', 'tokenpass'];
+		RocketChat.roomTypes.getTypes().map((roomType) => {
+			if (!excludeRoom.includes(roomType._identifier)) {
+				room.push([roomType._label]);
+			}
+		});
+		return room;
+	},
+	getIcon() {
+		const roomType = Template.instance().roomType.get();
+		return RocketChat.roomTypes.roomTypes[roomType].icon;
 	}
 });
 
@@ -66,19 +68,22 @@ Template.directory.events({
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchType.set(e.currentTarget.value);
+		const instance = Template.instance();
+		const type = Object.keys(RocketChat.roomTypes.roomTypes).find(
+			key => RocketChat.roomTypes.roomTypes[key]._label === e.currentTarget.value
+		);
+		instance.roomType.set(type);
 	},
 	'click .rc-table-body .rc-table-tr'() {
 		let searchType;
 		let routeConfig;
-		if (Template.instance().searchType.get() === 'channels') {
-			searchType = 'c';
-			routeConfig = {name: this.name};
-		} else if (Template.instance().searchType.get() === 'private') {
-			searchType = 'p';
-			routeConfig = {name: this.name};
-		} else {
+		const instance = Template.instance();
+		if (instance.searchType.get() === 'users') {
 			searchType = 'd';
 			routeConfig = {name: this.username};
+		} else {
+			searchType = instance.roomType.get();
+			routeConfig = {name: this.name};
 		}
 		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
 	},
@@ -116,13 +121,19 @@ Template.directory.events({
 
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
-	this.searchType = new ReactiveVar('channels');
+	this.searchType = new ReactiveVar('Channels');
+	this.roomType = new ReactiveVar('');
 	this.searchSortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
 
 	this.results = new ReactiveVar([]);
+
+	const type = Object.keys(RocketChat.roomTypes.roomTypes).find(
+		key => RocketChat.roomTypes.roomTypes[key]._label === this.searchType.get()
+	);
+	this.roomType.set(type);
 
 	Tracker.autorun(() => {
 		const searchConfig = {

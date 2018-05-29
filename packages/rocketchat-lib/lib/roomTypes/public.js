@@ -81,4 +81,10 @@ export class PublicRoomType extends RoomTypeConfig {
 				return '';
 		}
 	}
+	listInDirectory() {
+		if (!RocketChat.authz.hasPermission(Meteor.user()._id, 'view-c-room')) {
+			return false;
+		}
+		return true;
+	}
 }

@@ -17,7 +17,7 @@ export const UiTextContext = {
 };
 
 export class RoomTypeRouteConfig {
-	constructor({ name, path }) {
+	constructor({name, path}) {
 		if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length === 0)) {
 			throw new Error('The name must be a string.');
 		}
@@ -41,13 +41,13 @@ export class RoomTypeRouteConfig {
 
 export class RoomTypeConfig {
 	constructor({
-		identifier = Random.id(),
-		order,
-		icon,
-		header,
-		label,
-		route
-	}) {
+					identifier = Random.id(),
+					order,
+					icon,
+					header,
+					label,
+					route
+				}) {
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');
 		}
@@ -191,6 +191,11 @@ export class RoomTypeConfig {
 	enableMembersListProfile() {
 		return false;
 	}
+
+	listInDirectory() {
+		return false;
+	}
+
 
 	/**
 	 * Returns a text which can be used in generic UIs.

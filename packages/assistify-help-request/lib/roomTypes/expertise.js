@@ -87,5 +87,8 @@ export class ExpertiseRoomType extends RoomTypeConfig {
 				return '';
 		}
 	}
+	listInDirectory() {
+		return true;
+	}
 }
 
