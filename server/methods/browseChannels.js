@@ -51,9 +51,8 @@ Meteor.methods({
 		};
 
 		const user = Meteor.user();
-		const sort = sortUsers(sortBy, sortDirection);
-
 		if (type === 'users') {
+			const sort = sortUsers(sortBy, sortDirection);
 			// type === users
 			if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
 				return;
@@ -69,6 +68,7 @@ Meteor.methods({
 				}
 			}).fetch();
 		}
+		const sort = sortChannels(sortBy, sortDirection);
 		if (!RocketChat.roomTypes.roomTypes[roomType].listInDirectory()) {
 			return;
 		}
