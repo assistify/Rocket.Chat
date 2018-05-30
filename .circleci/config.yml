@@ -314,7 +314,15 @@ jobs:
       - run:
           command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
       - run:
-          command: docker push assistify/assistify-${BRANCH}:${CIRCLE_TAG}
+          command: docker push assistify/chat:develop
+          filters:
+            branches:
+              only: develop
+      - run:
+          command: docker push assistify/chat:latest
+          filters:
+            branches:
+              only: master
 
 workflows:
   version: 2
