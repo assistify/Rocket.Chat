@@ -298,8 +298,7 @@ jobs:
   
   publish-docker:
     <<: *defaults
-    docker:
-      - image: docker:17.05.0-ce-git
+    machine: true
     
     steps:
       - attach_workspace:
