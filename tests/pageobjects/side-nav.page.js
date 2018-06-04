@@ -39,7 +39,7 @@ class SideNav extends Page {
 	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
 	get userAndRoomList() { return browser.element('[class="rc-icon sidebar__toolbar-button-icon sidebar__toolbar-button-icon--globe"]'); }
 	get roomFilter() { return browser.element('.rc-input__element.rc-directory-selector.js-typeSelector'); }
-	get privateRoomFilter() { return browser.element('[value="private"]'); }
+	get privateRoomFilter() { return browser.element('[value="Private_Groups"]'); }
 
 	// Account
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
