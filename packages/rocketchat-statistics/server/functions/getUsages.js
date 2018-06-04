@@ -6,7 +6,7 @@ export function getUsages() {
 	const userDB = RocketChat.models.Users;
 	const subDB = RocketChat.models.Subscriptions;
 	const messageDB = RocketChat.models.Messages;
-	const usages = {};
+	const usages = [];
 	const users = userDB.model.aggregate([
 		{
 			$unwind: '$emails'
@@ -107,7 +107,7 @@ export function getUsages() {
 		user._id = SHA256(user.emails.address);
 		delete user.emails.address;
 		delete user.emails;
-		usages[user._id] = user;
+		usages.push(user);
 
 	}
 	return usages;
