@@ -317,7 +317,7 @@ jobs:
                 docker build -t assistify/chat:PR${CI_PR_ID} -f .docker/Dockerfile.local .
                 docker push assistify/chat:PR${CI_PR_ID}
             else 
-              if [[ -z ${CIRCLE_TAG} ]]
+              if [[ ! -z ${CIRCLE_TAG} ]]
                 then
                   docker build -t assistify/chat:${CIRCLE_TAG} -f .docker/Dockerfile.local .
                   docker push assistify/chat:${CIRCLE_TAG}
