@@ -299,15 +299,12 @@ jobs:
   publish-docker:
     <<: *defaults
     docker:
-      - image: golang:1.6.4
+      - image: docker:17.05.0-ce-git
     
     steps:
       - checkout
-
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - attach_workspace:
-          at: /tmp
+      - setup_remote_docker
+      
       - run:
           command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
       - run:
