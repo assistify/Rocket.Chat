@@ -302,6 +302,8 @@ jobs:
       - image: docker:17.05.0-ce-git
     
     steps:
+      - attach_workspace:	
+-          at: /tmp
       - checkout
       - setup_remote_docker
       
