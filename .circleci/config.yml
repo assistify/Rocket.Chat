@@ -295,29 +295,29 @@ jobs:
           command: |
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
             bash .scripts/deploy-assistify-chat.sh
-  
+
   publish-docker:
     <<: *defaults
     docker:
       - image: docker:17.05.0-ce-git
-    
+
     steps:
       - attach_workspace:
           at: /tmp
 
       - checkout
-      
+
       - setup_remote_docker
-      
+
       - run:
           command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
       - run:
           command: |
             if [[ ! -z $CI_PULL_REQUEST ]]
               then
-                docker build -t assistify/chat:PR${CI_PR_ID} -f .docker/Dockerfile.local .
-                docker push assistify/chat:PR${CI_PR_ID}
-            else 
+                docker build -t assistify/chat:PR-${CIRCLE_PULL_REQUEST##*/} -f .docker/Dockerfile.local .
+                docker push assistify/chat:PR-${CIRCLE_PULL_REQUEST##*/}
+            else
               if [[ ! -z ${CIRCLE_TAG} ]]
                 then
                   docker build -t assistify/chat:${CIRCLE_TAG} -f .docker/Dockerfile.local .
