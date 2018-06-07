@@ -315,8 +315,8 @@ jobs:
           command: |
             if [[ ! -z $CI_PULL_REQUEST ]]
               then
-                docker build -t assistify/chat:PR-${CIRCLE_PULL_REQUEST##*/} -f .docker/Dockerfile.local .
-                docker push assistify/chat:PR-${CIRCLE_PULL_REQUEST##*/}
+                docker build -t assistify/chat:pr-${CIRCLE_PULL_REQUEST##*/} -f .docker/Dockerfile.local .
+                docker push assistify/chat:pr-${CIRCLE_PULL_REQUEST##*/}
             else
               if [[ ! -z ${CIRCLE_TAG} ]]
                 then
