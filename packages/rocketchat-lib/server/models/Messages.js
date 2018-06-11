@@ -320,7 +320,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.insert(record);
 	}
 
-	findJoinRequestsByMsgTypeAndRoom(msgType, rid) {
+	findByMsgTypeAndRoom(msgType, rid) {
 		const query = {t: msgType, rid};
 		const options = {
 			sort: {
@@ -330,7 +330,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findLatestJoinRequestByMsgTypeRoomAndUser(msgType, rid, userName) {
+	findByMsgTypeRoomAndUser(msgType, rid, userName) {
 		const query = {t: msgType, rid, 'attachments.fields.requester': userName};
 		const options = {
 			sort: {

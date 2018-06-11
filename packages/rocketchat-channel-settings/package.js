@@ -33,6 +33,7 @@ Package.onUse(function(api) {
 		'server/functions/saveRoomReadOnly.js',
 		'server/functions/saveRoomDescription.js',
 		'server/functions/saveRoomSystemMessages.js',
+		'server/functions/saveRoomPrivacy.js',
 		'server/methods/saveRoomSettings.js',
 		'server/models/Messages.js',
 		'server/models/Rooms.js',

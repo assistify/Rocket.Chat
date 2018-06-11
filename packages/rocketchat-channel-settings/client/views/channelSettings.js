@@ -1,6 +1,6 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
-import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
+import {call, erase, hide, leave, RocketChat, RoomSettingsEnum} from 'meteor/rocketchat:lib';
 
 const common = {
 	canLeaveRoom() {
@@ -54,7 +54,7 @@ Template.channelSettingsEditing.events({
 });
 
 Template.channelSettingsEditing.onCreated(function() {
-	const room = this.room = ChatRoom.findOne(this.data && this.data.rid);
+	const room = this.room = ChatRoom.findOne({_id: this.data.rid});
 	this.settings = {
 		name: {
 			type: 'text',
@@ -177,6 +177,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				}
 				return true;
 			},
+			showPrivacySetting() {
+				return this.value.get();
+			},
 			canEdit() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room['default']) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 			},
@@ -184,7 +187,10 @@ Template.channelSettingsEditing.onCreated(function() {
 				const saveRoomSettings = () => {
 					value = value ? 'p' : 'c';
 					RocketChat.callbacks.run('roomTypeChanged', room);
-					return call('saveRoomSettings', room._id, 'roomType', value).then(() => {
+					return call('saveRoomSettings', room._id, {
+						'roomType': value,
+						'secretRoom': value === 'p' ? room.customFields.secretRoom : false
+					}, {roomType: value, secretRoom: false}).then(() => {
 						return toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 					});
 				};
@@ -212,6 +218,27 @@ Template.channelSettingsEditing.onCreated(function() {
 					// return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'p');
 				}
 				return saveRoomSettings();
+			}
+		},
+		privacy: {
+			type: 'boolean',
+			label: 'Secret_channel',
+			isToggle: true,
+			getValue() {
+				if (room.t === 'p') {
+					return room.customFields.secretRoom;
+				}
+			},
+			canView() {
+				return room.t === 'p';
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'secretRoom', value).then(() => {
+					toastr.success(TAPi18n.__('Room_privacy_changed_successfully'));
+				});
 			}
 		},
 		ro: {

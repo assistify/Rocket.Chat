@@ -47,7 +47,7 @@ Template.createChannel.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function' ? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
 		return Template.instance().ac.filteredList();
@@ -86,6 +86,12 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
+	showOnDirectorySearch() {
+		return t(Template.instance().secretRoom.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search'));
+	},
+	isPrivateChannel() {
+		return (Template.instance().type.get() !== 'p');
+	},
 	createIsDisabled() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
@@ -113,7 +119,7 @@ Template.createChannel.helpers({
 	extensionsConfig() {
 		const instance = Template.instance();
 		return {
-			validations : Template.instance().extensions_validations,
+			validations: Template.instance().extensions_validations,
 			submits: Template.instance().extensions_submits,
 			change: instance.change
 		};
@@ -156,10 +162,14 @@ Template.createChannel.events({
 	},
 	'change [name="type"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'd');
+		t.secretRoom.set(!e.target.checked);
 		t.change();
 	},
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
+	},
+	'change [name="secretRoom"]'(e, t) {
+		t.secretRoom.set(e.target.checked);
 	},
 	'input [name="users"]'(e, t) {
 		const input = e.target;
@@ -200,13 +210,15 @@ Template.createChannel.events({
 		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
 		}
-
+		const customFields = {
+			secretRoom: instance.secretRoom.get()
+		};
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => {
-				return { ...result, ...instance.extensions_submits[key](instance) };
+				return {...result, ...instance.extensions_submits[key](instance)};
 			}, {});
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, customFields, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -218,10 +230,10 @@ Template.createChannel.events({
 			}
 
 			if (!isPrivate) {
-				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: result.name});
 			}
 
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', {name: result.name}, FlowRouter.current().queryParams);
 		});
 		return false;
 	}
@@ -243,7 +255,7 @@ Template.createChannel.onRendered(function() {
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
-	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	const filter = {exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
 	// this.onViewRead:??y(function() {
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
@@ -253,6 +265,7 @@ Template.createChannel.onCreated(function() {
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('p');
 	this.readOnly = new ReactiveVar(false);
+	this.secretRoom = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
@@ -277,7 +290,7 @@ Template.createChannel.onCreated(function() {
 
 	this.ac = new AutoComplete(
 		{
-			selector:{
+			selector: {
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list'
 			},
@@ -286,7 +299,7 @@ Template.createChannel.onCreated(function() {
 			inputDelay: 300,
 			rules: [
 				{
-				// @TODO maybe change this 'collection' and/or template
+					// @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom',
 					subscription: 'userAutocomplete',
 					field: 'username',
@@ -294,7 +307,7 @@ Template.createChannel.onCreated(function() {
 					filter,
 					doNotChangeWidth: false,
 					selector(match) {
-						return { term: match };
+						return {term: match};
 					},
 					sort: 'username'
 				}

@@ -72,7 +72,7 @@ Meteor.methods({
 		if (!RocketChat.roomTypes.roomTypes[roomType].listInDirectory()) {
 			return;
 		}
-		return RocketChat.models.Rooms.findByNameAndType(regex, roomType, {
+		return RocketChat.models.Rooms.findByNameAndTypeIsSearchable(regex, roomType, {
 			...options,
 			sort,
 			fields: {

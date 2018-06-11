@@ -31,6 +31,20 @@
 						</label>
 						<span class="rc-switch__description">{{readOnlyDescription}}</span>
 					</div>
+					{{#unless isPrivateChannel}}
+						<div class="rc-switch">
+							<label class="rc-switch__label">
+								<input type="checkbox" class="rc-switch__input" name="secretRoom" value="false">
+								<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+								<span class="rc-switch__text">
+									{{_ "Secret_channel"}}
+								</span>
+							</label>
+							<span class="rc-switch__description">{{showOnDirectorySearch}}</span>
+						</div>
+					{{/unless}}
 				</div>
 				<div class="create-channel__inputs">
 					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
@@ -84,7 +98,8 @@
 					<div class="create-channel__switches">
 						<div class="rc-switch">
 							<label class="rc-switch__label" tabindex="-1">
-								<input type="checkbox" class="rc-switch__input" name="setTokensRequired" {{tokenIsDisabled}}>
+								<input type="checkbox" class="rc-switch__input"
+									   name="setTokensRequired" {{tokenIsDisabled}}>
 								<span class="rc-switch__button">
 									<span class="rc-switch__button-inside"></span>
 								</span>
@@ -99,7 +114,8 @@
 					{{/if}}
 				{{/if}}
 				<div class="create-channel__inputs">
-					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
+					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}}
+						   value="{{_ "Create"}}"/>
 				</div>
 			</form>
 		</div>
@@ -134,7 +150,8 @@
 			<label class="rc-input__label">
 				<div class="rc-input__title">{{_ "Tokens_Required"}}</div>
 				<div class="rc-input__wrapper">
-					<input name="tokensRequired" type="text" class="rc-input__element" placeholder="{{_ "Tokens_Required_Input_Placeholder"}}">
+					<input name="tokensRequired" type="text" class="rc-input__element"
+						   placeholder="{{_ "Tokens_Required_Input_Placeholder"}}">
 				</div>
 			</label>
 			<div class="rc-input__description">{{_ "Tokens_Required_Input_Description"}}</div>
@@ -143,7 +160,8 @@
 			<label class="rc-input__label">
 				<div class="rc-input__title">{{_ "Tokens_Minimum_Needed_Balance"}}</div>
 				<div class="rc-input__wrapper">
-					<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element" placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}" min="0">
+					<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element"
+						   placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}" min="0">
 				</div>
 			</label>
 			<div class="rc-input__description">{{_ "Tokens_Minimum_Needed_Balance_Description"}}</div>
@@ -163,7 +181,8 @@
 			</div>
 		{{/if}}
 
-		<input class="rc-button rc-button--primary rc-button--full" type="submit" data-button="add" {{addIsDisabled}} value="{{_ "Add"}}">
+		<input class="rc-button rc-button--primary rc-button--full" type="submit" data-button="add" {{addIsDisabled}}
+			   value="{{_ "Add"}}">
 
 	</fieldset>
 </template>
