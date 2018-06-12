@@ -256,7 +256,7 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeIsSearchable(name, type, options) {
+	findByNameAndTypeAndNotSecret(name, type, options) {
 		const query = {
 			t: type,
 			name,
@@ -268,7 +268,6 @@ class ModelRooms extends RocketChat.models._Base {
 		// do not use cache
 		return this._db.find(query, options);
 	}
-
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
