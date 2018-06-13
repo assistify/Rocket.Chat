@@ -1,4 +1,4 @@
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'secretRoom', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions'];
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'secret', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		if (!Meteor.userId()) {
@@ -89,9 +89,9 @@ Meteor.methods({
 						RocketChat.saveRoomType(rid, value, user);
 					}
 					break;
-				case 'secretRoom':
-					if (value !== room.customFields.secretRoom) {
-						RocketChat.saveRoomPrivacy(rid, value);
+				case 'secret':
+					if (value !== room.secret) {
+						RocketChat.saveRoomSecracy(rid, value);
 					}
 					break;
 				case 'tokenpass':

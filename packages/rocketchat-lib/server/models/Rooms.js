@@ -260,7 +260,7 @@ class ModelRooms extends RocketChat.models._Base {
 		const query = {
 			t: type,
 			name,
-			'customFields.secretRoom': {
+			secret: {
 				$ne: true
 			}
 		};
@@ -268,6 +268,7 @@ class ModelRooms extends RocketChat.models._Base {
 		// do not use cache
 		return this._db.find(query, options);
 	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
@@ -683,11 +684,11 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	setPrivacyById(_id, value) {
+	setSecretById(_id, value) {
 		const query = {_id};
 		const update = {
 			$set: {
-				'customFields.secretRoom': value
+				'secret': value
 			}
 		};
 		return this.update(query, update);

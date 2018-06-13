@@ -34,7 +34,7 @@
 					{{#unless isPrivateChannel}}
 						<div class="rc-switch">
 							<label class="rc-switch__label">
-								<input type="checkbox" class="rc-switch__input" name="secretRoom" value="false">
+								<input type="checkbox" class="rc-switch__input" name="secret" value="false">
 								<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -42,7 +42,7 @@
 									{{_ "Secret_channel"}}
 								</span>
 							</label>
-							<span class="rc-switch__description">{{showOnDirectorySearch}}</span>
+							<span class="rc-switch__description">{{secretDescription}}</span>
 						</div>
 					{{/unless}}
 				</div>

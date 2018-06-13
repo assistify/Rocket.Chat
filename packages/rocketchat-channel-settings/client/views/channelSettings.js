@@ -220,13 +220,13 @@ Template.channelSettingsEditing.onCreated(function() {
 				return saveRoomSettings();
 			}
 		},
-		privacy: {
+		secret: {
 			type: 'boolean',
 			label: 'Secret_channel',
 			isToggle: true,
 			getValue() {
 				if (room.t === 'p') {
-					return room.customFields.secretRoom;
+					return room.secret;
 				}
 			},
 			canView() {
@@ -236,8 +236,8 @@ Template.channelSettingsEditing.onCreated(function() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
-				return call('saveRoomSettings', room._id, 'secretRoom', value).then(() => {
-					toastr.success(TAPi18n.__('Room_privacy_changed_successfully'));
+				return call('saveRoomSettings', room._id, 'secret', value).then(() => {
+					toastr.success(TAPi18n.__('Room_secrecy_changed_successfully'));
 				});
 			}
 		},
@@ -250,7 +250,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('set-readonly', room._id);
+				return RocketChat.authz.hasAllPermission('set-secret', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.READ_ONLY, value).then(() => toastr.success(TAPi18n.__('Read_only_changed_successfully')));

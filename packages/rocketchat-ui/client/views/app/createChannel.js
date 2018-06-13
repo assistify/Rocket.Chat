@@ -86,8 +86,8 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
-	showOnDirectorySearch() {
-		return t(Template.instance().secretRoom.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search'));
+	secretDescription() {
+		return t(Template.instance().secret.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search'));
 	},
 	isPrivateChannel() {
 		return (Template.instance().type.get() !== 'p');
@@ -162,14 +162,14 @@ Template.createChannel.events({
 	},
 	'change [name="type"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'd');
-		t.secretRoom.set(!e.target.checked);
+		t.secret.set(!e.target.checked);
 		t.change();
 	},
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
 	},
-	'change [name="secretRoom"]'(e, t) {
-		t.secretRoom.set(e.target.checked);
+	'change [name="secret"]'(e, t) {
+		t.secret.set(e.target.checked);
 	},
 	'input [name="users"]'(e, t) {
 		const input = e.target;
@@ -210,15 +210,14 @@ Template.createChannel.events({
 		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
 		}
-		const customFields = {
-			secretRoom: instance.secretRoom.get()
-		};
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => {
 				return {...result, ...instance.extensions_submits[key](instance)};
-			}, {});
+			}, {
+				secret: instance.secret.get()
+			});
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, customFields, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -265,7 +264,7 @@ Template.createChannel.onCreated(function() {
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('p');
 	this.readOnly = new ReactiveVar(false);
-	this.secretRoom = new ReactiveVar(false);
+	this.secret = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
