@@ -24,27 +24,22 @@ const removeObsoleteSubscriptions = function() {
 	return counter;
 };
 
-function makePrivateRoomsSecret() {
-	let count = 0;
-	RocketChat.models.Rooms.findByType('p').forEach((room) => {
-		if ('customFields' in room) {
-			if ('secretRoom' in room.customFields) {
-				return;
-			}
-		}
-		RocketChat.models.Rooms.setPrivacyById(room._id, true);
-		count++;
-	});
-	return count;
-}
-
 Meteor.startup(() => {
 	const count = removeObsoleteSubscriptions();
 	if (count) {
 		console.log('Removed', count, 'erroneous subscriptions');
 	}
-	const PrivateRoomUpdated = makePrivateRoomsSecret();
-	if (PrivateRoomUpdated) {
-		console.log('Migrated', PrivateRoomUpdated, 'Private Room(s) Privacy is set to secret');
+	const updated = RocketChat.models.Rooms.update({
+		t: 'p',
+		secret: {
+			$exists: false
+		}
+	}, {
+		$set: {
+			secret: true
+		}
+	});
+	if (updated) {
+		console.log('Migrated', updated, 'Private Room(s) Privacy is set to secret');
 	}
 });

@@ -40,12 +40,12 @@ Meteor.methods({
 		check(name, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'requestJoin'});
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'joinRoomRequest'});
 		}
 
 		const room = RocketChat.models.Rooms.findOneByName(name);
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {method: 'requestJoin'});
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {method: 'joinRoomRequest'});
 		}
 
 		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
@@ -64,11 +64,12 @@ Meteor.methods({
 				});
 			return joinRequest;
 		}
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'joinRoomRequest'});
 	},
 	updateJoinRoomStatus(roomId, message, status, responder) {
 		check(status, String);
-		if (!status) {
-			return false;
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-room-id', 'Invalid room Id', {method: 'updateJoinRoomStatus'});
 		}
 		message.attachments[0].fields[0].status = status;
 		message.attachments[0].fields[0].responder = responder;
@@ -77,11 +78,17 @@ Meteor.methods({
 	getJoinRoomStatus(roomName) {
 		check(roomName, String);
 		const room = RocketChat.models.Rooms.findOneByName(roomName);
-		return RocketChat.models.Messages.findLatestJoinRequestByMsgTypeRoomAndUser('join-room-request', room._id, Meteor.user().username).fetch();
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {method: 'getJoinRoomStatus'});
+		}
+		return RocketChat.models.Messages.findByMsgTypeRoomAndUser('join-room-request', room._id, Meteor.user().username).fetch();
 	},
 	notifyUser(roomId, user) {
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'requestJoin'});
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'notifyUser'});
+		}
+		if (!roomId) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {method: 'notifyUser'});
 		}
 		const to = RocketChat.models.Users.findOneByUsername(user);
 		const cat = RocketChat.models.Users.findOneByUsername('rocket.cat');

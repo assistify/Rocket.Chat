@@ -21,14 +21,15 @@ function directorySearch(config, cb) {
 					username: result.username,
 					createdAt: timeAgo(result.createdAt)
 				};
+			} else {
+				return {
+					name: result.name,
+					users: result.usernames.length,
+					createdAt: timeAgo(result.ts),
+					description: result.description,
+					archived: result.archived
+				};
 			}
-			return {
-				name: result.name,
-				users: result.usernames.length,
-				createdAt: timeAgo(result.ts),
-				description: result.description,
-				archived: result.archived
-			};
 		}));
 	});
 }

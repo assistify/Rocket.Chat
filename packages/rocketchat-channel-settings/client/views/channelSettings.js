@@ -54,7 +54,7 @@ Template.channelSettingsEditing.events({
 });
 
 Template.channelSettingsEditing.onCreated(function() {
-	const room = this.room = ChatRoom.findOne({_id: this.data.rid});
+	const room = this.room = ChatRoom.findOne(this.data && this.data.rid);
 	this.settings = {
 		name: {
 			type: 'text',
@@ -177,20 +177,21 @@ Template.channelSettingsEditing.onCreated(function() {
 				}
 				return true;
 			},
-			showPrivacySetting() {
-				return this.value.get();
-			},
 			canEdit() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room['default']) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+			},
+			showSecretSetting(secret) {
+				//The secret room setting state must be in sync with respect to the private <-> public setting.
+				if (this.value.get() === false) {
+					secret.value.set(false);
+				}
+				return this.value.get();
 			},
 			save(value) {
 				const saveRoomSettings = () => {
 					value = value ? 'p' : 'c';
 					RocketChat.callbacks.run('roomTypeChanged', room);
-					return call('saveRoomSettings', room._id, {
-						'roomType': value,
-						'secretRoom': value === 'p' ? room.customFields.secretRoom : false
-					}, {roomType: value, secretRoom: false}).then(() => {
+					return call('saveRoomSettings', room._id, 'roomType', value).then(() => {
 						return toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 					});
 				};
@@ -225,15 +226,13 @@ Template.channelSettingsEditing.onCreated(function() {
 			label: 'Secret_channel',
 			isToggle: true,
 			getValue() {
-				if (room.t === 'p') {
-					return room.secret;
-				}
+				return room.secret;
 			},
 			canView() {
 				return room.t === 'p';
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return RocketChat.authz.hasAllPermission('set-secret', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'secret', value).then(() => {
@@ -250,7 +249,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('set-secret', room._id);
+				return RocketChat.authz.hasAllPermission('set-readOnly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.READ_ONLY, value).then(() => toastr.success(TAPi18n.__('Read_only_changed_successfully')));

@@ -80,6 +80,11 @@
 	}
 }
 
+.rc-directory-banner {
+	width: 100%;
+	overflow-x: auto;
+}
+
 @media (width <= 500px) {
 	.rc-directory-content .rc-table-head {
 		display: none;

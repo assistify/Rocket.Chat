@@ -256,15 +256,20 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeAndNotSecret(name, type, options) {
+	findListableByNameAndType(name, type, options) {
 		const query = {
 			t: type,
 			name,
-			secret: {
-				$ne: true
-			}
+			$or: [{
+				usernames: {
+					$in: [Meteor.user().username]
+				}
+			}, {
+				secret: {
+					$ne: true
+				}
+			}]
 		};
-
 		// do not use cache
 		return this._db.find(query, options);
 	}

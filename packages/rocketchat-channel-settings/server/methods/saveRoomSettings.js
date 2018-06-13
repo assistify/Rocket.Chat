@@ -1,3 +1,4 @@
+/* globals RocketChat */
 const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'secret', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
@@ -91,7 +92,7 @@ Meteor.methods({
 					break;
 				case 'secret':
 					if (value !== room.secret) {
-						RocketChat.saveRoomSecracy(rid, value);
+						RocketChat.saveRoomSecrecy(rid, value);
 					}
 					break;
 				case 'tokenpass':

@@ -1,3 +1,4 @@
+
 import s from 'underscore.string';
 
 const sortChannels = function(field, direction) {
@@ -72,7 +73,7 @@ Meteor.methods({
 		if (!RocketChat.roomTypes.roomTypes[roomType].listInDirectory()) {
 			return;
 		}
-		return RocketChat.models.Rooms.findByNameAndTypeAndNotSecret(regex, roomType, {
+		return RocketChat.models.Rooms.findListableByNameAndType(regex, roomType, {
 			...options,
 			sort,
 			fields: {
