@@ -59,9 +59,9 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.MessageTypes.registerType({
-		id: 'notify_user_that_he_was_accepted',
+		id: 'Notify_user_request_accepted',
 		system: true,
-		message: 'notify_user_that_he_was_accepted',
+		message: 'Notify_user_request_accepted',
 		data(message) {
 			const room = message.room;
 			Template.room.events({
@@ -72,7 +72,7 @@ Meteor.startup(function() {
 			});
 			return {
 				user: ` <a class="mention-link" data-username= "${ message.name }" >${ message.name } </a> `,
-				roomname: ` <a class="mention-group" data-group="${ room.name }">${ room.fname || room.name } </a>`
+				roomName: ` <a class="mention-group" data-group="${ room.name }">${ room.fname || room.name } </a>`
 			};
 		}
 	});

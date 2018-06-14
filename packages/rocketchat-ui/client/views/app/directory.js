@@ -54,6 +54,15 @@ Template.directory.helpers({
 	getIcon() {
 		const roomType = Template.instance().roomType.get();
 		return RocketChat.roomTypes.roomTypes[roomType].icon;
+	},
+	secretRoomsExists() {
+		const name = Template.instance().searchText.get();
+		Meteor.call('checkSecretRoomExists', name, 'p', (err, res) => {
+			if (err) {
+				return false;
+			}
+			return res;
+		});
 	}
 });
 

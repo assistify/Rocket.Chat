@@ -94,7 +94,7 @@ Meteor.methods({
 		const cat = RocketChat.models.Users.findOneByUsername('rocket.cat');
 		const rid = [cat._id, to._id].sort().join('');
 		const room = RocketChat.models.Rooms.findOneById(roomId);
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('notify_user_that_he_was_accepted', rid, 'test', cat,
+		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('Notify_user_request_accepted', rid, 'test', cat,
 			{
 				name: user.username,
 				room

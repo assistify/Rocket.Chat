@@ -7,7 +7,7 @@
 					<option value="users">{{_ 'Users' }}</option>
 					<option value="Private_Groups">{{_ 'Private' }}</option>
 					{{#each roomType in customRoomTypes}}
-						<option value={{roomType}}> {{roomType}}</option>
+						<option value={{roomType}}> {{_ roomType}}</option>
 					{{/each}}
 				</select>
 				<div class="rc-input rc-input--small rc-directory-search">
@@ -24,9 +24,11 @@
 			</div>
 		{{/header}}
 		{{#if $eq searchType 'Private_Groups'}}
-			<div class="rc-directory-banner">
-				<a>has a secret room</a>
-			</div>
+			{{#unless secretRoomsExists}}
+				<div class="rc-directory-secret-banner">
+					{{_ 'Secret_channel_are_not_listed'}}
+				</div>
+			{{/unless}}
 		{{/if}}
 		<div class="rc-directory-content">
 			{{#if $eq searchType 'users'}}

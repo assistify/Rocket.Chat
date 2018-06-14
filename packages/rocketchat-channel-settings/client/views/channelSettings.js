@@ -181,7 +181,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room['default']) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 			},
 			showSecretSetting(secret) {
-				//The secret room setting state must be in sync with respect to the private <-> public setting.
+				//The state of secret channel setting must be changed with respect to the private <-> public setting.
 				if (this.value.get() === false) {
 					secret.value.set(false);
 				}
