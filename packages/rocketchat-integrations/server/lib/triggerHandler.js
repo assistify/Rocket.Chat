@@ -385,6 +385,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				data.user_name = message.u.username;
 				data.text = message.msg;
 				data.room = room;
+				delete data.room['$loki'];
 				data.siteUrl = RocketChat.settings.get('Site_Url');
 
 				if (message.alias) {

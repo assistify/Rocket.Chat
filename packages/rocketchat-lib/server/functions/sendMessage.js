@@ -50,6 +50,8 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			delete message.sandstormSessionId;
 		}
 
+
+		/* Temporary Fix: Deactivate App here, since we experienced issues on startup with multi-instances
 		// For the Rocket.Chat Apps :)
 		if (Apps && Apps.isLoaded()) {
 			const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
@@ -59,6 +61,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 
 			// TODO: The rest of the IPreMessageSent events
 		}
+		*/
 
 		if (message._id && upsert) {
 			const _id = message._id;
