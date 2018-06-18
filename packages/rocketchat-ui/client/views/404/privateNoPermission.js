@@ -1,3 +1,5 @@
+import {TAPi18n} from 'meteor/tap:i18n';
+
 Template.privateNoPermission.helpers({
 	data() {
 		return Session.get('privateNoPermission');

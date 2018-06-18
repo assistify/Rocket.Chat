@@ -13,7 +13,7 @@
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Akzeptiere eingehende Livechat-Anfragen auch wenn kein Agent online ist",
   "Accept_with_no_online_agents": "Auch annehmen, wenn keine Agenten online sind",
   "Accept": "Akzeptieren",
-  "accepted": "Akzeptiert",
+  "accepted": "akzeptiert",
   "Access_not_authorized": "Der Zugriff ist nicht gestattet.",
   "Access_Token_URL": "URL des Access-Token",
   "access-mailer_description": "Berechtigung, Massen-E-Mails an alle Benutzer zu versenden.",

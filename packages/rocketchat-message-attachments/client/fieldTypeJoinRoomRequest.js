@@ -1,5 +1,5 @@
 import {registerFieldTemplate} from './renderField';
-
+import {TAPi18n} from 'meteor/tap:i18n';
 
 Template.JoinRoomRequest.helpers({
 	takeAction(status) {

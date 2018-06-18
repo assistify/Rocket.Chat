@@ -1,6 +1,7 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
 import {call, erase, hide, leave, RocketChat, RoomSettingsEnum} from 'meteor/rocketchat:lib';
+import {TAPi18n} from 'meteor/tap:i18n';
 
 const common = {
 	canLeaveRoom() {
