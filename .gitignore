@@ -2,6 +2,7 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+**/.meteor/.id
 **/.meteor/dev_bundle
 **/.meteor/local*
 **/.meteor/meteorite
@@ -75,3 +76,4 @@ build.sh
 /public/livechat
 .screenshots
 tests/end-to-end/temporary_staged_test
+packages/rocketchat-i18n/i18n/livechat.*

@@ -1,11 +1,14 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import {PrivateSettingsCachedCollection} from './SettingsCachedCollection';
 
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
-		RocketChat.settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
+			name: 'private-settings',
+			eventType: 'onLogged',
+			useCache: false
+		});
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
 		RocketChat.settings.cachedCollectionPrivate.init();
 	}

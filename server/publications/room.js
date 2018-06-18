@@ -11,6 +11,7 @@ const fields = {
 	// usernames: 1,
 	topic: 1,
 	announcement: 1,
+	announcementDetails: 1,
 	muted: 1,
 	_updatedAt: 1,
 	archived: 1,
@@ -32,9 +33,11 @@ const fields = {
 	label: 1,
 	ro: 1,
 	reactWhenReadOnly: 1,
+	sysMes: 1,
 	sentiment: 1,
 	tokenpass: 1,
-	streamingOptions: 1
+	streamingOptions: 1,
+	broadcast: 1
 };
 
 const roomMap = (record) => {
