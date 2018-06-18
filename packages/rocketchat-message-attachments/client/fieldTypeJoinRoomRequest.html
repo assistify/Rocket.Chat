@@ -11,7 +11,7 @@
 					class="decline rc-button rc-button--secondary attachment-field attachment-field-short">{{_
 					"Decline"}}</button>
 		{{else}}
-			<div class=""> {{{_ "Join-room-request-status" responder=responder status=status requester=requester}}}</div>
+			{{{_ "Join-room-request-status" responder=responder status=getStatus requester=requester}}}
 		{{/ if}}
 	{{/ if}}
 </template>

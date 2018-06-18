@@ -5,7 +5,7 @@
 				<select class="rc-input__element rc-directory-selector js-typeSelector" name="type">
 					<option value="Channels">{{_ 'Channels'}}</option>
 					<option value="users">{{_ 'Users' }}</option>
-					<option value="Private_Groups">{{_ 'Private' }}</option>
+					<option value="Private_Groups">{{_ 'Private_Groups' }}</option>
 					{{#each roomType in customRoomTypes}}
 						<option value={{roomType}}> {{_ roomType}}</option>
 					{{/each}}
@@ -24,11 +24,11 @@
 			</div>
 		{{/header}}
 		{{#if $eq searchType 'Private_Groups'}}
-			{{#unless secretRoomsExists}}
+			{{#if secretRoomsExists}}
 				<div class="rc-directory-banner">
 					{{_ 'Secret_channel_are_not_listed'}}
 				</div>
-			{{/unless}}
+			{{/if}}
 		{{/if}}
 		<div class="rc-directory-content">
 			{{#if $eq searchType 'users'}}

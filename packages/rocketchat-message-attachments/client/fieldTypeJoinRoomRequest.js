@@ -7,6 +7,9 @@ Template.JoinRoomRequest.helpers({
 	},
 	hasPermission() {
 		return RocketChat.authz.hasAtLeastOnePermission('add-user-to-joined-room');
+	},
+	getStatus() {
+		return TAPi18n.__(this.status);
 	}
 });
 

@@ -51,7 +51,7 @@
 				</label>
 			</div>
 		</div>
-	{{/with}} {{/unless}} {{#with settings.t}}
+	{{/with}} {{/unless}} {{#with settings.t}} {{#if canView}}
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
 				<div class="rc-switch-double__label {{equal true value 'disabled'}}">
@@ -78,7 +78,7 @@
 
 			</div>
 		</div>
-	{{/with}} {{#with settings.ro}}
+	{{/if}}{{/with}} {{#with settings.ro}}
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
 				<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
@@ -163,6 +163,7 @@
 						<span class="rc-switch__button-inside"></span>
 					</span>
 				</label>
+				<div class="rc-switch-double__description">{{secretDescription}}</div>
 			</div>
 		</div>
 	{{/if}} {{/with}} {{#with settings.archived}} {{#if canView}}

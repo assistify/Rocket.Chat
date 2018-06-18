@@ -50,7 +50,7 @@ Meteor.methods({
 
 		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
 		if (rocketCatUser && user) {
-			const joinRequest = RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('join-room-request', room._id, 'join-room-request', rocketCatUser,
+			const joinRequest = RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('join-room-request', room._id, user.username, rocketCatUser,
 				{
 					rid: room._id,
 					attachments: [{
@@ -62,6 +62,14 @@ Meteor.methods({
 						}]
 					}]
 				});
+			if (joinRequest) {
+				RocketChat.models.Subscriptions.find({rid: room._id}).forEach((sub) => {
+					if (RocketChat.authz.hasAtLeastOnePermission(sub.u._id, 'add-user-to-joined-room')) {
+						sub.alert = true;
+						RocketChat.models.Subscriptions.updateUnreadAlertById(sub._id, sub.alert);
+					}
+				});
+			}
 			return joinRequest;
 		}
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'joinRoomRequest'});

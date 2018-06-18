@@ -182,10 +182,12 @@ Template.channelSettingsEditing.onCreated(function() {
 			},
 			showSecretSetting(secret) {
 				//The state of secret channel setting must be changed with respect to the private <-> public setting.
-				if (this.value.get() === false) {
-					secret.value.set(false);
+				if (this.canView()) {
+					if (this.value.get() === false) {
+						secret.value.set(false);
+					}
+					return this.value.get();
 				}
-				return this.value.get();
 			},
 			save(value) {
 				const saveRoomSettings = () => {
@@ -223,7 +225,7 @@ Template.channelSettingsEditing.onCreated(function() {
 		},
 		secret: {
 			type: 'boolean',
-			label: 'Secret_channel',
+			label: 'Secret',
 			isToggle: true,
 			getValue() {
 				return room.secret;
@@ -238,6 +240,9 @@ Template.channelSettingsEditing.onCreated(function() {
 				return call('saveRoomSettings', room._id, 'secret', value).then(() => {
 					toastr.success(TAPi18n.__('Room_secrecy_changed_successfully'));
 				});
+			},
+			secretDescription() {
+				return this.value.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search-short');
 			}
 		},
 		ro: {

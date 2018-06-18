@@ -18,17 +18,17 @@ Template.privateNoPermission.helpers({
 	},
 	requestStatus() {
 		const instance = Template.instance();
-		return instance.joinRoomStatus.get();
+		return TAPi18n.__(instance.joinRoomStatus.get());
 	}
 });
 
 Template.privateNoPermission.events({
 	'click .joinRoomRequest'(e, t) {
 		const modalConfig = {
-			title: ('Request'),
+			title: TAPi18n.__('Request'),
 			text: TAPi18n.__('Request_to_join_room_confirm'),
 			showCancelButton: true,
-			confirmButtonText: TAPi18n.__('Request'),
+			confirmButtonText: TAPi18n.__('Send'),
 			cancelButtonColor: '#DD6B55',
 			cancelButtonText: TAPi18n.__('Cancel'),
 			closeOnConfirm: true,
