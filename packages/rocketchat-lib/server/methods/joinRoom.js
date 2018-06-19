@@ -66,7 +66,7 @@ Meteor.methods({
 				RocketChat.models.Subscriptions.find({rid: room._id}).forEach((sub) => {
 					// Subscriptions will be validated based on the authorization.
 					if (RocketChat.authz.hasAtLeastOnePermission(sub.u._id, 'add-user-to-joined-room')) {
-						sub.alert = true;
+						sub.alert = true; //passing the value directly miraculously didn't work at all
 						RocketChat.models.Subscriptions.updateUnreadAlertById(sub._id, sub.alert);
 					}
 				});
