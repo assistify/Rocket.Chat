@@ -1,3 +1,8 @@
+# Assistify 0.63.3-0.8.1
+
+This release is a bugfix release 🐛
+Particularly if you used outgoing and incoming integrations as a couple without any scripting in between, you may have noted some server side exceptions - which should now be gone.
+
 # Assistify 0.63.3-0.8.0
 
 This release brings new features 🎉 

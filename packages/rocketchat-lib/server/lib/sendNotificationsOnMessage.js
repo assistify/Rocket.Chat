@@ -63,7 +63,7 @@ function notifyDesktopUser(userId, user, message, room, duration) {
 	if (UI_Use_Real_Name) {
 		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
-	let title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
+	let title = UI_Use_Real_Name && user.name ? user.name : `@${ user.username }`;
 	if (room.t !== 'd' && room.name) {
 		title += ` @ #${ room.name }`;
 	}
@@ -114,6 +114,27 @@ function messageContainsHighlight(message, highlights) {
 	});
 
 	return has;
+}
+
+/**
+ * Detects the agents to be notified.
+ * This is essential for guest pool routing configuration.
+ * We'll only notify online agents.
+ * If the configuration allows to leave a message even if offline, the agents returning
+ * to the online status have to check the queue manually - which should be good practice
+	//
+ * @param {*} room The livechat room
+ */
+function getLivechatAgentIdsForRoom(room) {
+	const inquiry = RocketChat.models.LivechatInquiry.findOneByRoomId(room._id);
+	const department = inquiry ? inquiry.department : null;
+	let agentIds = [];
+	if (department) {
+		agentIds = RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(department).fetch().map((agent)=>agent.agentId);
+	} else {
+		agentIds = RocketChat.models.Users.findOnlineAgents().fetch().map((user)=>user._id);
+	}
+	return agentIds;
 }
 
 function getBadgeCount(userId) {
@@ -438,6 +459,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			userIdsForAudio = userIdsForAudio.concat(highlightsIds);
 			userIdsToNotify = userIdsToNotify.concat(highlightsIds);
 			userIdsToPushNotify = userIdsToPushNotify.concat(highlightsIds);
+		}
+
+		// for live chat rooms which are configured as guest pool, all agents
+		// of the targeted department need to be notified
+		if (room.t === 'l' && !room.servedBy) {
+			const agentIds = getLivechatAgentIdsForRoom(room);
+			userIdsForAudio = userIdsForAudio.concat(agentIds);
+			userIdsToNotify = userIdsToNotify.concat(agentIds);
+			userIdsToPushNotify = userIdsToPushNotify.concat(agentIds);
 		}
 
 		userIdsToNotify = _.without(_.compact(_.unique(userIdsToNotify)), message.u._id);

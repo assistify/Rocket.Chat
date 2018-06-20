@@ -15,19 +15,17 @@ import {SmartiAdapter} from './lib/SmartiAdapter';
 RocketChat.API.v1.addRoute('smarti.result/:_token', {authRequired: false}, {
 
 	post() {
+		SystemLogger.debug('Smarti - Incoming HTTP requests', JSON.stringify(this.bodyParams, null, 2));
 
-		check(this.bodyParams, Match.ObjectIncluding({
-			conversationId: String,
-			channelId: String
+		check(this.bodyParams.data, Match.ObjectIncluding({
+			conversation: String
 		}));
 
 		const rcWebhookToken = RocketChat.settings.get('Assistify_AI_RocketChat_Webhook_Token');
 
-		//verify token
+		// verify token
 		if (this.urlParams._token && this.urlParams._token === rcWebhookToken) {
-
-			SystemLogger.debug('Smarti - got conversation result:', JSON.stringify(this.bodyParams, null, 2));
-			SmartiAdapter.analysisCompleted(this.bodyParams.channelId, this.bodyParams.conversationId, this.bodyParams.token);
+			SmartiAdapter.analysisCompleted(null, this.bodyParams.data.conversation, this.bodyParams.data);
 			return RocketChat.API.v1.success();
 		} else {
 			return RocketChat.API.v1.unauthorized({msg: 'token not valid'});

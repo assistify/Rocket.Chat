@@ -379,14 +379,17 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			case 'sendMessage':
 				data.channel_id = room._id;
 				data.channel_name = room.name;
+				data.channel_type = room.t;
 				data.message_id = message._id;
 				data.timestamp = message.ts;
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
-				data.room = room;
-				delete data.room['$loki'];
 				data.siteUrl = RocketChat.settings.get('Site_Url');
+
+				if (room.expertise) {
+					data.expertise = room.expertise;
+				}
 
 				if (message.alias) {
 					data.alias = message.alias;

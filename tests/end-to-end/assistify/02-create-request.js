@@ -9,7 +9,7 @@ import {username, email, password, adminUsername, adminEmail, adminPassword} fro
 import { checkIfUserIsAdmin } from '../../data/checks';
 import globalObject from '../../pageobjects/global';
 const topicName = 'unit-testing';
-const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 describe('[Help Request]', function() {
 	const helpRequest = 'write-test-cases';
 	const comment = 'Request tested successfully';

@@ -87,6 +87,10 @@ class Assistify extends Page {
 		return browser.element('.sidebar__toolbar-button-icon--edit-rounded');
 	}
 
+	get firstRequestMessage() {
+		return browser.element('[name="first_question"]');
+	}
+
 
 	// Tabs
 	get tabs() {
@@ -133,6 +137,22 @@ class Assistify extends Page {
 
 	get numberOfRequests() {
 		return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge');
+	}
+	get resync() {
+		return browser.element('[data-setting="Assistify_AI_Resync_Full"]');
+	}
+
+	// admin ui
+	get assistifyAdminUi() {
+		return browser.element('[href="/admin/Assistify"]');
+	}
+
+	get knowledgebaseUiExpand() {
+		return browser.element('.section:nth-of-type(2) .button.expand');
+	}
+
+	get resyncButton() {
+		return browser.element('[data-action="triggerResync"]');
 	}
 
 	escape() {
@@ -205,17 +225,21 @@ class Assistify extends Page {
 		browser.keys(Keys.TAB);
 		browser.pause(300);
 
+		// if (message) {
+		// 	browser.pause(2000);
+		// 	this.firstRequestMessage.waitForVisible(5000);
+		// 	this.firstRequestMessage.setValue(message);
+		// }
+
 		browser.waitUntil(function() {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
 		}, 5000);
 
 		browser.pause(500);
 		this.saveTopicBtn.click();
-		browser.pause(500);
+		browser.pause(1000);
 
-		this.clickKnowledgebase();
 		this.sendTopicMessage(message);
-
 	}
 
 	sendTopicMessage(message) {

@@ -169,6 +169,13 @@ class SideNav extends Page {
 		browser.element(`[data-name="${ name }"]`).waitForVisible(5000);
 		browser.element(`[data-name="${ name }"]`).click();
 	}
+
+	openAdminView() {
+		this.sidebarMenu.waitForVisible(5000);
+		this.sidebarMenu.click();
+		this.admin.waitForVisible(5000);
+		this.admin.click();
+	}
 }
 
 module.exports = new SideNav();

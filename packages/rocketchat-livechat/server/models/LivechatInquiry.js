@@ -7,8 +7,8 @@ class LivechatInquiry extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'message': 1 }); // message sent by the client
 		this.tryEnsureIndex({ 'ts': 1 }); // timestamp
 		this.tryEnsureIndex({ 'code': 1 }); // (for routing)
-		this.tryEnsureIndex({ 'agents': 1}); // Id's of the agents who can see the inquiry (handle departments)
-		this.tryEnsureIndex({ 'status': 1}); // 'open', 'taken'
+		this.tryEnsureIndex({ 'agents': 1 }); // Id's of the agents who can see the inquiry (handle departments)
+		this.tryEnsureIndex({ 'status': 1 }); // 'open', 'taken'
 	}
 
 	findOneById(inquiryId) {
@@ -58,7 +58,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 	 * return the status of the inquiry (open or taken)
 	 */
 	getStatus(inquiryId) {
-		return this.findOne({'_id': inquiryId}).status;
+		return this.findOne({ '_id': inquiryId }).status;
 	}
 
 	updateVisitorStatus(token, status) {
@@ -74,6 +74,10 @@ class LivechatInquiry extends RocketChat.models._Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	findOneByRoomId(roomId) {
+		return this.findOne({ rid: roomId });
 	}
 }
 

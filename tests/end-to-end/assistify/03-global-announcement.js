@@ -40,6 +40,11 @@ describe('[Rocket.Chat Global Announcement Tests]', function() {
 	});
 
 	it('Login-Page announcement should be there', function() {
+		try {
+			sideNav.logoutRocketchat();
+		} catch (e) {
+			loginPage.open();
+		}
 		loginPage.open();
 		loginPage.GlobalAnnouncement.isVisible().should.equal(true);
 		loginPage.GlobalAnnouncement.getText().should.equal(message);

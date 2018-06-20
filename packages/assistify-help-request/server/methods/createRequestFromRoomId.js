@@ -1,7 +1,9 @@
+/* globals RocketChat */
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { CreateRequestFactory } from './createRequestFactory';
 import { CreateRequestBase } from './createRequestBase';
+import {getKnowledgeAdapter} from 'meteor/assistify:ai';
 
 /*
  * When a message is eligible to be answered as a independent question then it can be threaded into a new channel.
@@ -81,6 +83,9 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 		// Generate RoomName for the new room to be created.
 		this.name = `${ parentRoom.name }-${ CreateRequestBase.getNextId() }`;
 		const roomCreateResult = RocketChat.createRoom('r', this.name, Meteor.user() && Meteor.user().username, parentRoom.usernames, false, { parentRoomId: this._parentRoomId });
+		const knowledgeAdapter = getKnowledgeAdapter();
+		knowledgeAdapter.afterCreateChannel(roomCreateResult.rid);
+
 		if (parentRoom.t === 'e') {
 			parentRoom.usernames.concat([Meteor.user().username]);
 		}

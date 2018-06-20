@@ -38,6 +38,12 @@ Assistify_AI_Widget_Posting_Type_PostText: post text
 Assistify_AI_Widget_Posting_Type_SuggestText: suggest text
 Assistify_AI_RocketChat_Webhook_Token: Rocket.Chat Token
 Assistify_AI_RocketChat_Webhook_Token_Description: Appoint a token for incoming Smarti messages (z.B. key123).
+Assistify_AI_Resync: Resync Smarti
+Assistify_AI_Resync_Text: Resynchronize
+Assistify_AI_Resync_Description: Triggers a delta Rocket.Chat/Smarti synchronization
+Assistify_AI_Resync_Full: Resync Smarti (Complete)
+Assistify_AI_Resync_Full_Text: Resynchronize Complete
+Assistify_AI_Resync_Full_Description: Triggers a complete Rocket.Chat/Smarti synchronization
 Widget_could_not_load: The knowledge base cannot be displayed. We're more than sorry for that! If you're connected to the intranet (you have to in order to fetch results), please let us know so we can fix the issue!
 Widget_loading: Knowledge-base has been loading for a while now. Something seems to wrong here...
 Reload_Settings: Reload settings

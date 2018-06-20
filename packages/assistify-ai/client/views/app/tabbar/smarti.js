@@ -117,3 +117,10 @@ Template.AssistifySmarti.helpers({
 	}
 });
 
+Template.AssistifySmarti.events({
+	'click .js-resync-room'(event, instance) {
+		if (instance.data.rid) {
+			Meteor.call('resyncRoom', instance.data.rid);
+		}
+	}
+});

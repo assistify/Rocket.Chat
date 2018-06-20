@@ -5,7 +5,9 @@
 				<div id="widgetHeader">
 					<div class="widgetHeaderWrapper">
 						<h4>
-							<img src="/packages/assistify_ai/client/public/assistify.png" alt="Bulb-icon">
+							<button class="js-resync-room">
+								<img src="/packages/assistify_ai/client/public/assistify.png" alt="Bulb-icon">
+							</button>
 							{{_ "Knowledge_Base"}}
 						</h4>
 					</div>
@@ -14,19 +16,11 @@
 					<div class="widgetMessage">
 						<div class="loading-notification">{{loadingNotification}}</div>
 					</div>
-					{{#if isLoading }}
-						{{> loading }}
-					{{/if}}
+					{{#if isLoading }} {{> loading }} {{/if}}
 				</div>
 				<div id="widgetFooter">
-					{{#let helpRequest=helpRequestByRoom }}
-						{{#if helpRequest}}
-							{{> HelpRequestActions helpRequest }}
-						{{/if}}
-					{{/let}}
-					{{#if isLivechat}}
-						{{> HelpRequestActions liveChatActions}}
-					{{/if}}
+					{{#let helpRequest=helpRequestByRoom }} {{#if helpRequest}} {{> HelpRequestActions helpRequest }} {{/if}} {{/let}} {{#if
+					isLivechat}} {{> HelpRequestActions liveChatActions}} {{/if}}
 				</div>
 			</div>
 		</div>

@@ -59,9 +59,6 @@ Package.onUse(function(api) {
 	// we have all migrations in one single file
 	api.addFiles('server/migrations.js', 'server');
 
-	// Hooks
-	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
-
 	// UI artifacts which are pre-processed or packaged by the server
 	api.addAssets('client/public/icons.svg', 'server');
 

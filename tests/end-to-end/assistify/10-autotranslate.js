@@ -49,8 +49,7 @@ describe('[Auto Translate]', function() {
 		});
 		describe('[Translation Settings]', function() {
 			before(function() {
-				sideNav.sidebarMenu.click();
-				sideNav.popOverContent.click();
+				sideNav.openAdminView();
 			});
 			describe('[Section: Message]', function() {
 				before(() => {

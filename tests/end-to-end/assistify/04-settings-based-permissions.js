@@ -12,9 +12,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 	describe('Give User Permissions', function() {
 		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-			sideNav.sidebarMenu.click();
-			sideNav.admin.waitForVisible(5000);
-			sideNav.admin.click();
+			sideNav.openAdminView();
 			admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
 			expandSBP.click();
@@ -55,9 +53,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 
 		before(() => {
 			checkIfUserIsValid(username, email, password);
-			sideNav.sidebarMenu.click();
-			sideNav.admin.waitForVisible(5000);
-			sideNav.admin.click();
+			sideNav.openAdminView();
 		});
 
 		it('Change Titelpage title is allowed', function(done) {

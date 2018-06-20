@@ -1,3 +1,5 @@
+/* globals RocketChat */
+import {getKnowledgeAdapter} from 'meteor/assistify:ai';
 Meteor.methods({
 	createExpertise(name, members) {
 		check(name, String);
@@ -15,6 +17,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-no-members', 'No members supplied', { method: 'createExpertise' });
 		}
 
-		return RocketChat.createRoom('e', name, Meteor.user() && Meteor.user().username, members, false, {});
+		const room = RocketChat.createRoom('e', name, Meteor.user() && Meteor.user().username, members, false, {});
+		const knowledgeAdapter = getKnowledgeAdapter();
+		knowledgeAdapter.afterCreateChannel(room.rid);
+		return room;
 	}
 });
