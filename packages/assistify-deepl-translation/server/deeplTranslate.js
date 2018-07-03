@@ -69,31 +69,31 @@ class DeeplAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target] = [
 				{
 					'language': 'EN',
-					'name': TAPi18n.__('English', { lng: target })
+					'name': TAPi18n.__('English', {lng: target})
 				},
 				{
 					'language': 'DE',
-					'name': TAPi18n.__('German', { lng: target })
+					'name': TAPi18n.__('German', {lng: target})
 				},
 				{
 					'language': 'FR',
-					'name': TAPi18n.__('French', { lng: target })
+					'name': TAPi18n.__('French', {lng: target})
 				},
 				{
 					'language': 'ES',
-					'name': TAPi18n.__('Spanish', { lng: target })
+					'name': TAPi18n.__('Spanish', {lng: target})
 				},
 				{
 					'language': 'IT',
-					'name': TAPi18n.__('Italian', { lng: target })
+					'name': TAPi18n.__('Italian', {lng: target})
 				},
 				{
 					'language': 'NL',
-					'name': TAPi18n.__('Dutch', { lng: target })
+					'name': TAPi18n.__('Dutch', {lng: target})
 				},
 				{
 					'language': 'PL',
-					'name': TAPi18n.__('Polish', { lng: target })
+					'name': TAPi18n.__('Polish', {lng: target})
 				}
 			];
 		}
@@ -117,23 +117,23 @@ class DeeplAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			let result;
 			try {
-				result = HTTP.get(this.apiEndPointUrl, {
+				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language
 					}, query
 				});
+
+				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+					// store translation only when the source and target language are different.
+					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
+						const txt = result.data.translations.map(translation => translation.text).join('\n');
+						translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
+					}
+				}
 			} catch (e) {
 				console.log('Error translating message', e);
-			}
-			if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
-				// store translation only when the source and target language are different.
-				if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-					const txt = result.data.translations.map(translation => translation.text).join('\n');
-					translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
-				}
 			}
 		});
 		return translations;
@@ -154,21 +154,20 @@ class DeeplAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			let result;
 			try {
-				result = HTTP.get(this.apiEndPointUrl, {
+				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language
 					}, query
 				});
+				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
+						translations[language] = result.data.translations.map(translation => translation.text).join('\n');
+					}
+				}
 			} catch (e) {
 				console.log('Error translating message attachment', e);
-			}
-			if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
-				if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-					translations[language] = result.data.translations.map(translation => translation.text).join('\n');
-				}
 			}
 		});
 		return translations;

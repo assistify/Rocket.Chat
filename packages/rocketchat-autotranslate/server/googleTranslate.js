@@ -111,20 +111,19 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			let result;
 			try {
-				result = HTTP.get(this.apiEndPointUrl, {
+				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						key: this.apiKey,
 						target: language
 					}, query
 				});
+				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
+					const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+					translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
+				}
 			} catch (e) {
 				console.log('Error translating message', e);
-			}
-			if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-				const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
-				translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
 			}
 		});
 		return translations;
@@ -145,15 +144,20 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			const result = HTTP.get(this.apiEndPointUrl, {
-				params: {
-					key: this.apiKey,
-					target: language
-				}, query
-			});
-			if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-				translations[language] = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+			try {
+				const result = HTTP.get(this.apiEndPointUrl, {
+					params: {
+						key: this.apiKey,
+						target: language
+					}, query
+				});
+				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
+					translations[language] = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+				}
+			} catch (e) {
+				console.log('Error translating message', e);
 			}
+
 		});
 		return translations;
 	}
