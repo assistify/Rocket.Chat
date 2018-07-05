@@ -1,6 +1,7 @@
 /**
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
+/* globals SystemLogger, RocketChat */
 
 import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
 import {RocketChat} from 'meteor/rocketchat:lib';
@@ -133,7 +134,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					}
 				}
 			} catch (e) {
-				console.log('Error translating message', e);
+				SystemLogger.log('Error translating message', e);
 			}
 		});
 		return translations;
@@ -167,7 +168,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					}
 				}
 			} catch (e) {
-				console.log('Error translating message attachment', e);
+				SystemLogger.log('Error translating message attachment', e);
 			}
 		});
 		return translations;
