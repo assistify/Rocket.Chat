@@ -2,8 +2,10 @@
 /**
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
-/* globals SystemLogger, RocketChat */
+
 import {AutoTranslate, TranslationProviderRegistry} from './autotranslate';
+import {SystemLogger} from 'meteor/rocketchat:logger';
+import {RocketChat} from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -124,7 +126,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
 				}
 			} catch (e) {
-				SystemLogger.log('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -156,7 +158,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					translations[language] = result.data.data.translations.map(translation => translation.translatedText).join('\n');
 				}
 			} catch (e) {
-				SystemLogger.log('Error translating message', e);
+				SystemLogger.error('Error translating message', e);
 			}
 
 		});
