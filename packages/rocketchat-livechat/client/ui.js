@@ -26,7 +26,7 @@ RocketChat.TabBar.addButton({
 	order: 11
 });
 
-RocketChat.TabBar.addGroup('message-search', ['live']);
+RocketChat.TabBar.addGroup('rocket-search', ['live']);
 RocketChat.TabBar.addGroup('starred-messages', ['live']);
 RocketChat.TabBar.addGroup('uploaded-files-list', ['live']);
 RocketChat.TabBar.addGroup('push-notifications', ['live']);
