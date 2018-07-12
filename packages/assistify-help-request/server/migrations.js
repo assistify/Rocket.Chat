@@ -38,6 +38,8 @@ Meteor.startup(() => {
 		$set: {
 			secret: true
 		}
+	}, {
+		multi: true
 	});
 	if (updated) {
 		console.log('Migrated', updated, 'Private Room(s) Privacy is set to secret');
