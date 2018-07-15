@@ -15,7 +15,7 @@ export class CreateRequestFromExpertise extends CreateRequestBase {
 	static getExperts(expertise) {
 		const expertiseRoom = RocketChat.models.Rooms.findOneByName(expertise);
 		if (expertiseRoom) {
-			return expertiseRoom.usernames;
+			return expertiseRoom.usernames || [];
 		} else {
 			return []; // even if there are no experts in the room, this is valid. A bot could notify later on about this flaw
 		}
