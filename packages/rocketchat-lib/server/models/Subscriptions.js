@@ -798,4 +798,4 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Subscriptions = new ModelSubscriptions('subscription', true);
+RocketChat.models.Subscriptions = new ModelSubscriptions('subscription', false);
