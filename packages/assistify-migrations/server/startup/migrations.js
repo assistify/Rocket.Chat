@@ -6,25 +6,30 @@ on startup which migrate data - ignoring the actual version
 
 Meteor.startup(() => {
 	const topics = RocketChat.models.Rooms.findByType('e').fetch();
+	let counterRequests = 0;
 	//Update room type and parent room id for request
 	RocketChat.models.Rooms.findByType('r').forEach((request) => {
 		const update = {};
-		if (!update.$set) {
-			update.$set = {};
-		}
-		// prepare update fields
+		update.$set = {};
+		let parentTopic = null;
+
 		if (request.expertise) {
-			topics.find(topic => {
-				if (request.expertise === topic.name) {
-					update.$set.parentRoomId = topic._id;
-				}
+			parentTopic = topics.find(topic => {
+				return request.expertise === topic.name;
 			});
+			if (!parentTopic) {
+				console.log('couldn\'t find topic', request.expertise, '- ignoring');
+			} else {
+				update.$set.parentRoomId = parentTopic._id;
+			}
 		}
 		update.$set.oldType = request.t;
 		update.$set.t = 'p';
 		// update requests
 		RocketChat.models.Rooms.update({_id: request._id}, update);
+		counterRequests++;
 	});
+	console.log('Migrated', counterRequests, 'requests to private groups');
 
 	//Update room type and parent room id for expertises
 	RocketChat.models.Rooms.update({
@@ -32,7 +37,7 @@ Meteor.startup(() => {
 	}, {
 		$set: {
 			oldType: 'e', // move the room type as old room type
-			t: 'p' // set new room type to private room
+			t: 'c' // set new room type to public channel
 		}
 	}, {
 		multi: true
@@ -56,7 +61,7 @@ Meteor.startup(() => {
 	}, {
 		$set: {
 			oldType: 'e',
-			t: 'p'
+			t: 'c'
 		}
 	}, {
 		multi: true
