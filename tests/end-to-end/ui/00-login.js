@@ -119,7 +119,7 @@ describe('[Setup Wizard]', () => {
 		loginPage.login({ email: adminEmail, password: adminPassword });
 	});
 
-	it('Need to Run Setup Wizard?', () => {
+	it(`Need to Run Setup Wizard: ${ alreadyExecuted }`, () => {
 		if (alreadyExecuted) {
 			describe('Setup Wizard already completed earlier on', () => {
 				it.skip('skip the setup wizard tests', () => {
@@ -129,7 +129,7 @@ describe('[Setup Wizard]', () => {
 		} else {
 			describe('[Render - Step 1]', () => {
 				before(() => {
-					browser.pause(1000); // to make sure the wizard screen is visible
+					browser.pause(5000); // to make sure the wizard screen is visible
 				});
 				it('it should show organization type', () => {
 					setupWizard.organizationType.isVisible().should.be.true;
