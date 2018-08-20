@@ -58,8 +58,7 @@ Meteor.startup(() => {
 		$set: {
 			secret: true
 		}
-	},
-	{
+	}, {
 		multi: true
 	});
 	if (updated) {
