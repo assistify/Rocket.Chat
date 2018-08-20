@@ -43,7 +43,7 @@ describe('[Join Room Request]', function() {
 			done();
 		});
 
-		it('open private room without permission', (done)=> {
+		it('open private room without permission', (done) => {
 			sideNav.selectPrivateRoomFromList(privateChannelName);
 			done();
 		});
@@ -82,7 +82,7 @@ describe('[Join Room Request]', function() {
 			done();
 		});
 
-		it('open private room without permission', (done)=> {
+		it('open private room without permission', (done) => {
 			sideNav.selectPrivateRoomFromList(privateChannelName);
 			done();
 		});

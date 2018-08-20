@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import sideNav from '../../pageobjects/side-nav.page';
+/*import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 import { checkIfUserIsAdmin } from '../../data/checks';
@@ -38,10 +38,11 @@ describe('[Word-cloud Test]', () => {
 		this.timeout(100000);
 		console.log('Topics cleaning started.');
 		for (let i=1; i <= numTopics; i++) {
-			console.log('Topic Deleted', topicName+i);
+			console.log('Topic Deleted', topicName + i);
+			sideNav.searchChannel(topicName+i);
 			assistify.deleteRoom(topicName+i);
 		}
 		done();
 	});
 
-});
+});*/
