@@ -2,26 +2,7 @@
 
 import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
-import supertest from 'supertest';
-
-import { adminUsername, adminPassword } from '../../data/user.js';
-
-const request = supertest('http://localhost:3000');
-const prefix = '/api/v1/';
-
-function api(path) {
-	return prefix + path;
-}
-
-const credentials = {
-	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined
-};
-
-const login = {
-	user: adminUsername,
-	password: adminPassword
-};
+import { getSettingValue } from '../../pageobjects/settings';
 
 describe('[Login]', () => {
 	before(()=>{
@@ -90,39 +71,11 @@ describe('[Login]', () => {
 });
 
 let alreadyExecuted = false;
-function getSetupWizardStatus(done) {
-	request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			credentials['X-Auth-Token'] = res.body.data.authToken;
-			credentials['X-User-Id'] = res.body.data.userId;
-		})
-		.end(() => {
-			request.get(api('settings/Show_Setup_Wizard'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					alreadyExecuted = res.body.value === 'completed';
-				})
-				.end(done);
-		});
-	request.post(api('logout'))
-		.send(credentials)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			console.log(res);
-			return res.status = 'success';
-		})
-		.end(done);
-}
+
 describe('[Setup Wizard]', () => {
-	before((done)=>{
+	before(async() => {
+		alreadyExecuted = await getSettingValue('Show_Setup_Wizard');
 		//check to see if the setup-wizard already executed.
-		alreadyExecuted = getSetupWizardStatus(done);
 
 		setupWizard.login();
 		setupWizard.organizationType.waitForVisible(15000);
@@ -221,13 +174,13 @@ describe('[Setup Wizard]', () => {
 	});
 
 	after(() => {
-		/* 		browser.execute(function() {
+		browser.execute(function() {
 			const user = Meteor.user();
 			Meteor.logout(() => {
 				RocketChat.callbacks.run('afterLogoutCleanUp', user);
 				Meteor.call('logoutCleanUp', user);
 				FlowRouter.go('home');
 			});
-		}); */
+		});
 	});
 });
