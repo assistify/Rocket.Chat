@@ -119,7 +119,7 @@ describe('[Setup Wizard]', () => {
 		loginPage.login({ email: adminEmail, password: adminPassword });
 	});
 
-	it('Decide to Run Setup Wizard', () => {
+	it('Need to Run Setup Wizard?', () => {
 		if (alreadyExecuted) {
 			describe('Setup Wizard already completed earlier on', () => {
 				it.skip('skip the setup wizard tests', () => {
@@ -171,6 +171,24 @@ describe('[Setup Wizard]', () => {
 
 				it('it should server type', () => {
 					setupWizard.serverType.isVisible().should.be.true;
+				});
+
+				after(() => {
+					setupWizard.goNext();
+				});
+			});
+
+			describe('[Render - Step 3]', () => {
+				it('it should have option for registered server', () => {
+					setupWizard.registeredServer.isExisting().should.be.true;
+				});
+
+				it('it should have option for standalone server', () => {
+					setupWizard.standaloneServer.isExisting().should.be.true;
+				});
+
+				it('it should check option for registered server by default', () => {
+					setupWizard.registeredServer.isSelected().should.be.true;
 				});
 
 				after(() => {
