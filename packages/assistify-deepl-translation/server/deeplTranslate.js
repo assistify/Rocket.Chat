@@ -105,13 +105,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * Send Request REST API call to the service provider.
 	 * Returns translated message for each target language in target languages.
 	 * @private
-	 * @param {object} targetMessage
+	 * @param {object} message
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_sendRequestTranslateMessage(targetMessage, targetLanguages) {
+	_sendRequestTranslateMessage(message, targetLanguages) {
 		const translations = {};
-		let msgs = targetMessage.msg.split('\n');
+		let msgs = message.msg.split('\n');
 		msgs = msgs.map(msg => encodeURIComponent(msg));
 		const query = `text=${ msgs.join('&text=') }`;
 		const supportedLanguages = this._getSupportedLanguages('en');
@@ -131,7 +131,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					// store translation only when the source and target language are different.
 					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
 						const txt = result.data.translations.map(translation => translation.text).join('\n');
-						translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
+						translations[language] = this.deTokenize(Object.assign({}, message, {msg: txt}));
 					}
 				}
 			} catch (e) {

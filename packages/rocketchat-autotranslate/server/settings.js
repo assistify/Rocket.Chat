@@ -15,10 +15,21 @@ Meteor.startup(function() {
 		}, {
 			key: 'deepl-translate',
 			i18nLabel: 'AutoTranslate_DeepL'
+		}, {
+			key: 'dbs-translate',
+			i18nLabel: 'AutoTranslate_DBS'
 		}],
 		enableQuery: [{_id: 'AutoTranslate_Enabled', value: true}],
 		i18nLabel: 'AutoTranslate_ServiceProvider',
 		public: true
+	});
+	RocketChat.settings.add('AutoTranslate_ServiceProviderURL', '', {
+		type: 'string',
+		group: 'Message',
+		section: 'AutoTranslate',
+		public: true,
+		enableQuery: [{_id: 'AutoTranslate_Enabled', value: true}, {_id: 'AutoTranslate_ServiceProvider', value: 'dbs-translate'}],
+		i18nLabel: 'AutoTranslate_ServiceProviderURL'
 	});
 
 	if (RocketChat.models.Settings.findById('AutoTranslate_GoogleAPIKey').count()) {

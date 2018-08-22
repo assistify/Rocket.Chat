@@ -197,3 +197,4 @@ assistify:defaults
 meteorhacks:aggregate
 assistify:deepl-translation
 overture8:wordcloud2
+assistify:dbs-translation

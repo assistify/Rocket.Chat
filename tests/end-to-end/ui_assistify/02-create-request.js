@@ -41,6 +41,7 @@ describe('[Help Request]', function() {
 	describe('[Clean Up]', function() {
 		it('close new Topic', () => {
 			console.log('Clean for the Topic and Expertise Started...', topicName);
+			sideNav.searchChannel(helpRequest);
 			assistify.deleteRoom(helpRequest);
 		});
 	});
@@ -125,9 +126,12 @@ describe('[Threading]', function() {
 		describe('[Clean Up]', function() {
 			it('close the topics and request', () => {
 				console.log('Clean for the Topic and Expertise Started...', topicName);
+				sideNav.searchChannel(helpRequest);
 				assistify.deleteRoom(helpRequest);
+				sideNav.searchChannel(helpRequestThreaded);
 				assistify.deleteRoom(helpRequestThreaded);
 				browser.pause(1000);
+				sideNav.searchChannel(topicName);
 				assistify.deleteRoom(topicName);
 			});
 		});

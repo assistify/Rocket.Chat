@@ -9,6 +9,7 @@ accounts-twitter@1.4.1
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 assistify:ai@0.2.0
+assistify:dbs-translation@0.0.1
 assistify:deepl-translation@0.0.1
 assistify:defaults@0.0.1
 assistify:help-request@0.1.0

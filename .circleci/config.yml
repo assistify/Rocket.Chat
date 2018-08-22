@@ -335,7 +335,7 @@ jobs:
       - setup_remote_docker
 
       - run:
-          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
       - run:
           no_output_timeout: 20m
           command: |
