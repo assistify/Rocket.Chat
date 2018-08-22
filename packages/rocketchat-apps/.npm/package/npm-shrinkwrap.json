@@ -2,26 +2,26 @@
   "lockfileVersion": 1,
   "dependencies": {
     "@rocket.chat/apps-engine": {
-      "version": "0.4.8",
-      "resolved": "https://registry.npmjs.org/@rocket.chat/apps-engine/-/apps-engine-0.4.8.tgz",
-      "integrity": "sha512-QZ+VNeMf4RDWKTd8O6t8/enwOSNVla6hcpvZYAb9nd8D2Syi6RstcLCYCFjaM+Vc6EX5Dscv4nUjXJtsY/2KOw==",
+      "version": "0.6.10",
+      "resolved": "https://registry.npmjs.org/@rocket.chat/apps-engine/-/apps-engine-0.6.10.tgz",
+      "integrity": "sha512-4jrHvfuPCk5vHlU2wLgj+rHYgPaeMIU4BHtH1rmN+I14U88loDRfVT4hPPm70wxpCtNtFdyQ6fe95HzZbC8tzA==",
       "dependencies": {
         "@rocket.chat/apps-ts-definition": {
-          "version": "0.7.16",
-          "resolved": "https://registry.npmjs.org/@rocket.chat/apps-ts-definition/-/apps-ts-definition-0.7.16.tgz",
-          "integrity": "sha512-bCguBIH0rXn/58bY/+y/JGAALo/AjWikI9vhPu6IH9pBbIM2w57FAQT8Rd38B0Z+UK+uBsqlHdz5EWJPcU7ESA=="
+          "version": "0.9.13",
+          "resolved": "https://registry.npmjs.org/@rocket.chat/apps-ts-definition/-/apps-ts-definition-0.9.13.tgz",
+          "integrity": "sha512-2fqbJG8TPq19o2uZCE3UqRpNobAfAcgu0WkM8PAmhf1de459Z2gbmzbCBAsQJq6eOrGkqDry0GTzEneiCEvwZg=="
         }
       }
     },
     "@rocket.chat/apps-ts-definition": {
-      "version": "0.7.15",
-      "resolved": "https://registry.npmjs.org/@rocket.chat/apps-ts-definition/-/apps-ts-definition-0.7.15.tgz",
-      "integrity": "sha512-mOD1C/bTfeOY77/Rnlq8nLuCQSUTq8qeHH604DiehJJGD3gToEt2yIAbKOdFrkoOCV2T5z6eXzyBifMjsreAbQ=="
+      "version": "0.9.13",
+      "resolved": "https://registry.npmjs.org/@rocket.chat/apps-ts-definition/-/apps-ts-definition-0.9.13.tgz",
+      "integrity": "sha512-2fqbJG8TPq19o2uZCE3UqRpNobAfAcgu0WkM8PAmhf1de459Z2gbmzbCBAsQJq6eOrGkqDry0GTzEneiCEvwZg=="
     },
     "adm-zip": {
-      "version": "0.4.8",
-      "resolved": "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.8.tgz",
-      "integrity": "sha512-PcFQf6E2HFbI24MM4wttwKQ/UmBIfPk5qA7+fqXjL+sMQTrE2FykQ3j50TL+MlaEKN+/4IYqTpYfZ2I7Xec2cg=="
+      "version": "0.4.11",
+      "resolved": "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.11.tgz",
+      "integrity": "sha512-L8vcjDTCOIJk7wFvmlEUN7AsSb8T+2JrdP7KINBjzr24TJ5Mwj590sLu3BC7zNZowvJWa/JtPmD8eJCzdtDWjA=="
     },
     "busboy": {
       "version": "0.2.13",
@@ -47,6 +47,11 @@
       "version": "0.0.1",
       "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
       "integrity": "sha1-ihis/Kmo9Bd+Cav8YDiTmwXR7t8="
+    },
+    "lodash.clonedeep": {
+      "version": "4.5.0",
+      "resolved": "https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz",
+      "integrity": "sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8="
     },
     "readable-stream": {
       "version": "1.1.14",
@@ -74,9 +79,9 @@
       "integrity": "sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ="
     },
     "typescript": {
-      "version": "2.8.3",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.8.3.tgz",
-      "integrity": "sha512-K7g15Bb6Ra4lKf7Iq2l/I5/En+hLIHmxWZGq3D4DIRNFxMNV6j2SHSvDOqs2tGd4UvD/fJvrwopzQXjLrT7Itw=="
+      "version": "2.9.2",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.9.2.tgz",
+      "integrity": "sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w=="
     },
     "uuid": {
       "version": "3.2.1",

@@ -2,8 +2,10 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
+
 import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
 import {RocketChat} from 'meteor/rocketchat:lib';
+import {SystemLogger} from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 
 /**
@@ -69,31 +71,31 @@ class DeeplAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target] = [
 				{
 					'language': 'EN',
-					'name': TAPi18n.__('English', { lng: target })
+					'name': TAPi18n.__('English', {lng: target})
 				},
 				{
 					'language': 'DE',
-					'name': TAPi18n.__('German', { lng: target })
+					'name': TAPi18n.__('German', {lng: target})
 				},
 				{
 					'language': 'FR',
-					'name': TAPi18n.__('French', { lng: target })
+					'name': TAPi18n.__('French', {lng: target})
 				},
 				{
 					'language': 'ES',
-					'name': TAPi18n.__('Spanish', { lng: target })
+					'name': TAPi18n.__('Spanish', {lng: target})
 				},
 				{
 					'language': 'IT',
-					'name': TAPi18n.__('Italian', { lng: target })
+					'name': TAPi18n.__('Italian', {lng: target})
 				},
 				{
 					'language': 'NL',
-					'name': TAPi18n.__('Dutch', { lng: target })
+					'name': TAPi18n.__('Dutch', {lng: target})
 				},
 				{
 					'language': 'PL',
-					'name': TAPi18n.__('Polish', { lng: target })
+					'name': TAPi18n.__('Polish', {lng: target})
 				}
 			];
 		}
@@ -103,13 +105,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * Send Request REST API call to the service provider.
 	 * Returns translated message for each target language in target languages.
 	 * @private
-	 * @param {object} targetMessage
+	 * @param {object} message
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_sendRequestTranslateMessage(targetMessage, targetLanguages) {
+	_sendRequestTranslateMessage(message, targetLanguages) {
 		const translations = {};
-		let msgs = targetMessage.msg.split('\n');
+		let msgs = message.msg.split('\n');
 		msgs = msgs.map(msg => encodeURIComponent(msg));
 		const query = `text=${ msgs.join('&text=') }`;
 		const supportedLanguages = this._getSupportedLanguages('en');
@@ -117,23 +119,23 @@ class DeeplAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			let result;
 			try {
-				result = HTTP.get(this.apiEndPointUrl, {
+				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language
 					}, query
 				});
-			} catch (e) {
-				console.log('Error translating message', e);
-			}
-			if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
-				// store translation only when the source and target language are different.
-				if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-					const txt = result.data.translations.map(translation => translation.text).join('\n');
-					translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
+
+				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+					// store translation only when the source and target language are different.
+					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
+						const txt = result.data.translations.map(translation => translation.text).join('\n');
+						translations[language] = this.deTokenize(Object.assign({}, message, {msg: txt}));
+					}
 				}
+			} catch (e) {
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -154,21 +156,20 @@ class DeeplAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			let result;
 			try {
-				result = HTTP.get(this.apiEndPointUrl, {
+				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language
 					}, query
 				});
-			} catch (e) {
-				console.log('Error translating message attachment', e);
-			}
-			if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
-				if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-					translations[language] = result.data.translations.map(translation => translation.text).join('\n');
+				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
+						translations[language] = result.data.translations.map(translation => translation.text).join('\n');
+					}
 				}
+			} catch (e) {
+				SystemLogger.error('Error translating message attachment', e);
 			}
 		});
 		return translations;

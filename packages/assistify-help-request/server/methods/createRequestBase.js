@@ -51,10 +51,10 @@ export class CreateRequestBase {
 			if (expertise) {
 				const expertiseSubscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(expertise._id, user._id);
 				if (expertiseSubscription) {
-					RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, expertiseSubscription.desktopNotifications || 'default');
-					RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, expertiseSubscription.mobilePushNotifications || 'default');
-					RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, expertiseSubscription.emailNotifications || 'default');
-					RocketChat.models.Subscriptions.updateAudioNotificationsById(subscription._id, expertiseSubscription.audioNotifications || 'default');
+					RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, expertiseSubscription.desktopNotifications || null);
+					RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, expertiseSubscription.mobilePushNotifications || null);
+					RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, expertiseSubscription.emailNotifications || null);
+					RocketChat.models.Subscriptions.updateAudioNotificationsById(subscription._id, expertiseSubscription.audioNotifications || null);
 				}
 			} else {
 				// Fallback: notify everything
@@ -65,7 +65,13 @@ export class CreateRequestBase {
 		});
 	}
 	_postMessage(room, user, message, attachments) {
-		const newMessage = { _id: Random.id(), rid: room.rid, msg: message, attachments: attachments || [] };
+		attachments = attachments || [];
+
+		//sendMessage expects the attachments timestamp to be a string, => serialize it
+		attachments.forEach(attachment =>
+			attachment.ts = attachment.ts ? attachment.ts.toISOString() : ''
+		);
+		const newMessage = { _id: Random.id(), rid: room.rid, msg: message, attachments };
 		return RocketChat.sendMessage(user, newMessage, room);
 	}
 
@@ -74,5 +80,3 @@ export class CreateRequestBase {
 	}
 
 }
-
-

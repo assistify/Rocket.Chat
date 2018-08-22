@@ -1,3 +1,4 @@
+/* globals SystemLogger */
 import _ from 'underscore';
 
 RocketChat.models.Messages = new class extends RocketChat.models._Base {
@@ -19,6 +20,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({'location': '2dsphere'});
 		this.tryEnsureIndex({'slackBotId': 1, 'slackTs': 1}, {sparse: 1});
 		this.tryEnsureIndex({'t': 1, 'attachments.fields.requester': 1}, {unique: false});
+	}
+
+	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			ts: {
+				$gte: afterTimestamp,
+				$lte: beforeTimestamp
+			}
+		};
+
+		return this.find(query, options).count();
 	}
 
 	// FIND
@@ -284,6 +300,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = {slackTs};
 
 		return this.findOne(query);
+	}
+
+	findByRoomId(roomId, options) {
+		const query = {
+			rid: roomId
+		};
+
+		return this.find(query, options);
 	}
 
 	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
@@ -564,7 +588,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		const room = RocketChat.models.Rooms.findOneById(roomId, {fields: {sysMes: 1}});
-		if ((room != null ? room.sysMes : undefined) === false) {
+		if (!room) {
+			SystemLogger.error(`Tried to create a system message ${ message } type ${ type } for a non-existent room ${ roomId }`);
 			return;
 		}
 		const record = {

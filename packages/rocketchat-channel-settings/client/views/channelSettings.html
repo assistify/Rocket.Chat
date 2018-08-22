@@ -1,116 +1,130 @@
 <template name="channelSettings">
-	{{#if editing}} {{> channelSettingsEditing}} {{else}} {{> channelSettingsInfo}} {{/if}}
+	{{#if editing}}
+		{{> channelSettingsEditing}}
+	{{else}}
+		{{> channelSettingsInfo}}
+	{{/if}}
 </template>
 <template name="channelSettingsEditing">
 	<div class="rc-user-info__scroll">
-		{{#with settings.name}} {{#if canView}}
+		{{#with settings.name}}
+			{{#if canView}}
 			<div class="rc-user-info__row">
 				<div class="rc-input">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input"
-								   disabled="{{./disabled}}"/>
+							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 						</div>
 					</label>
 				</div>
 			</div>
-		{{/if}} {{/with}} {{#with settings.topic}}
-		<div class="rc-user-info__row">
-			<div class="rc-input">
-				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-					<div class="rc-input__wrapper">
-						<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input"
-							   disabled="{{./disabled}}"/>
-					</div>
-				</label>
-			</div>
-		</div>
-	{{/with}} {{#with settings.announcement}}
-		<div class="rc-user-info__row">
-			<div class="rc-input">
-				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-					<div class="rc-input__wrapper">
-						<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input"
-							   disabled="{{./disabled}}"/>
-					</div>
-				</label>
-			</div>
-		</div>
-	{{/with}} {{#unless isDirectMessage}} {{#with settings.description}}
-		<div class="rc-user-info__row">
-			<div class="rc-input">
-				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-					<div class="rc-input__wrapper">
-						<input type="text" name="description" value="{{value}}" class="rc-input__element js-input"
-							   disabled="{{./disabled}}"/>
-					</div>
-				</label>
-			</div>
-		</div>
-	{{/with}} {{/unless}} {{#with settings.t}} {{#if canView}}
-		<div class="rc-user-info__row rc-user-info__row--separator">
-			<div class="rc-switch-double">
-				<div class="rc-switch-double__label {{equal true value 'disabled'}}">
-					{{_ "Public"}}{{equal default value '*'}}
-					<div class="rc-switch-double__description">
-						{{_ "Everyone_can_access_this_channel"}}
-					</div>
-				</div>
-				<div class="rc-switch rc-switch--blue">
-					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input js-input-check" name="t" checked="{{checked}}"
-							   disabled="{{./disabled}}">
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
+			{{/if}}
+		{{/with}}
+
+		{{#with settings.topic}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
 					</label>
 				</div>
-				<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
-					{{_ "Private"}}
-					<div class="rc-switch-double__description">
-						{{_ "Just_invited_people_can_access_this_channel"}}
-					</div>
-				</div>
-
 			</div>
-		</div>
-	{{/if}}{{/with}} {{#with settings.ro}}
-		<div class="rc-user-info__row rc-user-info__row--separator">
-			<div class="rc-switch-double">
-				<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
-					{{_ "Colaborative"}}{{equal default value '*'}}
-					<div class="rc-switch-double__description">
-						{{_ "All_users_in_the_channel_can_write_new_messages"}}
-					</div>
-				</div>
-				<div class="rc-switch rc-switch--blue">
-					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input js-input-check" name="ro" checked="{{checked}}"
-							   disabled="{{disabled}}">
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
+		{{/with}}
+
+		{{#with settings.announcement}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
 					</label>
 				</div>
-				<div class="rc-switch-double__label {{equal false value 'disabled'}}">
-					{{_ "Read_only"}}
-					<div class="rc-switch-double__description">
-						{{_ "Only_authorized_users_can_write_new_messages"}}
+			</div>
+		{{/with}}
+		{{#unless isDirectMessage}}
+			{{#with settings.description}}
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							</div>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+		{{/unless}}
+
+		{{#with settings.t}}
+			{{#if canView}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Public"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "Everyone_can_access_this_channel"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="t" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "Private"}}
+						<div class="rc-switch-double__description">
+							{{_ "Just_invited_people_can_access_this_channel"}}
+						</div>
+					</div>
+
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+
+		{{#with settings.ro}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Collaborative"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "All_users_in_the_channel_can_write_new_messages"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="ro" checked="{{checked}}" disabled="{{disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "Read_only"}}
+						<div class="rc-switch-double__description">
+							{{_ "Only_authorized_users_can_write_new_messages"}}
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		{{/with}}
 
-	{{/with}} {{#with settings.reactWhenReadOnly}} {{#if canView}}
-		<div class="rc-user-info__row rc-user-info__row--separator">
-			<div class="rc-switch-double">
-				<div class="rc-switch-double__label {{equal true value 'disabled'}}">
-					{{_ "React_when_read_only"}}
-					<div class="rc-switch-double__description">
+
+		{{#with settings.reactWhenReadOnly}}
+			{{#if canView}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
 						{{_ "React_when_read_only"}}
 						<div class="rc-switch-double__description">
 							{{_ "React_when_read_only"}}
@@ -132,68 +146,92 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.archived}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
 				<div class="rc-switch rc-switch--blue">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly"
-							   checked="{{checked}}" disabled="{{./disabled}}">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value '*'}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
 					</label>
 				</div>
-				<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
-					{{_ "No_reactions"}}
-					<div class="rc-switch-double__description">
-						{{_ "No_reactions"}}
+			</div>
+			{{/if}} {{/with}}
+		 {{#with settings.sysMes}}
+			{{#if canView}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
 					</div>
 				</div>
+			{{/if}}
+		{{/with}}
+
+		{{#with settings.broadcast}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
+				<div class="rc-switch rc-switch--blue">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value '*'}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
 			</div>
-		</div>
-	{{/if}} {{/with}} {{#with settings.secret}} {{#if settings.t.showSecretSetting settings.secret}}
-		<div class="rc-user-info__row">
-			<div class="rc-switch rc-switch--blue">
-				<label class="rc-switch__label">
-					<span class="rc-switch__text">
-						{{_ label}}{{equal default value '*'}}
-					</span>
-					<input type="checkbox" class="rc-switch__input js-input-check" name="secret"
-						   checked="{{checked}}"
-						   disabled="{{disabled}}">
-					<span class="rc-switch__button">
-						<span class="rc-switch__button-inside"></span>
-					</span>
-				</label>
-				<div class="rc-switch-double__description">{{secretDescription}}</div>
-			</div>
-		</div>
-	{{/if}} {{/with}} {{#with settings.archived}} {{#if canView}}
-		<div class="rc-user-info__row">
-			<div class="rc-switch rc-switch--blue">
-				<label class="rc-switch__label">
-					<span class="rc-switch__text">
-						{{_ label}}{{equal default value '*'}}
-					</span>
-					<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}"
-						   disabled="{{./disabled}}">
-					<span class="rc-switch__button">
-						<span class="rc-switch__button-inside"></span>
-					</span>
-				</label>
-			</div>
-		</div>
-	{{/if}} {{/with}} {{#with settings.joinCode}}
-		<div class="rc-user-info__row">
-			<div class="rc-input">
-				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-					<div class="rc-input__wrapper">
-						<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input"
-							   disabled="{{./disabled}}"/>
+			{{/if}}
+		{{/with}}
+		{{#with settings.secret}}
+			{{#if settings.t.showSecretSetting settings.secret}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="secret"
+								checked="{{checked}}"
+								disabled="{{disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+						<div class="rc-switch-double__description">{{secretDescription}}</div>
 					</div>
-				</label>
+				</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.joinCode}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
+					</label>
+				</div>
 			</div>
-		</div>
-	{{/with}}
+		{{/with}}
 	</div>
 	<div class="rc-user-info__row">
 		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
@@ -213,30 +251,31 @@
 </template>
 <template name="channelSettingsInfo">
 	<main class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
-		{{# with settings=settings}} {{#unless isDirectMessage}}
-			<div class="rc-user-info">
-				<div class="rc-user-info__avatar">
-					{{#if archived}}
+		{{# with settings=settings}}
+			{{#unless isDirectMessage}}
+				<div class="rc-user-info">
+					<div class="rc-user-info__avatar">
+						{{#if archived}}
 						<div class="rc-user-info__banner">
 							{{_ "Room_archived"}}
 						</div>
-					{{/if}} {{> avatar username=channelName}}
+						{{/if}}
+						{{> avatar username=channelName}}
+					</div>
+					<h3 title="{{name}}" class="rc-user-info__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{ unscape name}}</h3>
+					{{#if password}}
+						<label class="rc-user-info__label">
+							{{_ "Room_archived"}}
+						</label>
+					{{/if}}
 				</div>
-				<h3 title="{{name}}"
-					class="rc-user-info__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{ unscape name}}</h3>
-				{{#if password}}
-					<label class="rc-user-info__label">
-						{{_ "Room_archived"}}
-					</label>
-				{{/if}}
-			</div>
-			<label class="rc-user-info__label">
-				{{_ "Description"}}
-				<div class="rc-user-info__description">
-					{{unscape description}}
-				</div>
-			</label>
-		{{/unless}}
+				<label class="rc-user-info__label">
+					{{_ "Description"}}
+					<div class="rc-user-info__description">
+						{{unscape description}}
+					</div>
+				</label>
+			{{/unless}}
 			<label class="rc-user-info__label">
 				{{_ "Announcement"}}
 				<div class="rc-user-info__description">
@@ -249,12 +288,17 @@
 					{{unscape topic}}
 				</div>
 			</label>
-
-		{{/with}} {{#each channelSettings}}
-		<div class="rc-user-info__row">
-			{{> Template.dynamic template=template data=data}}
-		</div>
-	{{/each}}
+			{{#if broadcast}}
+				<label class="rc-user-info__label">
+					<b>{{_ "Broadcast_channel"}}:</b> {{_ "Broadcast_channel_Description"}}
+				</label>
+			{{/if}}
+		{{/with}}
+		{{#each channelSettings}}
+			<div class="rc-user-info__row">
+				{{> Template.dynamic template=template data=data}}
+			</div>
+		{{/each}}
 	</main>
 
 	<div class="rc-user-info__flex rc-user-info__row edit">
@@ -270,9 +314,8 @@
 			<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_
 					'Leave'}}</button>
 		{{/if}}
-		<!-- {{#if canDeleteRoom}}
-		<button class="rc-button rc-button-outline rc-button-cancel js-delete" title="{{_
-				'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
-		{{/if}} -->
 	</div>
+	{{#if canDeleteRoom}}
+	<button class="rc-button rc-button-outline rc-button-cancel js-delete rc-button--cancel rc-button--stack" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+	{{/if}}
 </template>

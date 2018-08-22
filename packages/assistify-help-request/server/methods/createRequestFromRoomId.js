@@ -60,7 +60,12 @@ export class CreateRequestFromRoomId extends CreateRequestBase {
 				});
 			// Re-post message in the new room
 			const msgAuthor = RocketChat.models.Users.findOneByUsername(this._openingQuestion.u.username); // Search with the technical username
-			const msgRePosted = this._postMessage(roomCreated, msgAuthor, this._openingQuestion.msg, this._openingQuestion.attachments);
+			const msgRePosted = this._postMessage(
+				roomCreated,
+				msgAuthor,
+				this._openingQuestion.msg,
+				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter(attachment => attachment.type && attachment.type === 'file') : []
+			);
 
 			if (msgRePosted) {
 				/* Add a reference to the original message which can be rendered for navigation */

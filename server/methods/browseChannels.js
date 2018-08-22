@@ -25,15 +25,21 @@ const sortUsers = function(field, direction) {
 
 
 Meteor.methods({
-	browseChannels({text = '', type = 'Channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
+	browseChannels({text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
+
 		let roomType;
 		if (type !== 'users') {
+			if (type === 'channels') {
+				// Hack: map the lowercase-type to the room-type which - unfortunately - has got a capital "C"
+				type = 'Channels';
+			}
 			roomType = Object.keys(RocketChat.roomTypes.roomTypes).find(key => RocketChat.roomTypes.roomTypes[key]._label === type);
 			if (!roomType) {
 				return;
 			}
 		}
+
 		if (!['asc', 'desc'].includes(sortDirection)) {
 			return;
 		}
@@ -52,13 +58,34 @@ Meteor.methods({
 		};
 
 		const user = Meteor.user();
-		if (type === 'users') {
-			const sort = sortUsers(sortBy, sortDirection);
-			// type === users
-			if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		if (type !== 'users') {
+			const sort = sortChannels(sortBy, sortDirection);
+			if (!RocketChat.roomTypes.roomTypes[roomType].listInDirectory()) {
 				return;
 			}
-			return RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
+			return {
+				results: RocketChat.models.Rooms.findListableByNameAndType(regex, roomType, {
+					...options,
+					sort,
+					fields: {
+						description: 1,
+						name: 1,
+						ts: 1,
+						archived: 1,
+						usernames: 1
+					}
+				}).fetch(),
+				total: RocketChat.models.Rooms.findListableByNameAndType(regex, roomType).count()
+			};
+		}
+
+		// type === users
+		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+			return;
+		}
+		const sort = sortUsers(sortBy, sortDirection);
+		return {
+			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
 				...options,
 				sort,
 				fields: {
@@ -67,23 +94,9 @@ Meteor.methods({
 					createdAt: 1,
 					emails: 1
 				}
-			}).fetch();
-		}
-		const sort = sortChannels(sortBy, sortDirection);
-		if (!RocketChat.roomTypes.roomTypes[roomType].listInDirectory()) {
-			return;
-		}
-		return RocketChat.models.Rooms.findListableByNameAndType(regex, roomType, {
-			...options,
-			sort,
-			fields: {
-				description: 1,
-				name: 1,
-				ts: 1,
-				archived: 1,
-				usernames: 1
-			}
-		}).fetch();
+			}).fetch(),
+			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count()
+		};
 	}
 });
 

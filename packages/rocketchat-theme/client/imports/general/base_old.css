@@ -1691,7 +1691,8 @@
 }
 
 .rc-old .announcement {
-	display: block;
+	display: flex;
+	flex-flow: row nowrap;
 	overflow: hidden;
 
 	height: 40px;
@@ -1699,8 +1700,6 @@
 
 	cursor: pointer;
 	text-align: center;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 
 	color: var(--rc-color-content);
 
@@ -1715,6 +1714,14 @@
 		text-decoration: underline;
 
 		color: currentColor;
+	}
+
+	p {
+		width: 0; /* Grow via flex. */
+		flex: auto;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 
@@ -2619,6 +2626,16 @@
 	position: relative;
 }
 
+.rc-old .message-popup-items.preview-items {
+	display: flex;
+	overflow-y: auto;
+}
+
+.rc-old .preview-items .popup-item {
+	padding: 5px;
+	line-height: unset;
+}
+
 .rc-old .rc-message-box .reply-preview {
 	display: flex;
 	position: relative;
@@ -3155,7 +3172,6 @@
 
 		& .inline-image {
 			display: inline-block;
-			overflow: hidden;
 
 			border-radius: 3px;
 			background-repeat: no-repeat;
@@ -3168,10 +3184,9 @@
 			& img {
 				max-width: 100%;
 				max-height: 200px;
+				object-fit: contain;
 
 				cursor: pointer;
-
-				opacity: 0;
 			}
 		}
 
@@ -3290,7 +3305,7 @@
 }
 
 .rc-old .attachment-description {
-	margin-top: 10px;
+	margin: 6px;
 
 	line-height: 1;
 }
@@ -4072,7 +4087,7 @@ body:not(.is-cordova) {
 .rc-old .user-image {
 	position: relative;
 
-	display: inline-table;
+	display: inline-block;
 
 	width: var(--user-image-square);
 	height: var(--user-image-square);
@@ -5430,6 +5445,11 @@ body:not(.is-cordova) {
 
 .rc-old .collapse-switch {
 	cursor: pointer;
+}
+
+.toggle-hidden {
+	cursor: pointer;
+	font-style: italic;
 }
 
 /* kinda hacky, needed in oembedFrageWidget.html */

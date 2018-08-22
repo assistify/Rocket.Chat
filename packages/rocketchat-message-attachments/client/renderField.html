@@ -2,7 +2,7 @@
 	{{#if field.type}}
 		<!-- a custom rendering is requested -->
 		<div class="field">
-			{{{specializedRendering field}}}
+			{{{specializedRendering field=field message=../..}}}
 		</div>
 	{{else}}
 		{{#if short}}

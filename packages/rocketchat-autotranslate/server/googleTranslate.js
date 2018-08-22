@@ -2,7 +2,10 @@
 /**
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
+
 import {AutoTranslate, TranslationProviderRegistry} from './autotranslate';
+import {SystemLogger} from 'meteor/rocketchat:logger';
+import {RocketChat} from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -97,13 +100,13 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * Send Request REST API call to the service provider.
 	 * Returns translated message for each target language in target languages.
 	 * @private
-	 * @param {object} targetMessage
+	 * @param {object} message
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_sendRequestTranslateMessage(targetMessage, targetLanguages) {
+	_sendRequestTranslateMessage(message, targetLanguages) {
 		const translations = {};
-		let msgs = targetMessage.msg.split('\n');
+		let msgs = message.msg.split('\n');
 		msgs = msgs.map(msg => encodeURIComponent(msg));
 		const query = `q=${ msgs.join('&q=') }`;
 		const supportedLanguages = this._getSupportedLanguages('en');
@@ -111,20 +114,19 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			let result;
 			try {
-				result = HTTP.get(this.apiEndPointUrl, {
+				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						key: this.apiKey,
 						target: language
 					}, query
 				});
+				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
+					const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+					translations[language] = this.deTokenize(Object.assign({}, message, {msg: txt}));
+				}
 			} catch (e) {
-				console.log('Error translating message', e);
-			}
-			if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-				const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
-				translations[language] = this.deTokenize(Object.assign({}, targetMessage, {msg: txt}));
+				SystemLogger.error('Error translating message', e);
 			}
 		});
 		return translations;
@@ -145,15 +147,20 @@ class GoogleAutoTranslate extends AutoTranslate {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
 			}
-			const result = HTTP.get(this.apiEndPointUrl, {
-				params: {
-					key: this.apiKey,
-					target: language
-				}, query
-			});
-			if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-				translations[language] = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+			try {
+				const result = HTTP.get(this.apiEndPointUrl, {
+					params: {
+						key: this.apiKey,
+						target: language
+					}, query
+				});
+				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
+					translations[language] = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+				}
+			} catch (e) {
+				SystemLogger.error('Error translating message', e);
 			}
+
 		});
 		return translations;
 	}

@@ -131,7 +131,7 @@ describe('[Smarti Integration]', () => {
 
 			const messageId = assistify.lastMessageId;
 			messageId.should.not.be.empty;
-
+			browser.pause(2000); // give smarti sometimetoasynchronously process the update
 			smarti.get(`/conversation/${ conversationId }/message/${ messageId }`)
 				.set('Accept', 'application/json')
 				.set('X-Auth-Token', token)
@@ -151,8 +151,9 @@ describe('[Smarti Integration]', () => {
 			Global.modal.waitForVisible(5000);
 			Global.confirmPopup();
 
-			console.log(`deleted /conversation/${ conversationId }/message/${ messageId }`);
+			//console.log(`deleted /conversation/${ conversationId }/message/${ messageId }`);
 
+			browser.pause(2000); // give smarti sometimetoasynchronously process the update
 			smarti.get(`/conversation/${ conversationId }/message/${ messageId }`)
 				.set('Accept', 'application/json')
 				.set('X-Auth-Token', token)
@@ -163,6 +164,7 @@ describe('[Smarti Integration]', () => {
 		it('close new Request', (done) => {
 			sideNav.openChannel(requestName);
 			assistify.closeRequest();
+			browser.pause(2000); // give smarti sometimetoasynchronously process the update
 			smarti.get(`/conversation/${ conversationId }`)
 				.set('Accept', 'application/json')
 				.set('X-Auth-Token', token)
@@ -176,6 +178,7 @@ describe('[Smarti Integration]', () => {
 		it('delete created request', (done) => {
 			sideNav.searchChannel(requestName); //closing the request hides it, so we need to re-search it
 			assistify.deleteRoom();
+			browser.pause(3000); // give smarti sometimetoasynchronously process the update
 			smarti.get(`/conversation/${ conversationId }`)
 				.set('Accept', 'application/json')
 				.set('X-Auth-Token', token)

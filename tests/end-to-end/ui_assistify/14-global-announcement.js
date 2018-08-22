@@ -1,0 +1,95 @@
+/* eslint-env mocha */
+import supertest from 'supertest';
+import { adminUsername, adminPassword, username, email, password } from '../../data/user.js';
+import loginPage from '../../pageobjects/login.page';
+import mainContent from '../../pageobjects/main-content.page';
+import { checkIfUserIsValid } from '../../data/checks';
+import sideNav from '../../pageobjects/side-nav.page';
+
+export const rcrequest = supertest.agent('http://localhost:3000');
+
+describe('[Rocket.Chat Global Announcement Tests]', function() {
+	let userId;
+	let authToken;
+	const message = 'This is a global test announcement!';
+
+	it('Login to Rocket.Chat api', function(done) {
+		rcrequest.post('/api/v1/login')
+			.set('Content-Type', 'application/json')
+			.send({
+				username: adminUsername,
+				password: adminPassword
+			})
+			.end(function(err, res) {
+				authToken = res.body.data.authToken;
+				userId = res.body.data.userId;
+				res.status.should.be.equal(200);
+				done();
+			});
+	});
+	it('Create global announcement', function(done) {
+		rcrequest.post('/api/v1/settings/Layout_Global_Announcement')
+			.set('X-Auth-Token', authToken)
+			.set('X-User-Id', userId)
+			.send({
+				value: message
+			})
+			.expect(200)
+			.end(done);
+	});
+
+	describe('On Login Page', () => {
+		it('Login-Page announcement should be there', function() {
+			try {
+				sideNav.logoutRocketchat();
+			} catch (e) {
+				console.log('We are already logged out');
+			}
+			loginPage.open();
+			loginPage.GlobalAnnouncement.isVisible().should.equal(true);
+			loginPage.GlobalAnnouncement.getText().should.equal(message);
+		});
+	});
+
+	describe('On HOME Page', () => {
+		before(() => {
+			checkIfUserIsValid(username, email, password);
+		});
+
+		it('Home-Page announcement should be there', function() {
+			mainContent.GlobalAnnouncement.isVisible().should.equal(true);
+			mainContent.GlobalAnnouncement.getText().should.equal(`OK, GOT IT\n${ message }`);
+			mainContent.GlobalAnnouncementBtn.waitForVisible(10000);
+			mainContent.GlobalAnnouncementBtn.click();
+			mainContent.GlobalAnnouncement.isVisible().should.equal(false);
+			sideNav.logoutRocketchat();
+		});
+	});
+
+	describe('Revert global announcement', () => {
+		it('Remove global announcement', function(done) {
+			rcrequest.post('/api/v1/settings/Layout_Global_Announcement')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.send({
+					value: null
+				})
+				.expect(200)
+				.end(done);
+		});
+
+		it('Login-Page announcement should not be there', function() {
+			checkIfUserIsValid(username, email, password);
+			loginPage.open();
+			loginPage.GlobalAnnouncement.isVisible().should.equal(false);
+		});
+
+		it('Logout from Rocketchat api', function(done) {
+			rcrequest.get('/api/v1/logout')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(done);
+		});
+	});
+});

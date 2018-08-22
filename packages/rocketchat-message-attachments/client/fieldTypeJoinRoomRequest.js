@@ -6,7 +6,8 @@ Template.JoinRoomRequest.helpers({
 		return status === 'pending';
 	},
 	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission('add-user-to-joined-room');
+		const instance = Template.instance();
+		return RocketChat.authz.hasAtLeastOnePermission('add-user-to-joined-room', instance.data.message.rid);
 	},
 	getStatus() {
 		return TAPi18n.__(this.status);

@@ -35,10 +35,10 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 }
 
 Template.renderField.helpers({
-	specializedRendering(field) {
+	specializedRendering({hash: {field, message}}) {
 		let html = '';
 		if (field.type && renderers[field.type]) {
-			html = Blaze.toHTMLWithData(Template[renderers[field.type]], field);
+			html = Blaze.toHTMLWithData(Template[renderers[field.type]], {field, message});
 		} else {
 			// consider the value already formatted as html
 			html = field.value;

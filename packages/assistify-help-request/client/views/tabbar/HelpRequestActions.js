@@ -23,19 +23,13 @@ Template.HelpRequestActions.helpers({
 
 	isLivechat() {
 		const instance = Template.instance();
-		const room = ChatSubscription.findOne({rid: instance.data.roomId});
+		const room = ChatRoom.findOne({_id: instance.data.roomId});
 		return room && room.t === 'l';
-	},
-
-	livechatOpen() {
-		const instance = Template.instance();
-		const room = ChatSubscription.findOne({rid: instance.data.roomId});
-		return room && room.open;
 	},
 
 	isOpenLivechat() {
 		const instance = Template.instance();
-		const room = ChatSubscription.findOne({rid: instance.data.roomId});
+		const room = ChatRoom.findOne({_id: instance.data.roomId});
 		return room && room.t === 'l' && room.open;
 	}
 });
@@ -137,7 +131,7 @@ Template.HelpRequestActions.onCreated(function() {
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId);
 			instance.helpRequest.set(helpRequest);
 
-			const room = ChatSubscription.findOne({rid: instance.data.roomId});
+			const room = ChatRoom.findOne({_id: instance.data.roomId});
 			instance.room.set(room);
 		}
 	});

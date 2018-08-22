@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8.9
 
     steps:
       - checkout
@@ -140,7 +140,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8.9-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
     # ulimits:
@@ -194,7 +194,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8.9-browsers
       - image: circleci/mongo:3.4
     # ulimits:
     #   core: -1
@@ -294,7 +294,7 @@ jobs:
   aws-upload-artifact:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9
 
     steps:
       - attach_workspace:
@@ -335,8 +335,9 @@ jobs:
       - setup_remote_docker
 
       - run:
-          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
       - run:
+          no_output_timeout: 20m
           command: |
             if [[ ! -z $CI_PULL_REQUEST ]]
               then

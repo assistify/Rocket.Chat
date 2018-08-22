@@ -12,22 +12,23 @@ function timeAgo(time) {
 }
 
 function directorySearch(config, cb) {
-	return Meteor.call('browseChannels', config, (err, results) => {
-		cb(results && results.length && results.map(result => {
-
-			if (config.type === 'users') {
-				return {
-					name: result.name,
-					username: result.username,
-					createdAt: timeAgo(result.createdAt)
-				};
-			} else {
+	return Meteor.call('browseChannels', config, (err, result) => {
+		cb(result.results && result.results.length && result.results.map(result => {
+			if (config.type !== 'users') {
 				return {
 					name: result.name,
 					users: result.usernames.length,
 					createdAt: timeAgo(result.ts),
 					description: result.description,
 					archived: result.archived
+				};
+			}
+
+			if (config.type === 'users') {
+				return {
+					name: result.name,
+					username: result.username,
+					createdAt: timeAgo(result.createdAt)
 				};
 			}
 		}));
@@ -40,6 +41,17 @@ Template.directory.helpers({
 	},
 	searchType() {
 		return Template.instance().searchType.get();
+	},
+	sortIcon(key) {
+		const {
+			sortDirection,
+			searchSortBy
+		} = Template.instance();
+
+		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
+	},
+	createChannelOrGroup() {
+		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	},
 	customRoomTypes() {
 		const room = [];
@@ -56,13 +68,7 @@ Template.directory.helpers({
 		return RocketChat.roomTypes.roomTypes[roomType].icon;
 	},
 	secretRoomsExists() {
-		const name = Template.instance().searchText.get();
-		Meteor.call('checkSecretRoomExists', name, 'p', (err, res) => {
-			if (err) {
-				return false;
-			}
-			return res;
-		});
+		return Template.instance().secretRoomsExists.get();
 	}
 });
 
@@ -72,6 +78,7 @@ Template.directory.events({
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
+		t.checkSecretRoomsExist(e.currentTarget.value);
 	},
 	'change .js-typeSelector'(e, t) {
 		t.end.set(false);
@@ -129,28 +136,20 @@ Template.directory.events({
 	}
 });
 
-Template.directory.onCreated(function() {
-	this.searchText = new ReactiveVar('');
-	this.searchType = new ReactiveVar('Channels');
-	this.roomType = new ReactiveVar('');
-	this.searchSortBy = new ReactiveVar('name');
-	this.sortDirection = new ReactiveVar('asc');
-	this.page = new ReactiveVar(0);
-	this.end = new ReactiveVar(false);
-
-	this.results = new ReactiveVar([]);
-
-	const type = Object.keys(RocketChat.roomTypes.roomTypes).find(
-		key => RocketChat.roomTypes.roomTypes[key]._label === this.searchType.get()
-	);
-	this.roomType.set(type);
-
+Template.directory.onRendered(function() {
+	this.resize = () => {
+		const height = this.$('.rc-directory-content').height();
+		this.limit.set(Math.ceil((height / 100) + 5));
+	};
+	this.resize();
+	$(window).on('resize', this.resize);
 	Tracker.autorun(() => {
 		const searchConfig = {
 			text: this.searchText.get(),
 			type: this.searchType.get(),
 			sortBy: this.searchSortBy.get(),
 			sortDirection: this.sortDirection.get(),
+			limit: this.limit.get(),
 			page: this.page.get()
 		};
 		if (this.end.get() || this.loading) {
@@ -168,6 +167,42 @@ Template.directory.onCreated(function() {
 			return this.results.set(result);
 		});
 	});
+});
+
+Template.directory.onDestroyed(function() {
+	$(window).on('off', this.resize);
+});
+
+Template.directory.onCreated(function() {
+
+	this.checkSecretRoomsExist = function(name) {
+		Meteor.call('checkSecretRoomExists', name, 'p', (err, res) => {
+			if (err) {
+				this.secretRoomsExists.set(false);
+			} else {
+				this.secretRoomsExists.set(res);
+			}
+		});
+	};
+
+	this.roomType = new ReactiveVar('');
+	this.secretRoomsExists = new ReactiveVar(false);
+	this.searchText = new ReactiveVar('');
+	this.searchType = new ReactiveVar('Channels');
+	this.searchSortBy = new ReactiveVar('name');
+	this.sortDirection = new ReactiveVar('asc');
+	this.limit = new ReactiveVar(0);
+	this.page = new ReactiveVar(0);
+	this.end = new ReactiveVar(false);
+
+	this.results = new ReactiveVar([]);
+
+	const type = Object.keys(RocketChat.roomTypes.roomTypes).find(
+		key => RocketChat.roomTypes.roomTypes[key]._label === this.searchType.get()
+	);
+	this.roomType.set(type);
+
+	this.checkSecretRoomsExist('');
 });
 
 Template.directory.onRendered(function() {

@@ -250,12 +250,12 @@ export class AutoTranslate {
 	 * Send Request REST API call to the service provider.
 	 * @abstract
 	 * @public
-	 * @param {object} targetMessage
+	 * @param {object} message
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	_sendRequestTranslateMessage(targetMessage, targetLanguages) {
-		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateMessage', targetMessage, targetLanguages);
+	_sendRequestTranslateMessage(message, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateMessage', message, targetLanguages);
 	}
 
 	/**
