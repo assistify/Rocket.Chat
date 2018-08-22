@@ -1,8 +1,13 @@
 <template name="home">
 	<section class="page-container page-home page-static content-background-color">
 		{{> header sectionName=title}}
-		<div class="content">
-			{{{body}}}
-		</div>
+		{{#if threadingOnHome}}
+			{{> CreateThread }}
+		{{ else }}
+			<div class="content">
+				{{{body}}}
+			</div>
+		{{/if}}
+
 	</section>
 </template>
