@@ -15,7 +15,13 @@ function timeAgo(time) {
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
 		cb(result && result.results && result.results.length && result.results.map(result => {
-			if (config.type === 'channels') {
+			if (config.type === 'users') {
+				return {
+					name: result.name,
+					username: result.username,
+					createdAt: timeAgo(result.createdAt)
+				};
+			} else {
 				return {
 					name: result.name,
 					users: result.usersCount || 0,
@@ -27,13 +33,6 @@ function directorySearch(config, cb) {
 				};
 			}
 
-			if (config.type === 'users') {
-				return {
-					name: result.name,
-					username: result.username,
-					createdAt: timeAgo(result.createdAt)
-				};
-			}
 		}));
 	});
 }
@@ -77,7 +76,7 @@ Template.directory.helpers({
 			tabs: [
 				{
 					label: t('Channels'),
-					value: 'channels',
+					value: 'c',
 					condition() {
 						return true;
 					},
@@ -86,6 +85,13 @@ Template.directory.helpers({
 				{
 					label: t('Users'),
 					value: 'users',
+					condition() {
+						return true;
+					}
+				},
+				{
+					label: t('Private_Groups'),
+					value: 'p',
 					condition() {
 						return true;
 					}
@@ -103,15 +109,15 @@ Template.directory.helpers({
 	},
 	onTableItemClick() {
 		const { searchType } = Template.instance();
-		let type;
 		let routeConfig;
+		let type;
 		return function(item) {
-			if (searchType.get() === 'channels') {
-				type = 'c';
-				routeConfig = { name: item.name };
-			} else {
+			if (searchType.get() === 'users') {
 				type = 'd';
 				routeConfig = { name: item.username };
+			} else {
+				type = searchType.get();
+				routeConfig = { name: item.name };
 			}
 			FlowRouter.go(RocketChat.roomTypes.getRouteLink(type, routeConfig));
 		};
@@ -201,7 +207,7 @@ Template.directory.onRendered(function() {
 
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
-	this.searchType = new ReactiveVar('channels');
+	this.searchType = new ReactiveVar('c'); //channels
 	this.searchSortBy = new ReactiveVar('usersCount');
 	this.sortDirection = new ReactiveVar('desc');
 	this.limit = new ReactiveVar(0);

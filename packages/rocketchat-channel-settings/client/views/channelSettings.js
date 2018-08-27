@@ -81,7 +81,7 @@ function roomHasPurge(room) {
 	return roomHasGlobalPurge(room);
 }
 
-function retentionEnabled({t: type}) {
+function retentionEnabled({ t: type }) {
 	switch (type) {
 		case 'c':
 			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
@@ -155,7 +155,7 @@ Template.channelSettingsEditing.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change : (value) => {
+				change: (value) => {
 					const realValue = value === 'enabled' ? true : value === 'disabled' ? false : undefined;
 					return this.value.set(realValue);
 				},
@@ -312,6 +312,15 @@ Template.channelSettingsEditing.onCreated(function() {
 			canEdit() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room['default']) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 			},
+			showSecretSetting(secret) {
+				//The state of secret channel setting must be changed with respect to the private <-> public setting.
+				if (this.canView()) {
+					if (this.value.get() === false) {
+						secret.value.set(false);
+					}
+					return this.value.get();
+				}
+			},
 			save(value) {
 				const saveRoomSettings = () => {
 					value = value ? 'p' : 'c';
@@ -344,6 +353,28 @@ Template.channelSettingsEditing.onCreated(function() {
 					// return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'p');
 				}
 				return saveRoomSettings();
+			}
+		},
+		secret: {
+			type: 'boolean',
+			label: 'Secret',
+			isToggle: true,
+			getValue() {
+				return room.secret;
+			},
+			canView() {
+				return room.t === 'p';
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('set-secret', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'secret', value).then(() => {
+					toastr.success(TAPi18n.__('Room_secrecy_changed_successfully'));
+				});
+			},
+			secretDescription() {
+				return this.value.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search-short');
 			}
 		},
 		ro: {

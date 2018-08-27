@@ -2111,6 +2111,16 @@
 	}
 }
 
+.rc-old .room-not-found-wrapper {
+	position: relative;
+	flex-direction: column;
+	flex: 1 1 auto;
+
+	display: flex;
+
+	height: calc(100% - 50px);
+}
+
 .rc-old .room-not-found {
 	display: flex;
 	flex-direction: column;

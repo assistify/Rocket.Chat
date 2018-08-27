@@ -46,7 +46,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	showJoinLink(roomId) {
-		return !!ChatRoom.findOne({_id: roomId, t: 'c'});
+		return !!ChatRoom.findOne({ _id: roomId, t: 'c' });
 	}
 
 	includeInRoomSearch() {
@@ -88,5 +88,11 @@ export class PublicRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+	listInDirectory() {
+		if (!RocketChat.authz.hasPermission(Meteor.user()._id, 'view-c-room')) {
+			return false;
+		}
+		return true;
 	}
 }

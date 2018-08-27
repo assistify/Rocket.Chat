@@ -88,22 +88,24 @@ html.rtl .attachment {
 
 	& .attachment-fields {
 		display: flex;
-		margin-top: 4px;
+		
 
 		& .attachment-field {
+			margin-top: 4px;
 			&.attachment-field-short {
 				display: inline-block;
-
+				
 				margin-right: 12px;
 			}
 
 			& .attachment-field-title {
 				font-weight: 600;
+
 				line-height: 1rem;
 			}
 		}
 	}
-
+	
 	& .attachment-thumb {
 		padding-top: 5px;
 		padding-right: 10px;
@@ -135,4 +137,26 @@ html.rtl .attachment {
 		border-width: 1px;
 		border-radius: 5px;
 	}
+
+	& .join-room-request {
+	    color: black;
+    }
+
+    & .join-room-request-reason {
+		font-weight: 500;
+    }
+
+	& .field button {
+		width: fit-content;
+	  	padding: 3px 10px;
+		min-height: 20px;
+		& > svg {
+		  margin-left: -4px;
+		  margin-right: 8px;
+		}
+
+		&:hover {
+		  text-decoration: none;
+	 	}
+  	}
 }
