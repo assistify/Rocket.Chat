@@ -64,7 +64,7 @@ Template.directory.helpers({
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	},
 	secretRoomsExists() {
-		return Template.instance().secretRoomsExists.get();	
+		return Template.instance().secretRoomsExists.get();
 	},
 	tabsData() {
 		const {
