@@ -170,8 +170,8 @@ Template.createChannel.events({
 	},
 	'change [name="type"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'd');
-		if (!e.target.check) {
-			t.secret.set(e.target.checked); // set secret to 'false' for public channels.
+		if (t.type.get() !== 'p') {
+			t.secret.set(e.target.checked); // set secret to 'false' for non-private channels.
 		}
 		t.change();
 	},
@@ -183,7 +183,6 @@ Template.createChannel.events({
 		t.readOnly.set(e.target.checked);
 	},
 	'change [name="secret"]'(e, t) {
-		console.log(t.secret.get());
 		t.secret.set(e.target.checked);
 	},
 	'input [name="users"]'(e, t) {
