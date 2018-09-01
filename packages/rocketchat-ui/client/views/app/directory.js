@@ -86,15 +86,15 @@ Template.directory.helpers({
 					active: true
 				},
 				{
-					label: t('Users'),
-					value: 'users',
+					label: t('Private_Groups'),
+					value: 'p',
 					condition() {
 						return true;
 					}
 				},
 				{
-					label: t('Private_Groups'),
-					value: 'p',
+					label: t('Users'),
+					value: 'users',
 					condition() {
 						return true;
 					}
