@@ -29,7 +29,7 @@ export function getUsages() {
 		{
 			$group:
 				{
-					_id: { uid: '$u._id', subType: '$t'},
+					_id: { uid: '$u._id', subType: {$cond: [{$not: ['$parentRoomId']}, '$t', 't']}},
 					subs: { $sum: 1 }
 				}
 		},
@@ -73,7 +73,7 @@ export function getUsages() {
 		{
 			$group:
 				{
-					_id: { uid: '$u._id', msgRoom: '$msgRooms.t'},
+					_id: { uid: '$u._id', msgRoom: {$cond: [{$not: ['$msgRooms.parentRoomId']}, '$msgRooms.t', 't']} },
 					messages: { $sum: 1 }
 				}
 		},
