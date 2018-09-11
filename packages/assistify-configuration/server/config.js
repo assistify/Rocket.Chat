@@ -13,4 +13,5 @@ Meteor.startup(() => {
 	RocketChat.models.Settings.db.removeById('Assistify_room_count');
 	RocketChat.models.Settings.db.removeById('Experts_channel');
 	RocketChat.models.Settings.db.removeById('Deactivate_close_comment');
+	RocketChat.models.Settings.db.removeById('Agent_typing_alias');
 });
