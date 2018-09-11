@@ -129,13 +129,10 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.videoCall = result.videoCall;
 			Livechat.fileUpload = result.fileUpload;
 			Livechat.registrationForm = result.registrationForm;
-<<<<<<< HEAD
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
-=======
 			Livechat.agentTypingAlias = result.agentTypingAlias;
 
->>>>>>> 59ac4f64d... [New] alias for livechat agents typing
 			if (result.room) {
 				Livechat.room = result.room._id;
 
