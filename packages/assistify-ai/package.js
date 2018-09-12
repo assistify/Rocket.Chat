@@ -21,7 +21,6 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 	api.use('rocketchat:lib'); //in order to make general settings load earlier
 	api.use('rocketchat:ui-master'); //for the loading animation
-	api.use('chatpal:search'); //for the loading animation
 	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
 
 	// Libraries
