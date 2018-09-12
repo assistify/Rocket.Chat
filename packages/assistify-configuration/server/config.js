@@ -1,4 +1,4 @@
-/* globals RocketChat, SystemLogger */
+/* globals RocketChat */
 
 Meteor.startup(() => {
 	const languageSetting = RocketChat.models.Settings.db.findOneById('Language');
