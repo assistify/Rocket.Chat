@@ -112,10 +112,58 @@ Template.AssistifySmarti.helpers({
 		} else if (instance.currentTryLoading.get() === instance.maxTriesLoading) {
 			return TAPi18n.__('Widget_could_not_load');
 		}
+	},
+	notArchived() {
+		return true;
 	}
 });
 
+const showClosingComment = function() {
+	return !RocketChat.settings.get('Assistify_Deactivate_request_closing_comments');
+};
+
 Template.AssistifySmarti.events({
+	'click .close-helprequest'(event, instance) {
+		event.preventDefault();
+
+		const modalConfig = {
+			title: t('Closing_chat'),
+			text: t('Close_Chat_Warning'),
+			showCancelButton: true,
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: true,
+			roomId: instance.data.roomId
+		};
+
+		if (showClosingComment()) {
+			modalConfig.type = 'input';
+			modalConfig.inputPlaceholder = t('Close_request_comment');
+		}
+		modal.open(
+			modalConfig,
+			(inputValue) => {
+				if (inputValue === false) {
+					return;
+				}
+
+				Meteor.call('closeConversation', ` ${ inputValue }`, instance.data.rid, Meteor.user(), function(error) {
+					if (error) {
+						return handleError(error);
+					} else {
+						modal.open({
+							title: t('Chat_closed'),
+							text: t('Chat_closed_successfully'),
+							type: 'success',
+							timer: 1000,
+							showConfirmButton: false
+						});
+					}
+				});
+			}
+		);
+	},
 	'click .js-resync-room'(event, instance) {
 		if (instance.data.rid) {
 			Meteor.call('resyncRoom', instance.data.rid);

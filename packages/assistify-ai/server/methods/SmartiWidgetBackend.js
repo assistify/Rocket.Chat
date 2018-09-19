@@ -164,6 +164,11 @@ Meteor.methods({
 		};
 	},
 
+	closeConversation(message, roomId, user) {
+		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('request_closed', roomId, ` ${ message }`, user);
+		RocketChat.archiveRoom(roomId);
+	},
+
 	/**
 	 * This method is triggered by the client in order to retrieve the most recent widget
 	 */
