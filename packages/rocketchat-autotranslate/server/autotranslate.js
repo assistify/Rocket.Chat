@@ -1,22 +1,35 @@
-import _ from 'underscore';
-import s from 'underscore.string';
+/* globals SystemLogger, RocketChat */
 
-class AutoTranslate {
+import s from 'underscore.string';
+import _ from 'underscore';
+
+/**
+ * Generic auto translate base implementation.
+ * @class
+ */
+export class AutoTranslate {
+	/**
+	 * Encapsulate the api key and provider settings.
+	 * @constructor
+	 */
 	constructor() {
 		this.languages = [];
-		this.enabled = RocketChat.settings.get('AutoTranslate_Enabled');
-		this.apiKey = RocketChat.settings.get('AutoTranslate_GoogleAPIKey');
 		this.supportedLanguages = {};
-		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, 'AutoTranslate');
-
+		this.apiKey = RocketChat.settings.get('AutoTranslate_APIKey');
+		this.autoTranslateEnabled = RocketChat.settings.get('AutoTranslate_Enabled');
 		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
-			this.enabled = value;
+			this.autoTranslateEnabled = value;
 		});
-		RocketChat.settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+		RocketChat.settings.get('AutoTranslate_APIKey', (key, value) => {
 			this.apiKey = value;
 		});
 	}
 
+	/**
+	 * tokenize message
+	 * @param {object} message
+	 * @return {object} message
+	 */
 	tokenize(message) {
 		if (!message.tokens || !Array.isArray(message.tokens)) {
 			message.tokens = [];
@@ -146,43 +159,28 @@ class AutoTranslate {
 		return message.msg;
 	}
 
+	/**
+	 * Prepares the message that are needs translation.
+	 * @public
+	 * @param {object} message
+	 * @param {object} room
+	 * @param {object} targetLanguage
+	 * @returns {object} unmodified message object.
+	 */
 	translateMessage(message, room, targetLanguage) {
-		if (this.enabled && this.apiKey) {
+		if (this.autoTranslateEnabled && this.apiKey) {
 			let targetLanguages;
 			if (targetLanguage) {
-				targetLanguages = [ targetLanguage ];
+				targetLanguages = [targetLanguage];
 			} else {
 				targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
 			}
 			if (message.msg) {
 				Meteor.defer(() => {
-					const translations = {};
 					let targetMessage = Object.assign({}, message);
-
 					targetMessage.html = s.escapeHTML(String(targetMessage.msg));
 					targetMessage = this.tokenize(targetMessage);
-
-					let msgs = targetMessage.msg.split('\n');
-					msgs = msgs.map(msg => encodeURIComponent(msg));
-					const query = `q=${ msgs.join('&q=') }`;
-
-					const supportedLanguages = this.getSupportedLanguages('en');
-					targetLanguages.forEach(language => {
-						if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-							language = language.substr(0, 2);
-						}
-						let result;
-						try {
-							result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query });
-						} catch (e) {
-							console.log('Error translating message', e);
-							return message;
-						}
-						if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-							const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
-							translations[language] = this.deTokenize(Object.assign({}, targetMessage, { msg: txt }));
-						}
-					});
+					const translations = this._sendRequestTranslateMessage(targetMessage, targetLanguages);
 					if (!_.isEmpty(translations)) {
 						RocketChat.models.Messages.addTranslations(message._id, translations);
 					}
@@ -194,20 +192,8 @@ class AutoTranslate {
 					for (const index in message.attachments) {
 						if (message.attachments.hasOwnProperty(index)) {
 							const attachment = message.attachments[index];
-							const translations = {};
 							if (attachment.description || attachment.text) {
-								const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
-								const supportedLanguages = this.getSupportedLanguages('en');
-								targetLanguages.forEach(language => {
-									if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-										language = language.substr(0, 2);
-									}
-									const result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query });
-									if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-										const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
-										translations[language] = txt;
-									}
-								});
+								const translations = this._sendRequestTranslateMessageAttachments(attachment, targetLanguages);
 								if (!_.isEmpty(translations)) {
 									RocketChat.models.Messages.addAttachmentTranslations(message._id, index, translations);
 								}
@@ -220,38 +206,92 @@ class AutoTranslate {
 		return message;
 	}
 
-	getSupportedLanguages(target) {
-		if (this.enabled && this.apiKey) {
-			if (this.supportedLanguages[target]) {
-				return this.supportedLanguages[target];
-			}
+	/**
+	 * Registers afterSaveMessage call back for active service provider
+	 * @protected
+	 * @param {string} provider
+	 */
+	_registerAfterSaveMsgCallBack(provider) {
+		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, provider);
+	}
 
-			let result;
-			const params = { key: this.apiKey };
-			if (target) {
-				params.target = target;
-			}
+	/**
+	 * De-register afterSaveMessage call back for active service provider
+	 * @protected
+	 * @param {string} provider
+	 */
+	_unRegisterAfterSaveMsgCallBack(provider) {
+		RocketChat.callbacks.remove('afterSaveMessage', provider);
+	}
 
-			try {
-				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
-			} catch (e) {
-				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
-					params.target = 'en';
-					target = 'en';
-					if (!this.supportedLanguages[target]) {
-						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
-					}
-				}
-			} finally {
-				if (this.supportedLanguages[target]) {
-					return this.supportedLanguages[target];
-				} else {
-					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					return this.supportedLanguages[target || 'en'];
-				}
-			}
-		}
+	/**
+	 * Returns metadata information about the service provider
+	 * @abstract
+	 * @private
+	 * @returns {object}
+	 */
+	_getProviderMetadata() {
+		SystemLogger.warn('must be implemented by subclass!', '_getProviderMetadata');
+	}
+
+
+	/**
+	 * Returns necessary settings information about the translation service provider.
+	 * @abstract
+	 * @private
+	 * @param {string} target
+	 * @returns {object}
+	 */
+	_getSupportedLanguages(target) {
+		SystemLogger.warn('must be implemented by subclass!', '_getSupportedLanguages', target);
+	}
+
+	/**
+	 * Send Request REST API call to the service provider.
+	 * @abstract
+	 * @public
+	 * @param {object} message
+	 * @param {object} targetLanguages
+	 * @return {object}
+	 */
+	_sendRequestTranslateMessage(message, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateMessage', message, targetLanguages);
+	}
+
+	/**
+	 * Send Request REST API call to the service provider.
+	 * @abstract
+	 * @param {object} attachment
+	 * @param {object} targetLanguages
+	 * @returns {object} translated messages for each target language
+	 */
+	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateMessageAttachments', attachment, targetLanguages);
 	}
 }
 
-RocketChat.AutoTranslate = new AutoTranslate;
+export class TranslationProviderRegistry {
+	static registerProvider(provider) {
+		//get provider information
+		const metadata = provider._getProviderMetadata();
+		if (!TranslationProviderRegistry._providers) {
+			TranslationProviderRegistry._providers = {};
+		}
+		TranslationProviderRegistry._providers[metadata.name] = provider;
+	}
+
+	static initProviderSettings() {
+		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+			TranslationProviderRegistry._activeProvider = value;
+		});
+	}
+
+	static getActiveServiceProvider() {
+		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
+	}
+}
+
+Meteor.startup(() => {
+	TranslationProviderRegistry.initProviderSettings();
+});
+

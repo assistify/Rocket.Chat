@@ -202,4 +202,6 @@ assistify:ai
 assistify:threading
 assistify:migrations
 assistify:configuration
-overture8:wordcloud2
+assistify:dbs-translation
+assistify:deepl-translation
+

@@ -4,7 +4,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings'});
 		}
 
-		return RocketChat.AutoTranslate.getSupportedLanguages(targetLanguage);
+		return RocketChat.AutoTranslate._getSupportedLanguages(targetLanguage);
 	}
 });
 

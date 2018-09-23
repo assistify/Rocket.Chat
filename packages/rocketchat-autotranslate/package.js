@@ -25,12 +25,16 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'server/settings.js',
-		'server/autotranslate.js',
 		'server/permissions.js',
+		'server/autotranslate.js',
+		'server/googleTranslate.js',
 		'server/models/Messages.js',
+		'server/models/Settings.js',
 		'server/models/Subscriptions.js',
 		'server/methods/saveSettings.js',
 		'server/methods/translateMessage.js',
-		'server/methods/getSupportedLanguages.js'
+		'server/methods/getSupportedLanguages.js',
+		'server/methods/refreshProviderSettings.js'
 	], 'server');
+	api.mainModule('server/index.js', 'server');
 });
