@@ -204,4 +204,5 @@ assistify:migrations
 assistify:configuration
 assistify:dbs-translation
 assistify:deepl-translation
+overture8:wordcloud2
 

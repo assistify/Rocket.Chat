@@ -70,31 +70,31 @@ class DeeplAutoTranslate extends AutoTranslate {
 			}
 			return this.supportedLanguages[target] = [
 				{
-					'language': 'EN',
+					'language': 'en',
 					'name': TAPi18n.__('English', {lng: target})
 				},
 				{
-					'language': 'DE',
+					'language': 'de',
 					'name': TAPi18n.__('German', {lng: target})
 				},
 				{
-					'language': 'FR',
+					'language': 'fr',
 					'name': TAPi18n.__('French', {lng: target})
 				},
 				{
-					'language': 'ES',
+					'language': 'es',
 					'name': TAPi18n.__('Spanish', {lng: target})
 				},
 				{
-					'language': 'IT',
+					'language': 'it',
 					'name': TAPi18n.__('Italian', {lng: target})
 				},
 				{
-					'language': 'NL',
+					'language': 'nl',
 					'name': TAPi18n.__('Dutch', {lng: target})
 				},
 				{
-					'language': 'PL',
+					'language': 'pl',
 					'name': TAPi18n.__('Polish', {lng: target})
 				}
 			];
