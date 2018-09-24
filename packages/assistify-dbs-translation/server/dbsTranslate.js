@@ -2,10 +2,11 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import { TranslationProviderRegistry, AutoTranslate } from 'meteor/rocketchat:autotranslate';
-import { RocketChat } from 'meteor/rocketchat:lib';
-//import { SystemLogger } from 'meteor/rocketchat:logger';
+import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {SystemLogger} from 'meteor/rocketchat:logger';
 import _ from 'underscore';
+
 const cld = Npm.require('cld'); // import the local package dependencies
 
 /**
@@ -74,47 +75,47 @@ class DBSAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target] = [
 				{
 					'language': 'de',
-					'name': TAPi18n.__('German', { lng: target })
+					'name': TAPi18n.__('German', {lng: target})
 				},
 				{
 					'language': 'en',
-					'name': TAPi18n.__('English', { lng: target })
+					'name': TAPi18n.__('English', {lng: target})
 				},
 				{
 					'language': 'fr',
-					'name': TAPi18n.__('French', { lng: target })
+					'name': TAPi18n.__('French', {lng: target})
 				},
 				{
 					'language': 'es',
-					'name': TAPi18n.__('Spanish', { lng: target })
+					'name': TAPi18n.__('Spanish', {lng: target})
 				},
 				{
 					'language': 'it',
-					'name': TAPi18n.__('Italian', { lng: target })
+					'name': TAPi18n.__('Italian', {lng: target})
 				},
 				{
 					'language': 'nl',
-					'name': TAPi18n.__('Dutch', { lng: target })
+					'name': TAPi18n.__('Dutch', {lng: target})
 				},
 				{
 					'language': 'pl',
-					'name': TAPi18n.__('Polish', { lng: target })
+					'name': TAPi18n.__('Polish', {lng: target})
 				},
 				{
 					'language': 'ro',
-					'name': TAPi18n.__('Romanian', { lng: target })
+					'name': TAPi18n.__('Romanian', {lng: target})
 				},
 				{
 					'language': 'sk',
-					'name': TAPi18n.__('Slovak', { lng: target })
+					'name': TAPi18n.__('Slovak', {lng: target})
 				},
 				{
 					'language': 'ja',
-					'name': TAPi18n.__('Japanese', { lng: target })
+					'name': TAPi18n.__('Japanese', {lng: target})
 				},
 				{
 					'language': 'zh',
-					'name': TAPi18n.__('Chinese', { lng: target })
+					'name': TAPi18n.__('Chinese', {lng: target})
 				}
 			];
 		}
@@ -139,36 +140,40 @@ class DBSAutoTranslate extends AutoTranslate {
 		 * When the language detector fails, it falls back into the user language.
 		 */
 		cld.detect(query, (err, result) => {
-			result.languages.map((language) => {
-				sourceLanguage = language.code || RocketChat.settings.get('Language'); // fallback to user language.
-			});
-		});
-		const supportedLanguages = this._getSupportedLanguages('en');
-		targetLanguages.forEach(language => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+			if (result) {
+				result.languages.map((language) => {
+					sourceLanguage = language.code;
+				});
+				const supportedLanguages = this._getSupportedLanguages('en');
+				targetLanguages.forEach(language => {
+					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
+						language = language.substr(0, 2);
+					}
+					const result = Meteor.call('assistify.translate', 'POST', `${ this.apiEndPointUrl }/translate`, {
+						params: {
+							key: this.apiKey
+						}, data: {
+							text: query,
+							to: language,
+							from: sourceLanguage
+						}
+					});
+					translations[language] = this.deTokenize(Object.assign({}, message, {msg: result}));
+				});
+			} else {
+				SystemLogger.log('Text language could not be determined', err.message);
 			}
-			const result = Meteor.call('assistify.translate', 'POST', `${ this.apiEndPointUrl }/translate`, {
-				params: {
-					key: this.apiKey
-				}, data: {
-					text: query,
-					to: language,
-					from: sourceLanguage
-				}
-			});
-			translations[language] = this.deTokenize(Object.assign({}, message, { msg: result }));
 		});
 		return translations;
 	}
 
 	/**
- 	  * Returns translated message attachment description in target languages.
- 	  * @private
- 	  * @param {object} attachment
- 	  * @param {object} targetLanguages
- 	  * @returns {object} translated messages for each target language
- 	  */
+	 * Returns translated message attachment description in target languages.
+	 * @private
+	 * @param {object} attachment
+	 * @param {object} targetLanguages
+	 * @returns {object} translated messages for each target language
+	 */
 	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
 		const translations = {};
 		const query = attachment.description || attachment.text;
@@ -179,24 +184,28 @@ class DBSAutoTranslate extends AutoTranslate {
 		 * When the language detector fails, it falls back into the user language.
 		 */
 		cld.detect(query, (err, result) => {
-			result.languages.map((language) => {
-				sourceLanguage = language.code || RocketChat.settings.get('Language'); // fallback to user language.
-			});
-		});
-		const supportedLanguages = this._getSupportedLanguages('en');
-		targetLanguages.forEach(language => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+			if (result) {
+				result.languages.map((language) => {
+					sourceLanguage = language.code || RocketChat.settings.get('Language'); // fallback to user language.
+				});
+				const supportedLanguages = this._getSupportedLanguages('en');
+				targetLanguages.forEach(language => {
+					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
+						language = language.substr(0, 2);
+					}
+					translations[language] = Meteor.call('assistify.translate', 'POST', `${ this.apiEndPointUrl }/translate`, {
+						params: {
+							key: this.apiKey
+						}, data: {
+							text: query,
+							to: language,
+							from: sourceLanguage
+						}
+					});
+				});
+			} else {
+				SystemLogger.log('Text language could not be determined', err.message);
 			}
-			translations[language] = Meteor.call('assistify.translate', 'POST', `${ this.apiEndPointUrl }/translate`, {
-				params: {
-					key: this.apiKey
-				}, data: {
-					text: query,
-					to: language,
-					from: sourceLanguage
-				}
-			});
 		});
 		return translations;
 	}
