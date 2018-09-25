@@ -21,15 +21,14 @@ class GoogleAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'google-translate';
-		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 		// register & de-register itself - afterSaveMessage based on the activeProvider
-		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+/* 		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			if (this.name !== value) {
 				this._unRegisterAfterSaveMsgCallBack(this.name);
 			} else {
 				this._registerAfterSaveMsgCallBack(this.name);
 			}
-		});
+		}); */
 	}
 
 	/**
@@ -139,7 +138,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
+	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
@@ -166,7 +165,6 @@ class GoogleAutoTranslate extends AutoTranslate {
 	}
 }
 
-Meteor.startup(() => {
-	TranslationProviderRegistry.registerProvider(new GoogleAutoTranslate());
-	RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
-});
+// Register Google translation provider.
+TranslationProviderRegistry.registerProvider(new GoogleAutoTranslate());
+

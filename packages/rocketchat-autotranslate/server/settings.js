@@ -28,7 +28,7 @@ Meteor.startup(function() {
 		group: 'Message',
 		section: 'AutoTranslate',
 		public: true,
-		enableQuery: [{_id: 'AutoTranslate_Enabled', value: true}, {_id: 'AutoTranslate_ServiceProvider', value: 'dbs-translate'}],
+		enableQuery: [{_id: 'AutoTranslate_Enabled', value: true}],
 		i18nLabel: 'AutoTranslate_ServiceProviderURL'
 	});
 

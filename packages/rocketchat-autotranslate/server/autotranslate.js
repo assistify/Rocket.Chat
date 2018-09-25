@@ -17,11 +17,25 @@ export class AutoTranslate {
 		this.supportedLanguages = {};
 		this.apiKey = RocketChat.settings.get('AutoTranslate_APIKey');
 		this.autoTranslateEnabled = RocketChat.settings.get('AutoTranslate_Enabled');
+		// get the service provider url from settings.
+		RocketChat.settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
+			this.apiEndPointUrl = value;
+		});
 		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
+			console.log('turn off');
 			this.autoTranslateEnabled = value;
 		});
 		RocketChat.settings.get('AutoTranslate_APIKey', (key, value) => {
+			console.log('change key');
 			this.apiKey = value;
+		});
+		// self register & de-register callback - afterSaveMessage based on the activeProvider
+		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+			if (this.name === value) {
+				this._registerAfterSaveMsgCallBack(this.name);
+			} else {
+				this._unRegisterAfterSaveMsgCallBack(this.name);
+			}
 		});
 	}
 
@@ -193,7 +207,7 @@ export class AutoTranslate {
 						if (message.attachments.hasOwnProperty(index)) {
 							const attachment = message.attachments[index];
 							if (attachment.description || attachment.text) {
-								const translations = this._sendRequestTranslateMessageAttachments(attachment, targetLanguages);
+								const translations = this._sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages);
 								if (!_.isEmpty(translations)) {
 									RocketChat.models.Messages.addAttachmentTranslations(message._id, index, translations);
 								}
@@ -265,8 +279,8 @@ export class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
-		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateMessageAttachments', attachment, targetLanguages);
+	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 
@@ -280,18 +294,24 @@ export class TranslationProviderRegistry {
 		TranslationProviderRegistry._providers[metadata.name] = provider;
 	}
 
-	static initProviderSettings() {
-		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+	static setActiveServiceProvider() {
+		RocketChat.settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
 			TranslationProviderRegistry._activeProvider = value;
+			console.log(TranslationProviderRegistry._activeProvider);
+			//RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
 		});
 	}
 
 	static getActiveServiceProvider() {
+		if (!TranslationProviderRegistry._activeProvider) {
+			TranslationProviderRegistry._activeProvider = RocketChat.settings.get('AutoTranslate_ServiceProvider');
+		}
+		console.log(TranslationProviderRegistry._activeProvider);
 		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 	}
 }
 
-Meteor.startup(() => {
-	TranslationProviderRegistry.initProviderSettings();
-});
 
+Meteor.startup(() => {
+	RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
+});

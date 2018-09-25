@@ -3,7 +3,6 @@
  */
 
 import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
-import {RocketChat} from 'meteor/rocketchat:lib';
 import {SystemLogger} from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 
@@ -22,18 +21,14 @@ class DBSAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'dbs-translate';
-		// get the service provider url from settings.
-		RocketChat.settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
-			this.apiEndPointUrl = value;
-		});
 		// self register & de-register callback - afterSaveMessage based on the activeProvider
-		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+		/* 		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			if (this.name === value) {
 				this._registerAfterSaveMsgCallBack(this.name);
 			} else {
 				this._unRegisterAfterSaveMsgCallBack(this.name);
 			}
-		});
+		}); */
 	}
 
 	/**
@@ -137,7 +132,7 @@ class DBSAutoTranslate extends AutoTranslate {
 		/**
 		 * Service provider do not handle the text language detection automatically rather it requires the source language to be specified
 		 * explicitly. To automate this language detection process we used the cld language detector.
-		 * When the language detector fails, it falls back into the user language.
+		 * When the language detector fails, log it.
 		 */
 		cld.detect(query, (err, result) => {
 			if (result) {
@@ -149,21 +144,28 @@ class DBSAutoTranslate extends AutoTranslate {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 						language = language.substr(0, 2);
 					}
-					const result = Meteor.call('assistify.translate', 'POST', `${ this.apiEndPointUrl }/translate`, {
-						params: {
-							key: this.apiKey
-						}, data: {
-							text: query,
-							to: language,
-							from: sourceLanguage
+					try {
+						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
+							params: {
+								key: this.apiKey
+							}, data: {
+								text: query,
+								to: language,
+								from: sourceLanguage
+							}
+						});
+						if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
+							translations[language] = this.deTokenize(Object.assign({}, message, { msg: decodeURIComponent(result.data.translation) }));
 						}
-					});
-					translations[language] = this.deTokenize(Object.assign({}, message, {msg: result}));
+					} catch (e) {
+						throw new Meteor.Error('translation-failed', 'Auto-Translate is not allowed', e);
+					}
 				});
 			} else {
 				SystemLogger.warn('Text language could not be determined', err.message);
 			}
 		});
+		console.log('translations', translations);
 		return translations;
 	}
 
@@ -174,26 +176,26 @@ class DBSAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
+	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = attachment.description || attachment.text;
 		let sourceLanguage;
 		/**
 		 * Service provider do not handle the text language detection automatically rather it requires the source language to be specified
 		 * explicitly. To automate this language detection process we used the cld language detector.
-		 * When the language detector fails, it falls back into the user language.
+		 * When the language detector fails, log it.
 		 */
 		cld.detect(query, (err, result) => {
 			if (result) {
 				result.languages.map((language) => {
-					sourceLanguage = language.code || RocketChat.settings.get('Language'); // fallback to user language.
+					sourceLanguage = language.code;
 				});
 				const supportedLanguages = this.getSupportedLanguages('en');
 				targetLanguages.forEach(language => {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 						language = language.substr(0, 2);
 					}
-					translations[language] = Meteor.call('assistify.translate', 'POST', `${ this.apiEndPointUrl }/translate`, {
+					const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 						params: {
 							key: this.apiKey
 						}, data: {
@@ -202,6 +204,9 @@ class DBSAutoTranslate extends AutoTranslate {
 							from: sourceLanguage
 						}
 					});
+					if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
+						translations[language] = decodeURIComponent(result.data.translation);
+					}
 				});
 			} else {
 				SystemLogger.warn('Text language could not be determined', err.message);
@@ -210,9 +215,6 @@ class DBSAutoTranslate extends AutoTranslate {
 		return translations;
 	}
 }
+// Register DBS translation provider to the list.
+TranslationProviderRegistry.registerProvider(new DBSAutoTranslate());
 
-
-Meteor.startup(() => {
-	TranslationProviderRegistry.registerProvider(new DBSAutoTranslate());
-	RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
-});

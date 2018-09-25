@@ -2,14 +2,15 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-
 import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
-import {RocketChat} from 'meteor/rocketchat:lib';
 import {SystemLogger} from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 
 /**
- * Represents DEEPL translate class
+ * DeepL translation service provider class representation.
+ * Encapsulates the service provider settings and information.
+ * Provides languages supported by the service provider.
+ * Resolves API call to service provider to resolve the translation request.
  * @class
  * @augments AutoTranslate
  */
@@ -21,15 +22,6 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
-		// self register & de-register callback - afterSaveMessage based on the activeProvider
-		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
-			if (this.name === value) {
-				this._registerAfterSaveMsgCallBack(this.name);
-			} else {
-				this._unRegisterAfterSaveMsgCallBack(this.name);
-			}
-		});
 	}
 
 	/**
@@ -148,7 +140,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
+	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
 		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
@@ -176,8 +168,5 @@ class DeeplAutoTranslate extends AutoTranslate {
 	}
 }
 
-
-Meteor.startup(() => {
-	TranslationProviderRegistry.registerProvider(new DeeplAutoTranslate());
-	RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
-});
+// Register DeepL translation provider to the list.
+TranslationProviderRegistry.registerProvider(new DeeplAutoTranslate());
