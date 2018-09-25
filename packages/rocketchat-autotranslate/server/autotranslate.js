@@ -304,8 +304,6 @@ export class TranslationProviderRegistry {
 	}
 }
 
-AutoTranslate.initialize();
-
 Meteor.startup(() => {
 	TranslationProviderRegistry.loadActiveServiceProvider();
 });

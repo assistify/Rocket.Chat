@@ -136,7 +136,6 @@ class DBSAutoTranslate extends AutoTranslate {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 						language = language.substr(0, 2);
 					}
-					console.log('test');
 					try {
 						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 							params: {
@@ -158,7 +157,6 @@ class DBSAutoTranslate extends AutoTranslate {
 				SystemLogger.warn('Text language could not be determined', err.message);
 			}
 		});
-		console.log('translations', translations);
 		return translations;
 	}
 
