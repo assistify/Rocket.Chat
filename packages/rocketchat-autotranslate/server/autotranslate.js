@@ -2,6 +2,7 @@
 
 import s from 'underscore.string';
 import _ from 'underscore';
+import {RocketChat} from 'meteor/rocketchat:lib';
 
 /**
  * Generic auto translate base implementation.
@@ -13,23 +14,24 @@ export class AutoTranslate {
 	 * @constructor
 	 */
 	constructor() {
+		this.name = '';
 		this.languages = [];
 		this.supportedLanguages = {};
-		this.apiKey = RocketChat.settings.get('AutoTranslate_APIKey');
-		this.autoTranslateEnabled = RocketChat.settings.get('AutoTranslate_Enabled');
-		// get the service provider url from settings.
+		RocketChat.settings.get('AutoTranslate_APIKey', (key, value) => {
+			this.apiKey = value;
+		});
+		// Get Service provider URL.
 		RocketChat.settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
 			this.apiEndPointUrl = value;
 		});
+		// Get Auto Translate Active flag
 		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
-			console.log('turn off');
 			this.autoTranslateEnabled = value;
 		});
-		RocketChat.settings.get('AutoTranslate_APIKey', (key, value) => {
-			console.log('change key');
-			this.apiKey = value;
-		});
-		// self register & de-register callback - afterSaveMessage based on the activeProvider
+		/** Register the active service provider on the 'AfterSaveMessage' callback.
+		 *  So the registered provider will be invoked when a message is saved.
+		 *  All the other inactive service provider must be deactivated.
+		 */
 		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			if (this.name === value) {
 				this._registerAfterSaveMsgCallBack(this.name);
@@ -294,24 +296,17 @@ export class TranslationProviderRegistry {
 		TranslationProviderRegistry._providers[metadata.name] = provider;
 	}
 
-	static setActiveServiceProvider() {
-		RocketChat.settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
+	static loadActiveServiceProvider() {
+		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			TranslationProviderRegistry._activeProvider = value;
-			console.log(TranslationProviderRegistry._activeProvider);
-			//RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
+			RocketChat.AutoTranslate = TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 		});
-	}
-
-	static getActiveServiceProvider() {
-		if (!TranslationProviderRegistry._activeProvider) {
-			TranslationProviderRegistry._activeProvider = RocketChat.settings.get('AutoTranslate_ServiceProvider');
-		}
-		console.log(TranslationProviderRegistry._activeProvider);
-		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
 	}
 }
 
+AutoTranslate.initialize();
 
 Meteor.startup(() => {
-	RocketChat.AutoTranslate = TranslationProviderRegistry.getActiveServiceProvider();
+	TranslationProviderRegistry.loadActiveServiceProvider();
 });
+

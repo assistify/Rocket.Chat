@@ -21,14 +21,6 @@ class DBSAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'dbs-translate';
-		// self register & de-register callback - afterSaveMessage based on the activeProvider
-		/* 		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
-			if (this.name === value) {
-				this._registerAfterSaveMsgCallBack(this.name);
-			} else {
-				this._unRegisterAfterSaveMsgCallBack(this.name);
-			}
-		}); */
 	}
 
 	/**
@@ -144,6 +136,7 @@ class DBSAutoTranslate extends AutoTranslate {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 						language = language.substr(0, 2);
 					}
+					console.log('test');
 					try {
 						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 							params: {
@@ -215,6 +208,6 @@ class DBSAutoTranslate extends AutoTranslate {
 		return translations;
 	}
 }
-// Register DBS translation provider to the list.
+// Register DBS translation provider.
 TranslationProviderRegistry.registerProvider(new DBSAutoTranslate());
 

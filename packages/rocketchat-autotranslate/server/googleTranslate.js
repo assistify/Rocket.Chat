@@ -5,7 +5,6 @@
 
 import {AutoTranslate, TranslationProviderRegistry} from './autotranslate';
 import {SystemLogger} from 'meteor/rocketchat:logger';
-import {RocketChat} from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -21,14 +20,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'google-translate';
-		// register & de-register itself - afterSaveMessage based on the activeProvider
-/* 		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
-			if (this.name !== value) {
-				this._unRegisterAfterSaveMsgCallBack(this.name);
-			} else {
-				this._registerAfterSaveMsgCallBack(this.name);
-			}
-		}); */
+		//this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 	}
 
 	/**

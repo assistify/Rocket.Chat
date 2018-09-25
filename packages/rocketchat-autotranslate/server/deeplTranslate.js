@@ -22,6 +22,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
+		//this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
 	}
 
 	/**
@@ -122,7 +123,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
 					// store translation only when the source and target language are different.
 					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-						const txt = result.data.translations.map(translation => translation.text).join('\n');
+						const txt = result.data.translations.map(translation => translation.text);
 						translations[language] = this.deTokenize(Object.assign({}, message, {msg: txt}));
 					}
 				}
@@ -157,7 +158,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 				});
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
 					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map(translation => translation.text).join('\n');
+						translations[language] = result.data.translations.map(translation => translation.text);
 					}
 				}
 			} catch (e) {
@@ -168,5 +169,5 @@ class DeeplAutoTranslate extends AutoTranslate {
 	}
 }
 
-// Register DeepL translation provider to the list.
+// Register DeepL translation provider.
 TranslationProviderRegistry.registerProvider(new DeeplAutoTranslate());
