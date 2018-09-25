@@ -63,7 +63,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	_getSupportedLanguages(target) {
+	getSupportedLanguages(target) {
 		if (this.autoTranslateEnabled && this.apiKey) {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
@@ -114,7 +114,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map(msg => encodeURIComponent(msg));
 		const query = `text=${ msgs.join('&text=') }`;
-		const supportedLanguages = this._getSupportedLanguages('en');
+		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach(language => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);
@@ -151,7 +151,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	_sendRequestTranslateMessageAttachments(attachment, targetLanguages) {
 		const translations = {};
 		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
-		const supportedLanguages = this._getSupportedLanguages('en');
+		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach(language => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 				language = language.substr(0, 2);

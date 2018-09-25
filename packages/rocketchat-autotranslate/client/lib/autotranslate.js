@@ -42,15 +42,11 @@ RocketChat.AutoTranslate = {
 		Meteor.call('autoTranslate.getSupportedLanguages', 'en', (err, languages) => {
 			this.supportedLanguages = languages || [];
 		});
+
 		Tracker.autorun(() => {
 			if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
 				RocketChat.callbacks.add('renderMessage', (message) => {
-					const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid}, {
-						fields: {
-							autoTranslate: 1,
-							autoTranslateLanguage: 1
-						}
-					});
+					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 					const autoTranslateLanguage = this.getLanguage(message.rid);
 					if (message.u && message.u._id !== Meteor.userId()) {
 						if (!message.translations) {
@@ -74,12 +70,7 @@ RocketChat.AutoTranslate = {
 
 				RocketChat.callbacks.add('streamMessage', (message) => {
 					if (message.u && message.u._id !== Meteor.userId()) {
-						const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid}, {
-							fields: {
-								autoTranslate: 1,
-								autoTranslateLanguage: 1
-							}
-						});
+						const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 						const language = this.getLanguage(message.rid);
 						if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 							RocketChat.models.Messages.update({_id: message._id}, {$set: {autoTranslateFetching: true}});
@@ -99,16 +90,11 @@ RocketChat.AutoTranslate = {
 				RocketChat.callbacks.remove('streamMessage', 'autotranslate-stream');
 			}
 		});
-
-		Tracker.autorun(() => {
-			if (RocketChat.settings.get('AutoTranslate_ServiceProvider') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
-				Meteor.call('autoTranslate.refreshProviderSettings');
-			}
-		});
 	}
-
 };
 
 Meteor.startup(function() {
-	RocketChat.AutoTranslate.init();
+	RocketChat.CachedCollectionManager.onLogin(() => {
+		RocketChat.AutoTranslate.init();
+	});
 });

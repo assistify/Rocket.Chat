@@ -242,8 +242,8 @@ export class AutoTranslate {
 	 * @param {string} target
 	 * @returns {object}
 	 */
-	_getSupportedLanguages(target) {
-		SystemLogger.warn('must be implemented by subclass!', '_getSupportedLanguages', target);
+	getSupportedLanguages(target) {
+		SystemLogger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
 	}
 
 	/**

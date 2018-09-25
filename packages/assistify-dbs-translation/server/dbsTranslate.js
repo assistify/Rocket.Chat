@@ -67,7 +67,7 @@ class DBSAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	_getSupportedLanguages(target) {
+	getSupportedLanguages(target) {
 		if (this.autoTranslateEnabled && this.apiKey) {
 			if (this.supportedLanguages[target]) {
 				return this.supportedLanguages[target];
@@ -144,7 +144,7 @@ class DBSAutoTranslate extends AutoTranslate {
 				result.languages.map((language) => {
 					sourceLanguage = language.code;
 				});
-				const supportedLanguages = this._getSupportedLanguages('en');
+				const supportedLanguages = this.getSupportedLanguages('en');
 				targetLanguages.forEach(language => {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 						language = language.substr(0, 2);
@@ -161,7 +161,7 @@ class DBSAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, {msg: result}));
 				});
 			} else {
-				SystemLogger.log('Text language could not be determined', err.message);
+				SystemLogger.warn('Text language could not be determined', err.message);
 			}
 		});
 		return translations;
@@ -188,7 +188,7 @@ class DBSAutoTranslate extends AutoTranslate {
 				result.languages.map((language) => {
 					sourceLanguage = language.code || RocketChat.settings.get('Language'); // fallback to user language.
 				});
-				const supportedLanguages = this._getSupportedLanguages('en');
+				const supportedLanguages = this.getSupportedLanguages('en');
 				targetLanguages.forEach(language => {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
 						language = language.substr(0, 2);
@@ -204,7 +204,7 @@ class DBSAutoTranslate extends AutoTranslate {
 					});
 				});
 			} else {
-				SystemLogger.log('Text language could not be determined', err.message);
+				SystemLogger.warn('Text language could not be determined', err.message);
 			}
 		});
 		return translations;
