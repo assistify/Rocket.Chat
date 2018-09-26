@@ -19,6 +19,7 @@ export class AutoTranslate {
 		this.name = '';
 		this.languages = [];
 		this.supportedLanguages = {};
+		// Get the service provide API key.
 		RocketChat.settings.get('AutoTranslate_APIKey', (key, value) => {
 			this.apiKey = value;
 		});
