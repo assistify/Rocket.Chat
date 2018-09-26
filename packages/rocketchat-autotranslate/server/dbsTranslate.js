@@ -3,7 +3,8 @@
  */
 
 import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
-import {SystemLogger} from 'meteor/rocketchat:logger';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { Promise } from 'meteor/promise';
 import _ from 'underscore';
 
 const cld = Npm.require('cld'); // import the local package dependencies
@@ -15,7 +16,7 @@ const cld = Npm.require('cld'); // import the local package dependencies
  */
 class DBSAutoTranslate extends AutoTranslate {
 	/**
-	 * setup api reference to dbs translation service provider to be used for translation.
+	 * Encapsulate service provider name and invokes parent constructor.
 	 * @constructor
 	 */
 	constructor() {
@@ -24,7 +25,7 @@ class DBSAutoTranslate extends AutoTranslate {
 	}
 
 	/**
-	 * Returns metadata information about the service provide
+	 * Returns metadata information of the service provider
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
@@ -126,14 +127,14 @@ class DBSAutoTranslate extends AutoTranslate {
 		 * explicitly. To automate this language detection process we used the cld language detector.
 		 * When the language detector fails, log it.
 		 */
-		cld.detect(query, (err, result) => {
+		Promise.await(cld.detect(query, (err, result) => {
 			if (result) {
 				result.languages.map((language) => {
 					sourceLanguage = language.code;
 				});
 				const supportedLanguages = this.getSupportedLanguages('en');
 				targetLanguages.forEach(language => {
-					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
+					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 						language = language.substr(0, 2);
 					}
 					try {
@@ -148,6 +149,7 @@ class DBSAutoTranslate extends AutoTranslate {
 						});
 						if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
 							translations[language] = this.deTokenize(Object.assign({}, message, { msg: decodeURIComponent(result.data.translation) }));
+							return 1;
 						}
 					} catch (e) {
 						throw new Meteor.Error('translation-failed', 'Auto-Translate is not allowed', e);
@@ -156,7 +158,7 @@ class DBSAutoTranslate extends AutoTranslate {
 			} else {
 				SystemLogger.warn('Text language could not be determined', err.message);
 			}
-		});
+		}));
 		return translations;
 	}
 
@@ -176,36 +178,40 @@ class DBSAutoTranslate extends AutoTranslate {
 		 * explicitly. To automate this language detection process we used the cld language detector.
 		 * When the language detector fails, log it.
 		 */
-		cld.detect(query, (err, result) => {
+		Promise.await(cld.detect(query, (err, result) => {
 			if (result) {
 				result.languages.map((language) => {
 					sourceLanguage = language.code;
 				});
 				const supportedLanguages = this.getSupportedLanguages('en');
 				targetLanguages.forEach(language => {
-					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
+					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 						language = language.substr(0, 2);
 					}
-					const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
-						params: {
-							key: this.apiKey
-						}, data: {
-							text: query,
-							to: language,
-							from: sourceLanguage
+					try {
+						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
+							params: {
+								key: this.apiKey
+							}, data: {
+								text: query,
+								to: language,
+								from: sourceLanguage
+							}
+						});
+						if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
+							translations[language] = decodeURIComponent(result.data.translation);
 						}
-					});
-					if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
-						translations[language] = decodeURIComponent(result.data.translation);
+					} catch (e) {
+						throw new Meteor.Error('translation-failed', 'Auto-Translate is not allowed', e);
 					}
 				});
 			} else {
 				SystemLogger.warn('Text language could not be determined', err.message);
 			}
-		});
+		}));
 		return translations;
 	}
 }
-// Register DBS translation provider.
+// Register provider to the registry.
 TranslationProviderRegistry.registerProvider(new DBSAutoTranslate());
 

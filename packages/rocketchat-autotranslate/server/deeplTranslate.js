@@ -169,5 +169,5 @@ class DeeplAutoTranslate extends AutoTranslate {
 	}
 }
 
-// Register DeepL translation provider.
+// Register DeepL translation provider to the registry.
 TranslationProviderRegistry.registerProvider(new DeeplAutoTranslate());
