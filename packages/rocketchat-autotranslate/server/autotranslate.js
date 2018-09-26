@@ -6,6 +6,8 @@ import {RocketChat} from 'meteor/rocketchat:lib';
 
 /**
  * Generic auto translate base implementation.
+ * Can be used as superclass for translation providers
+ * @abstract
  * @class
  */
 export class AutoTranslate {
@@ -42,7 +44,7 @@ export class AutoTranslate {
 	}
 
 	/**
-	 * tokenize message
+	 * Extracts non-translatable parts of a message
 	 * @param {object} message
 	 * @return {object} message
 	 */
@@ -176,7 +178,8 @@ export class AutoTranslate {
 	}
 
 	/**
-	 * Prepares the message that are needs translation.
+	 * Triggers the translation of the prepared (tokenized) message
+	 * and persists the result
 	 * @public
 	 * @param {object} message
 	 * @param {object} room
@@ -223,7 +226,8 @@ export class AutoTranslate {
 	}
 
 	/**
-	 * Registers afterSaveMessage call back for active service provider
+	 * On changing the service provider, the callback in which the translation
+	 * is being requested needs to be switched to the new provider
 	 * @protected
 	 * @param {string} provider
 	 */
@@ -232,7 +236,8 @@ export class AutoTranslate {
 	}
 
 	/**
-	 * De-register afterSaveMessage call back for active service provider
+	 * On changing the service provider, the callback in which the translation
+	 * is being requested needs to be deactivated for the previous translation provider
 	 * @protected
 	 * @param {string} provider
 	 */
@@ -241,10 +246,12 @@ export class AutoTranslate {
 	}
 
 	/**
-	 * Returns metadata information about the service provider
+	 * Returns metadata information about the service provider which is used by
+	 * the generic implementation
 	 * @abstract
-	 * @private
-	 * @returns {object}
+	 * @protected
+	 * @returns { name, displayName, settings }
+		};
 	 */
 	_getProviderMetadata() {
 		SystemLogger.warn('must be implemented by subclass!', '_getProviderMetadata');
@@ -252,20 +259,21 @@ export class AutoTranslate {
 
 
 	/**
-	 * Returns necessary settings information about the translation service provider.
+	 * Provides the possible languages _from_ which a message can be translated into a target language
 	 * @abstract
-	 * @private
-	 * @param {string} target
-	 * @returns {object}
+	 * @protected
+	 * @param {string} target - the language into which shall be translated
+	 * @returns [{ language, name }]
 	 */
 	getSupportedLanguages(target) {
 		SystemLogger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
 	}
 
 	/**
-	 * Send Request REST API call to the service provider.
+	 * Performs the actual translation of a message,
+	 * usually by sending a REST API call to the service provider.
 	 * @abstract
-	 * @public
+	 * @protected
 	 * @param {object} message
 	 * @param {object} targetLanguages
 	 * @return {object}
@@ -275,7 +283,8 @@ export class AutoTranslate {
 	}
 
 	/**
-	 * Send Request REST API call to the service provider.
+	 * Performs the actual translation of an attachment (precisely its description),
+	 * usually by sending a REST API call to the service provider.
 	 * @abstract
 	 * @param {object} attachment
 	 * @param {object} targetLanguages
