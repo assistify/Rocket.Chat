@@ -36,9 +36,9 @@ export class AutoTranslate {
 		 */
 		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			if (this.name === value) {
-				this._registerAfterSaveMsgCallBack(this.name);
+				this.registerAfterSaveMsgCallBack(this.name);
 			} else {
-				this._unRegisterAfterSaveMsgCallBack(this.name);
+				this.unRegisterAfterSaveMsgCallBack(this.name);
 			}
 		});
 	}
@@ -199,7 +199,7 @@ export class AutoTranslate {
 					let targetMessage = Object.assign({}, message);
 					targetMessage.html = s.escapeHTML(String(targetMessage.msg));
 					targetMessage = this.tokenize(targetMessage);
-					const translations = this._sendRequestTranslateMessage(targetMessage, targetLanguages);
+					const translations = this._translateMessage(targetMessage, targetLanguages);
 					if (!_.isEmpty(translations)) {
 						RocketChat.models.Messages.addTranslations(message._id, translations);
 					}
@@ -212,7 +212,7 @@ export class AutoTranslate {
 						if (message.attachments.hasOwnProperty(index)) {
 							const attachment = message.attachments[index];
 							if (attachment.description || attachment.text) {
-								const translations = this._sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages);
+								const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
 								if (!_.isEmpty(translations)) {
 									RocketChat.models.Messages.addAttachmentTranslations(message._id, index, translations);
 								}
@@ -231,17 +231,17 @@ export class AutoTranslate {
 	 * @protected
 	 * @param {string} provider
 	 */
-	_registerAfterSaveMsgCallBack(provider) {
+	registerAfterSaveMsgCallBack(provider) {
 		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, provider);
 	}
 
 	/**
 	 * On changing the service provider, the callback in which the translation
-	 * is being requested needs to be deactivated for the previous translation provider
+	 * is being requested needs to be deactivated for the all other translation providers
 	 * @protected
 	 * @param {string} provider
 	 */
-	_unRegisterAfterSaveMsgCallBack(provider) {
+	unRegisterAfterSaveMsgCallBack(provider) {
 		RocketChat.callbacks.remove('afterSaveMessage', provider);
 	}
 
@@ -278,8 +278,8 @@ export class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	_sendRequestTranslateMessage(message, targetLanguages) {
-		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateMessage', message, targetLanguages);
+	_translateMessage(message, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
 	}
 
 	/**
@@ -290,8 +290,8 @@ export class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
-		SystemLogger.warn('must be implemented by subclass!', '_sendRequestTranslateAttachmentDescriptions', attachment, targetLanguages);
+	_translateAttachmentDescriptions(attachment, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 

@@ -116,7 +116,7 @@ class DBSAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_sendRequestTranslateMessage(message, targetLanguages) {
+	_translateMessage(message, targetLanguages) {
 		const translations = {};
 		const msgs = message.msg.split('\n');
 		const query = msgs.join();
@@ -167,7 +167,7 @@ class DBSAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
+	_translateAtachment(attachment, targetLanguages) {
 		const translations = {};
 		const query = attachment.description || attachment.text;
 		let sourceLanguage;

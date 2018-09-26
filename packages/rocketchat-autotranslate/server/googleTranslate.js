@@ -95,7 +95,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_sendRequestTranslateMessage(message, targetLanguages) {
+	_translateMessage(message, targetLanguages) {
 		const translations = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map(msg => encodeURIComponent(msg));
@@ -130,7 +130,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_sendRequestTranslateAttachmentDescriptions(attachment, targetLanguages) {
+	_translateAtachment(attachment, targetLanguages) {
 		const translations = {};
 		const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
