@@ -127,7 +127,7 @@ class DBSAutoTranslate extends AutoTranslate {
 		 * explicitly. To automate this language detection process we used the cld language detector.
 		 * When the language detector fails, log it.
 		 */
-		Promise.await(cld.detect(query, (err, result) => {
+		cld.detect(query, (err, result) => {
 			if (result) {
 				result.languages.map((language) => {
 					sourceLanguage = language.code;
@@ -158,7 +158,7 @@ class DBSAutoTranslate extends AutoTranslate {
 			} else {
 				SystemLogger.warn('Text language could not be determined', err.message);
 			}
-		}));
+		});
 		return translations;
 	}
 
