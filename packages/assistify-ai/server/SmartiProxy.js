@@ -28,8 +28,8 @@ export class SmartiProxy {
 	 *
 	 * @param {String} method - the HTTP method to use
 	 * @param {String} path - the path to call
-	 * @param {Object} [body=null] - the payload to pass (optional)
-	 * @param {String} [parameters=null] - the http query params (optional)
+	 * @param {Object} [parameters=null] - the http query params (optional)
+	 * @param {String} [body=null] - the payload to pass (optional)
 	 * @param {Function} onError=null - custom error handler
 	 *
 	 * @returns {Object}
