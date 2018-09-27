@@ -44,7 +44,7 @@ Meteor.methods({
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }/analysis`, null, (error) => {
+		)(verbs.get, `conversation/${ conversationId }/analysis`, null, null, (error) => {
 			// 404 is expected if no mapping exists
 			if (error.response && error.response.statusCode === 404) {
 				return null;
@@ -70,30 +70,26 @@ Meteor.methods({
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }?start=${ start }&rows=${ rows }`);
+		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }`, { start, rows });
 	},
 
 	searchConversations(queryParams) {
 
-		const _getAclQuery = function() {
+		function unique(value, index, array) {
+			return array.indexOf(value) === index;
+		}
 
-			function unique(value, index, array) {
-				return array.indexOf(value) === index;
-			}
+		const solrFilterBooleanLimit = 256; // there is a limit for boolean expressinos in a filter query of default 1024 and an additional limiter by the HTTP-server. Experiments showed this limit as magic number.
+		const findOptions = { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { _id: 1 } };
+		const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map(subscription => subscription.rid);
+		const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}, findOptions).fetch().map(room => room._id) : [];
+		const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}, findOptions).fetch().map(room => room._id) : [];
 
-			const solrFilterBooleanLimit = 256; // there is a limit for boolean expressinos in a filter query of default 1024 and an additional limiter by the HTTP-server. Experiments showed this limit as magic number.
-			const findOptions = { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { _id: 1 } };
-			const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map(subscription => subscription.rid);
-			const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}, findOptions).fetch().map(room => room._id) : [];
-			const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}, findOptions).fetch().map(room => room._id) : [];
+		const accessibleRooms = livechats.concat(subscribedRooms).concat(publicChannels);
 
-			const accessibleRooms = livechats.concat(subscribedRooms).concat(publicChannels);
-
-			const filterCriteria = `${ accessibleRooms.filter(unique).slice(0, solrFilterBooleanLimit).join(' OR ') }`;
-			return filterCriteria
-				? `&fq=meta_channel_id:(${ filterCriteria })`
-				: '&fq=meta_channel_id:""'; //fallback: if the user's not authorized to view any room, filter for "nothing"
-		};
+		let fq = `${ accessibleRooms.filter(unique).slice(0, solrFilterBooleanLimit).join(' OR ') }`;
+		fq = fq ? { fq: `meta_channel_id:(${ fq })` } : { fq: 'meta_channel_id:""'}; //fallback: if the user's not authorized to view any room, filter for "nothing"
+		const params = Object.assign(queryParams, fq);
 
 		const queryString = querystring.stringify(queryParams);
 		SystemLogger.debug('QueryString: ', queryString);
@@ -103,7 +99,7 @@ Meteor.methods({
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/search?${ queryString }${ _getAclQuery() }`);
+		)(verbs.get, 'conversation/search', params);
 		SystemLogger.debug('SearchResult: ', JSON.stringify(searchResult, null, 2));
 		return searchResult;
 	}
