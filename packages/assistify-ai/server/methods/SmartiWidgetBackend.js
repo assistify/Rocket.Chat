@@ -3,8 +3,6 @@ import {SystemLogger} from 'meteor/rocketchat:logger';
 import {SmartiProxy, verbs} from '../SmartiProxy';
 import {SmartiAdapter} from '../lib/SmartiAdapter';
 
-const querystring = require('querystring');
-
 /** @namespace RocketChat.RateLimiter.limitFunction */
 
 /**
@@ -91,8 +89,6 @@ Meteor.methods({
 		fq = fq ? { fq: `meta_channel_id:(${ fq })` } : { fq: 'meta_channel_id:""'}; //fallback: if the user's not authorized to view any room, filter for "nothing"
 		const params = Object.assign(queryParams, fq);
 
-		const queryString = querystring.stringify(queryParams);
-		SystemLogger.debug('QueryString: ', queryString);
 		const searchResult = RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
