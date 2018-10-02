@@ -720,19 +720,15 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
-			if (RocketChat.Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
-			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+		const roomNameOrId = $(e.currentTarget).data('channel');
+		if (roomNameOrId) {
+			FlowRouter.goToRoomById(roomNameOrId); // the name can be handled in the underlying methods as well
 			return;
+		} else {
+			const username = $(e.currentTarget).data('username');
+
+			openProfileTabOrOpenDM(e, instance, username);
 		}
-
-		const username = $(e.currentTarget).data('username');
-
-		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {

@@ -45,6 +45,11 @@ Template.roomList.helpers({
 				types = ['c', 'p', 'd'];
 			}
 
+			if (this.identifier === 'thread') {
+				types = ['c', 'p', 'd'];
+				query.parentRoomId = {$exists: true};
+			}
+
 			if (this.identifier === 'unread' || this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
@@ -53,6 +58,11 @@ Template.roomList.helpers({
 				query.tokens = { $exists: false };
 			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
 				query.tokens = { $exists: true };
+			}
+
+			// if we display threads as a separate group, we should hide them from the other lists
+			if (RocketChat.getUserPreference(user, 'sidebarGroupByType')) {
+				query.parentRoomId = {$exists: false};
 			}
 
 			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
@@ -82,7 +92,6 @@ Template.roomList.helpers({
 
 		return !['unread', 'f'].includes(group.identifier) || (rooms.length || rooms.count && rooms.count());
 	},
-
 	roomType(room) {
 		if (room.header || room.identifier) {
 			return `type-${ room.header || room.identifier }`;

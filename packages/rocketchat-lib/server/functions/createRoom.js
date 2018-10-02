@@ -80,6 +80,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		}
 
 		const extra = { open: true };
+		if (room.parentRoomId) {
+			extra.parentRoomId = room.parentRoomId;
+		}
 
 		if (username === owner.username) {
 			extra.ls = now;
@@ -99,6 +102,13 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
 		});
 	}
+
+	if (room.parentRoomId) {
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('afterCreateThread', owner, room);
+		});
+	}
+
 	Meteor.defer(() => {
 		RocketChat.callbacks.run('afterCreateRoom', owner, room);
 	});

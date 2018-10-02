@@ -26,7 +26,7 @@ class SideNav extends Page {
 	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
-	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
+	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--inbox'); }
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
 	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
@@ -69,6 +69,13 @@ class SideNav extends Page {
 			currentRoom = browser.element('.rc-header__name').getText();
 		}
 		if (currentRoom !== channelName) {
+			try { // depending on tests executed earlier, the search is already opened or still closed
+				this.spotlightSearchIcon.click();
+			} catch (e) {
+				// the search icon was not available, so finally open the search
+			} finally {
+				this.spotlightSearch.waitForVisible(5000);
+			}
 			this.spotlightSearch.click();
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
