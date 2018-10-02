@@ -16,7 +16,9 @@ Meteor.startup(() => {
 
 	const usersWithoutName = RocketChat.models.Users.find({name: null}).fetch();
 	usersWithoutName.forEach((user)=>{
-		RocketChat.models.Users.update({_id: user._id}, {$set: {name: _guessNameFromUsername(user.username, user.emails[0].address)}});
+		if (user.username || (user.emails && user.emails.length > 0)) {
+			RocketChat.models.Users.update({_id: user._id}, {$set: {name: _guessNameFromUsername(user.username, user.emails[0].address)}});
+		}
 	});
 
 });
