@@ -66,6 +66,13 @@ Template.directory.helpers({
 	secretRoomsExists() {
 		return Template.instance().secretRoomsExists.get();
 	},
+	getIcon() {
+		const instance = Template.instance();
+		if (instance.searchType.get() === 'p') {
+			return 'lock';
+		}
+		return 'hashtag';
+	},
 	tabsData() {
 		const {
 			sortDirection,
