@@ -89,9 +89,11 @@ Template.privateNoPermission.onCreated(function() {
 				_id: 1
 			}
 		});
-		const isSubscribed = ChatSubscription.findOne({ rid: roomId._id}); // user is not subscribed on loading.
-		if (isSubscribed) {
-			document.location.reload(true); // Reload the page to display the room content.
+		if (roomId) {
+			const isSubscribed = ChatSubscription.findOne({ rid: roomId._id}); // user is not subscribed on loading.
+			if (isSubscribed) {
+				document.location.reload(true); // Reload the page to display the room content.
+			}
 		}
 	});
 });
