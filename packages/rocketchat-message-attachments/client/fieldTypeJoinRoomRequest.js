@@ -19,12 +19,12 @@ const events = {
 		const status = 'accepted';
 		const responder = Meteor.user().name;
 		const roomId = t.data._id;
-		Meteor.call('addUsersToRoom', {rid: roomId, users: [message.attachments[0].fields[0].requester]}, (err) => {
+		const requester = message.attachments[0].fields[0].requester;
+		Meteor.call('addUsersToRoom', {rid: roomId, users: [requester]}, (err) => {
 			if (err) {
 				return err;
 			}
 			Meteor.call('updateJoinRoomStatus', roomId, message, status, responder);
-			//Meteor.call('notifyUser', roomId, 'user');
 		});
 	},
 	'click [name="decline"]'(e, t) {
@@ -33,7 +33,6 @@ const events = {
 		const responder = Meteor.user().name;
 		const roomId = t.data._id;
 		Meteor.call('updateJoinRoomStatus', roomId, message, status, responder);
-		//Meteor.call('notifyUser', roomId, 'user');
 	}
 };
 
