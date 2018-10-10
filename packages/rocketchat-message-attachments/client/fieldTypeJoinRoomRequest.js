@@ -19,7 +19,7 @@ const events = {
 		const status = 'accepted';
 		const responder = Meteor.user().name;
 		const roomId = t.data._id;
-		Meteor.call('addUserToRoom', {rid: roomId, username: message.attachments[0].fields[0].requester}, (err) => {
+		Meteor.call('addUsersToRoom', {rid: roomId, users: [message.attachments[0].fields[0].requester]}, (err) => {
 			if (err) {
 				return err;
 			}
