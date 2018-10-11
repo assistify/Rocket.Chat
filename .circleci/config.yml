@@ -82,7 +82,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           command: |
-            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
+            if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == "develop" ]] || [[ $CIRCLE_BRANCH == "master" ]]; then meteor reset; fi
             set +e
             meteor add rocketchat:lib
             set -e
@@ -214,6 +214,62 @@ jobs:
           name: Run Tests
           command: |
             if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+            npm test
+
+      - store_artifacts:
+          path: .screenshots/
+
+  test-smarti:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8.9.4-browsers
+      - image: circleci/mongo:3.4
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+      - image: assistify/smarti:0.7.5
+        environment:
+          DOWNLOAD_NLP_LIBS: true
+          SPRING_DATA_MONGODB_URI: mongodb://localhost:27017/smarti
+          SECURITY_CONFIG_MONGO_ADMIN-PASSWORD: admin
+          # Optimize Smarti for a small memory footprint
+          JAVA_OPTS: '-Xms1024m -Xmx1600m'
+          SMARTI_PROCESSING_NUMTHREADS: 1
+          NLP_STANFORDNLP_DE_PARSEMAXLEN: 20
+          NLP_STANFORDNLP_DE_PARSEMODEL: edu/stanford/nlp/models/lexparser/germanPCFG.ser.gz
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testsmarti
+      MONGO_OPLOG_URL: mongodb://localhost:27017/local
+      RETRY_TESTS: 5
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: Skip if disabled
+          command: if [[ $DISABLE_SMARTI ]]; then circleci step halt; fi
+
+      - run:
+          name: Install dependencies
+          command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+            sudo apt-get update
+            sudo apt-get install -y google-chrome-stable
+
+      - run:
+          name: NPM install
+          command: |
+            npm install
+
+      - run:
+          name: Run Tests
+          command: |
+            shopt -s extglob
+            rm -rf ./tests/end-to-end/!(ui_smarti) # remove all non-Smarti-tests
             npm test
 
       - store_artifacts:
@@ -372,6 +428,12 @@ workflows:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - test-without-oplog:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
+      - test-smarti:
           requires:
             - build
           filters:
