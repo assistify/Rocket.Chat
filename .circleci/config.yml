@@ -174,7 +174,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+            rm -rf ./tests/end-to-end/ui_smarti
             npm test
 
       - store_artifacts:
@@ -213,7 +213,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+            rm -rf ./tests/end-to-end/ui_smarti
             npm test
 
       - store_artifacts:
