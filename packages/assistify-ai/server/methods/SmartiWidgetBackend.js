@@ -156,9 +156,11 @@ Meteor.methods({
 		};
 	},
 
-	closeConversation(message, roomId, user) {
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('request_closed', roomId, ` ${ message }`, user);
-		RocketChat.archiveRoom(roomId);
+	closeConversation(roomId) {
+		if (RocketChat.authz.hasAllPermission(Meteor.userId(), 'archive-room', roomId)) { return false ; }
+		const room = RocketChat.models.Rooms.findOneById(roomId);
+		if (room.archived) { return false; }
+		return true;
 	},
 
 	/**

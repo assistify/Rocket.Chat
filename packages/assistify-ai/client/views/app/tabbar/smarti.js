@@ -114,7 +114,8 @@ Template.AssistifySmarti.helpers({
 		}
 	},
 	notArchived() {
-		return true;
+		const instance = Template.instance();
+		return Meteor.call('closeConversation', instance.data.rid);
 	}
 });
 
@@ -147,14 +148,13 @@ Template.AssistifySmarti.events({
 				if (inputValue === false) {
 					return;
 				}
-
-				Meteor.call('closeConversation', ` ${ inputValue }`, instance.data.rid, Meteor.user(), function(error) {
+				Meteor.call('archiveRoom', instance.data.rid, function(error) {
 					if (error) {
 						return handleError(error);
 					} else {
 						modal.open({
-							title: t('Chat_closed'),
-							text: t('Chat_closed_successfully'),
+							title: t('Archive'),
+							text: t('Room_has_been_archived'),
 							type: 'success',
 							timer: 1000,
 							showConfirmButton: false
