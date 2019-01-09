@@ -854,7 +854,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': userId,
 			alert: false, // ignore unred rooms
 			f: { $ne: true }, // ignore favored rooms
-			ls: { $lt: thresholdDate }
+			ls: { $lt: thresholdDate },
 		};
 
 		const result = this.update(
@@ -862,8 +862,8 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			{
 				$set: {
 					alert: false,
-					open: false
-				}
+					open: false,
+				},
 			},
 			{ multi: true });
 

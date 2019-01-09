@@ -7,7 +7,7 @@ Meteor.methods({
 
 		if (!Match.test(idleDuration, Number)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'hideOldSubscriptions'
+				method: 'hideOldSubscriptions',
 			});
 		}
 
@@ -17,7 +17,7 @@ Meteor.methods({
 			'u._id': userId,
 			alert: false, // ignore unred rooms
 			f: { $ne: true }, // ignore favored rooms
-			ls: { $lt: thresholdDate }
+			ls: { $lt: thresholdDate },
 		};
 
 		return ChatSubscription.update(
@@ -25,9 +25,9 @@ Meteor.methods({
 			{
 				$set: {
 					alert: false,
-					open: false
-				}
+					open: false,
+				},
 			},
 			{ multi: true });
-	}
+	},
 });

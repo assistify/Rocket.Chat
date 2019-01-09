@@ -116,7 +116,7 @@ export function hideOldSubscriptions() {
 		confirmButtonText: t('Yes_hide_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: true,
-		html: false
+		html: false,
 	}, async function(inputValue) {
 		const days = parseInt(inputValue);
 		if (!days) {

@@ -45,5 +45,5 @@ Template.sortlist.events({
 	'click .js-hide-old-subscriptions'(/* event, instance*/) {
 		hideOldSubscriptions();
 		popover.close();
-	}
+	},
 });
