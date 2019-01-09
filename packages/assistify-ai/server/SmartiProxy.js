@@ -5,7 +5,7 @@ export const verbs = {
 	get: 'GET',
 	post: 'POST',
 	put: 'PUT',
-	delete: 'DELETE'
+	delete: 'DELETE',
 };
 
 /**
@@ -28,37 +28,41 @@ export class SmartiProxy {
 	 *
 	 * @param {String} method - the HTTP method to use
 	 * @param {String} path - the path to call
-	 * @param {Object} [body=null] - the payload to pass (optional)
+	 * @param {Object} [parameters=null] - the http query params (optional)
+	 * @param {String} [body=null] - the payload to pass (optional)
 	 * @param {Function} onError=null - custom error handler
 	 *
 	 * @returns {Object}
 	 */
-	static propagateToSmarti(method, path, body = null, onError = null) {
+	static propagateToSmarti(method, path, parameters = null, body = null, onError = null) {
 		const url = `${ SmartiProxy.smartiUrl }${ path }`;
 		const header = {
 			'X-Auth-Token': SmartiProxy.smartiAuthToken,
-			'Content-Type': 'application/json; charset=utf-8'
+			'Content-Type': 'application/json; charset=utf-8',
 		};
 		try {
 			SystemLogger.debug('Sending request to Smarti', method, 'to', url, 'body', JSON.stringify(body));
-			const response = HTTP.call(method, url, {data: body, headers: header});
+
+			const response = HTTP.call(method, url, {
+				params: parameters,
+				data: body,
+				headers: header,
+			});
+
 			if (response.statusCode < 400) {
-				return response.data || response.content; //.data if it's a json-response
+				return response.data || response.content; // .data if it's a json-response
 			} else {
 				SystemLogger.debug('Got unexpected result from Smarti', method, 'to', url, 'response', JSON.stringify(response));
 			}
 		} catch (error) {
 
 			if (error && onError) {
-				const recoveryResult = onError(error);
-				if (recoveryResult !== undefined) {
-					return recoveryResult;
-				}
+				return onError(error);
 			}
 
 			SystemLogger.error('Could not complete', method, 'to', url, error.response);
 			SystemLogger.debug(error);
-			return {error};
+			return { error };
 		}
 	}
 }

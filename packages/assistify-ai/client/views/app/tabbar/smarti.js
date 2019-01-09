@@ -1,24 +1,36 @@
 /* globals TAPi18n, RocketChat */
 
 Template.AssistifySmarti.onCreated(function() {
-	this.helpRequest = new ReactiveVar(null);
+	this.room = new ReactiveVar(null);
 	this.smartiLoaded = new ReactiveVar(false);
 	this.maxTriesLoading = 10;
 	this.timeoutMs = 2000;
 	this.currentTryLoading = new ReactiveVar(0);
+	this.reactOnSmartiDirty = new ReactiveVar(true);
 
 	const instance = this;
 
 	this.autorun(() => {
 		if (instance.data.rid) {
-			const helpRequest = RocketChat.models.Rooms.findOne(instance.data.rid);
-			instance.helpRequest.set(helpRequest);
+			const room = RocketChat.models.Rooms.findOne(instance.data.rid);
+			instance.room.set(room);
 		}
 	});
 
+	/*
+	Once this template is created (meaning: Once the tab is opened),
+	the user is interested in what Smarti is analyzing =>
+	Hook into an event issued by the backend to allow requesting an analysis
+	*/
+	RocketChat.Notifications.onRoom(instance.data.rid, 'assistify-smarti-dirty', () => {
+		if (this.reactOnSmartiDirty.get()) {
+			Meteor.call('analyze', instance.data.rid);
+		}
+	});
 });
 
 Template.AssistifySmarti.onDestroyed(function() {
+	this.reactOnSmartiDirty.set(false);
 	clearTimeout(this.loading);
 });
 
@@ -31,9 +43,9 @@ Template.AssistifySmarti.onRendered(function() {
 	const instance = this;
 
 	/* in order to avoid duplicated scrollbars, have the outer one hidden */
-	//const parentContainer = this.$(':parent').parent();
-	//parentContainer.css('overflow-y', 'initial');
-	//this.$('.smarti-widget').css('overflow-y', 'auto');
+	// const parentContainer = this.$(':parent').parent();
+	// parentContainer.css('overflow-y', 'initial');
+	// this.$('.smarti-widget').css('overflow-y', 'auto');
 
 	function createSmarti() {
 		if (window.SmartiWidget === undefined) {
@@ -56,12 +68,12 @@ Template.AssistifySmarti.onRendered(function() {
 				channel: instance.data.rid,
 				postings: {
 					type: WIDGET_POSTING_TYPE,
-					cssInputSelector: '.rc-message-box .js-input-message'
+					cssInputSelector: '.rc-message-box .js-input-message',
 				},
-				lang: localStorage.getItem('userLanguage').split('-')[0]
+				lang: localStorage.getItem('userLanguage').split('-')[0],
 			};
 
-			//propagate i18n - support formatted strings while doing that
+			// propagate i18n - support formatted strings while doing that
 			const i18nSetting = RocketChat.settings.get('Assistify_AI_Smarti_Widget_i18n');
 			const i18n = i18nSetting.search('\n') > -1 ? JSON.parse(i18nSetting) : i18nSetting;
 			if (i18n) {
@@ -89,10 +101,6 @@ Template.AssistifySmarti.helpers({
 		const instance = Template.instance();
 		return { roomId: instance.data.rid };
 	},
-	helpRequestByRoom() {
-		const instance = Template.instance();
-		return instance.helpRequest.get();
-	},
 	loadingClass() {
 		const instance = Template.instance();
 		if (instance.smartiLoaded.get()) {
@@ -112,7 +120,7 @@ Template.AssistifySmarti.helpers({
 		} else if (instance.currentTryLoading.get() === instance.maxTriesLoading) {
 			return TAPi18n.__('Widget_could_not_load');
 		}
-	}
+	},
 });
 
 Template.AssistifySmarti.events({
@@ -120,5 +128,5 @@ Template.AssistifySmarti.events({
 		if (instance.data.rid) {
 			Meteor.call('resyncRoom', instance.data.rid);
 		}
-	}
+	},
 });

@@ -2,6 +2,7 @@
 /* globals _ */
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
+import toastr from 'toastr';
 
 const parent = document.querySelector('.main-content');
 let oldRoute = '';
@@ -24,14 +25,14 @@ FlowRouter.route('/create-thread', {
 		if (parent) {
 			Blaze.renderWithData('CreateThread', parent);
 		} else {
-			BlazeLayout.render('main', { center: 'CreateThread'});
+			BlazeLayout.render('main', { center: 'CreateThread' });
 		}
 	},
 
 	triggersExit: [function() {
 		Blaze.remove(Blaze.getView(document.getElementsByClassName('full-modal')[0]));
 		$('.main-content').addClass('rc-old');
-	}]
+	}],
 });
 
 const acEvents = {
@@ -66,7 +67,7 @@ const acEvents = {
 		t.ac.onBlur(e);
 		t.debounceValidateParentChannel(e.target.value);
 		t.debounceDropDown();
-	}
+	},
 };
 
 
@@ -100,7 +101,7 @@ Template.CreateThread.helpers({
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
 					return `<strong>${ part }</strong>`;
 				}) }`;
-			}
+			},
 		};
 	},
 	selectParent() {
@@ -138,7 +139,7 @@ Template.CreateThread.helpers({
 		const instance = Template.instance();
 		const parentChannels = instance.parentChannelsList.get();
 
-		function getSize(/*channel*/) {
+		function getSize(/* channel*/) {
 			return Math.random() * (4 - 10) + 4;
 		}
 
@@ -152,11 +153,11 @@ Template.CreateThread.helpers({
 
 		function setParentChannel() {
 			return function(selectedparentChannel) {
-				const parentChannel = parentChannels.find(parentChannel => parentChannel.name === selectedparentChannel[0]);
+				const parentChannel = parentChannels.find((parentChannel) => parentChannel.name === selectedparentChannel[0]);
 				if (parentChannel) {
 					instance.debounceWordCloudSelect(parentChannel);
 				}
-				instance.showChannelSelection.set(false); //Search completed.
+				instance.showChannelSelection.set(false); // Search completed.
 			};
 		}
 
@@ -185,8 +186,8 @@ Template.CreateThread.helpers({
 			ellipticity: setFlatness(),
 			list: getWordList(),
 			click: setParentChannel(),
-			hover: onWordHover()
-			//setCanvas: getCanvas
+			hover: onWordHover(),
+			// setCanvas: getCanvas
 		};
 	},
 
@@ -204,7 +205,7 @@ Template.CreateThread.helpers({
 		const instance = Template.instance();
 
 		return instance.selectParent.get() ? '' : 'hidden';
-	}
+	},
 });
 
 Template.CreateThread.events({
@@ -215,7 +216,7 @@ Template.CreateThread.events({
 	'input #parentChannel-search'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 		t.parentChannel.set(input.value);
 		t.parentChannelId.set('');
@@ -234,28 +235,29 @@ Template.CreateThread.events({
 		const parentChannel = instance.parentChannel.get();
 		const parentChannelId = instance.parentChannelId.get();
 		const openingQuestion = instance.openingQuestion.get();
+		let errorText = '';
 		if (parentChannelId) {
 			instance.error.set(null);
 			Meteor.call('createThread', parentChannelId, {
-				msg: openingQuestion
+				msg: openingQuestion,
 			}, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {
 						case 'error-invalid-name':
-							instance.error.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
-							return;
+							errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+							break;
 						case 'error-duplicate-channel-name':
-							instance.error.set(TAPi18n.__('Request_already_exists'));
-							return;
+							errorText = TAPi18n.__('Request_already_exists');
+							break;
 						case 'error-archived-duplicate-name':
-							instance.error.set(TAPi18n.__('Duplicate_archived_channel_name', name));
-							return;
+							errorText = TAPi18n.__('Duplicate_archived_channel_name', name);
+							break;
 						case 'error-invalid-room-name':
 							console.log('room name slug error');
 							// 	toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
-							instance.error.set(TAPi18n.__('Invalid_room_name', err.details.channel_name));
-							return;
+							errorText = TAPi18n.__('Invalid_room_name', err.details.channel_name);
+							break;
 						default:
 							return handleError(err);
 					}
@@ -267,11 +269,20 @@ Template.CreateThread.events({
 					RocketChat.roomTypes.openRouteLink(result.t, result);
 				}
 			});
+		} else {
+			errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+		}
+
+		if (errorText) {
+			instance.parentChannelError.set(errorText);
+			if (!instance.selectParent.get()) {
+				toastr.error(errorText);
+			}
 		}
 	},
 	'click .full-modal__back-button'() {
 		oldRoute ? history.back() : FlowRouter.go('home');
-	}
+	},
 });
 
 Template.CreateThread.onRendered(function() {
@@ -315,7 +326,7 @@ Template.CreateThread.onRendered(function() {
 
 Template.CreateThread.onCreated(function() {
 	const instance = this;
-	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Thread_default_parent_Channel')); //determine parent Channel from setting and allow to overwrite
+	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Thread_default_parent_Channel')); // determine parent Channel from setting and allow to overwrite
 	instance.parentChannelId = new ReactiveVar('');
 	instance.parentChannelError = new ReactiveVar(null);
 	instance.selectParent = new ReactiveVar(false);
@@ -341,15 +352,15 @@ Template.CreateThread.onCreated(function() {
 
 	instance.debounceValidateParentChannel = _.debounce((parentChannel) => {
 		if (!parentChannel) {
-			return false; //parentChannel is mandatory
+			return false; // parentChannel is mandatory
 		}
 		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
 			if (!result) {
 				instance.parentChannelId.set(false);
-				instance.parentChannelError.set('Parent_channel_doesnt_exist');
+				instance.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
 			} else {
 				instance.parentChannelError.set('');
-				instance.parentChannelId.set(result); //assign parent channel Id
+				instance.parentChannelId.set(result); // assign parent channel Id
 			}
 		});
 	}, 500);
@@ -360,7 +371,7 @@ Template.CreateThread.onCreated(function() {
 	instance.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
-			container: '.rc-popup-list__list'
+			container: '.rc-popup-list__list',
 		},
 		limit: 10,
 		inputDelay: 300,
@@ -372,15 +383,15 @@ Template.CreateThread.onCreated(function() {
 			doNotChangeWidth: false,
 			selector(match) {
 				return {
-					name: match
+					name: match,
 				};
 			},
-			sort: 'name'
-		}]
+			sort: 'name',
+		}],
 	});
 	this.ac.tmplInst = this;
 
-	//pre-fill form based on query parameters if passed
+	// pre-fill form based on query parameters if passed
 	if (FlowRouter.current().queryParams) {
 		const parentChannel = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('parentChannel');
 		if (parentChannel) {
@@ -395,7 +406,7 @@ Template.CreateThread.onCreated(function() {
 	}
 
 	Meteor.call('getParentChannelList', {
-		sort: 'name'
+		sort: 'name',
 	}, function(err, result) {
 		if (result) {
 			instance.parentChannelsList.set(result.channels);

@@ -66,7 +66,13 @@ class SideNav extends Page {
 			currentRoom = browser.element('.rc-header__name').getText();
 		}
 		if (currentRoom !== channelName) {
-			this.spotlightSearch.waitForVisible(5000);
+			try { // depending on tests executed earlier, the search is already opened or still closed
+				this.spotlightSearchIcon.click();
+			} catch (e) {
+				// the search icon was not available, so finally open the search
+			} finally {
+				this.spotlightSearch.waitForVisible(5000);
+			}
 			this.spotlightSearch.click();
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
@@ -105,12 +111,12 @@ class SideNav extends Page {
 		return browser.element(`.sidebar-item__name=${ channelName }`);
 	}
 
-	createChannel(channelName, isPrivate, /*isReadOnly*/) {
+	createChannel(channelName, isPrivate, /* isReadOnly*/) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelName.waitForVisible(10000);
 
-		//workaround for incomplete setvalue bug
+		// workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
 
 		browser.waitUntil(function() {
