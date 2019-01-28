@@ -17,7 +17,8 @@ test-install-dependencies: &test-install-dependencies
 test-run: &test-run
   name: Run Tests
   command: |
-    for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+    if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+    npm test
 
 test-npm-install: &test-npm-install
   name: NPM install
@@ -41,7 +42,7 @@ test: &test
   environment: &test-environment
     TEST_MODE: "true"
     MONGO_URL: mongodb://localhost:27017/rocketchat
-
+    RETRY_TESTS: 5
 
 test-with-oplog: &test-with-oplog
   <<: *test
@@ -200,51 +201,13 @@ jobs:
       - store_artifacts:
           path: /tmp/build
 
-  test-with-oplog:
-    <<: *defaults
+
+  test-with-oplog-mongo-3-2:
+    <<: *test-with-oplog
     docker:
-      - image: circleci/node:8.9-browsers
-      - image: mongo:3.4
-        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
-
-    environment:
-      TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/rocketchat
-      MONGO_OPLOG_URL: mongodb://localhost:27017/local
-      RETRY_TESTS: 5
-
-    steps:
-      - attach_workspace:
-          at: /tmp
-
-      - checkout
-
-      - run:
-          name: Install dependencies
-          command: |
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-            sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell google-chrome-stable
-
-      - run:
-          name: Configure Replica Set
-          command: |
-            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-            mongo --eval 'rs.status()'
-
-      - run:
-          name: NPM install
-          command: |
-            npm install
-
-      - run:
-          name: Run Tests
-          command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
-            npm test
+      - image: *test-docker-image
+      - image: mongo:3.2
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
   test-with-oplog-mongo-3-4:
     <<: *test-with-oplog
@@ -260,10 +223,12 @@ jobs:
       - image: mongo:3.6
         command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
-    environment:
-      TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
-      RETRY_TESTS: 5
+  test-with-oplog-mongo-4-0:
+    <<: *test-with-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:4.0
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
 
   test-without-oplog-mongo-3-2:
@@ -284,11 +249,11 @@ jobs:
       - image: *test-docker-image
       - image: mongo:3.6
 
-      - run:
-          name: Run Tests
-          command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
-            npm test
+  test-without-oplog-mongo-4-0:
+    <<: *test-without-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:4.0
 
 
   deploy:
@@ -431,32 +396,45 @@ jobs:
 
 workflows:
   version: 2
-  build:
+  build-and-test:
     jobs:
       - build:
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-with-oplog:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-2: &test-mongo
           requires:
             - build
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-without-oplog:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-4: &test-mongo-no-pr
           requires:
             - build
-          filters:
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - deploy:
-          requires:
-            - image-build
           filters:
             branches:
-              only:
-                - develop
-                - master
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
+      - test-with-oplog-mongo-4-0: *test-mongo
+      - test-without-oplog-mongo-3-2: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-4: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-6: *test-mongo-no-pr
+      - test-without-oplog-mongo-4-0: *test-mongo-no-pr
+      - deploy:
+          requires:
+            - test-with-oplog-mongo-3-2
+            - test-with-oplog-mongo-3-4
+            - test-with-oplog-mongo-3-6
+            - test-with-oplog-mongo-4-0
+            - test-without-oplog-mongo-3-2
+            - test-without-oplog-mongo-3-4
+            - test-without-oplog-mongo-3-6
+            - test-without-oplog-mongo-4-0
+          filters:
+            branches:
+              only: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - image-build:
