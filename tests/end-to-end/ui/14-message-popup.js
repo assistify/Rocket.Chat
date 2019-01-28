@@ -1,15 +1,14 @@
-/* eslint-env mocha */
+import { adminEmail, adminPassword } from '../../data/user.js';
+
 import {
 	api,
 	request,
 	getCredentials,
 	credentials,
 } from '../../data/api-data.js';
+import loginPage from '../../pageobjects/login.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import mainContent from '../../pageobjects/main-content.page';
-
-import { username, password, email } from '../../data/user.js';
-import { checkIfUserIsValid } from '../../data/checks';
 
 const users = new Array(10).fill(null)
 	.map(() => `${ Date.now() }.${ Math.random().toString(36).slice(2) }`)
@@ -65,6 +64,13 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 describe('[Message Popup]', () => {
 	describe('test user mentions in message popup', () => {
 		before(() => {
+			browser.executeAsync((done) => {
+				const user = Meteor.user();
+				if (!user) {
+					return done();
+				}
+				Meteor.logout(done);
+			});
 
 			browser.call(async() => {
 				for (const user of users) {
@@ -72,9 +78,9 @@ describe('[Message Popup]', () => {
 				}
 			});
 
-			checkIfUserIsValid(username, email, password);
+			loginPage.open();
+			loginPage.login({ email: adminEmail, password: adminPassword });
 
-			sideNav.openChannel('general');
 			sideNav.general.waitForVisible(5000);
 			sideNav.general.click();
 		});

@@ -1,4 +1,6 @@
-/* globals popover */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui';
 
 import { hideOldSubscriptions } from 'meteor/rocketchat:lib';
 

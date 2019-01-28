@@ -1,8 +1,8 @@
-/* globals SystemLogger, RocketChat */
-
-import s from 'underscore.string';
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import _ from 'underscore';
+import s from 'underscore.string';
 
 /**
  * Generic auto translate base implementation.

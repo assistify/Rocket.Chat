@@ -1,5 +1,6 @@
-/* globals RocketChat */
-import { UiTextContext } from 'meteor/rocketchat:lib';
+import { Meteor } from 'meteor/meteor';
+import { RocketChat, UiTextContext } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
 
 Template.roomList.helpers({
 	rooms() {
