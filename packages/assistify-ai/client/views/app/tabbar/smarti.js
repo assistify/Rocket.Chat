@@ -1,4 +1,7 @@
-/* globals TAPi18n, RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.AssistifySmarti.onCreated(function() {
 	this.room = new ReactiveVar(null);

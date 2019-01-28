@@ -1,4 +1,5 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * Load Smarti script asynchronously to the window.

@@ -1,4 +1,6 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(() => {
 	const addAISettings = function() {

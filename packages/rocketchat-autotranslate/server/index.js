@@ -17,7 +17,7 @@ import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import './googleTranslate';
 import './deeplTranslate';
 import './dbsTranslate';
-import '.models/Settings';
+import './models/Settings';
 
 export {
 	AutoTranslate,
