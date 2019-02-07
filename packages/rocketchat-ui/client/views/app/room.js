@@ -721,14 +721,35 @@ Template.room.events({
 		}
 	},
 
-	'click .recognized-term'(/* e, instance */) {
+	'click .recognized-term'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}
-		// const term = $(e.currentTarget).get(0).innerText;
+		const term = $(e.currentTarget).get(0).innerText;
 
-		if ($('.rc-header .messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed
-			Meteor.setTimeout(() => $('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click(), 50);
+		if ($('.messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed
+			Meteor.setTimeout(() => {
+				// open the tab
+				$('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click();
+				// and pin the term. We don't have a callback available for that,
+				// so we'll just try it multiple times. Once the pin was visible, we press it.
+				let tokenPinned = false;
+				let counter = 1;
+				const interval = Meteor.setInterval(() => {
+					if (counter >= 30) {
+						Meteor.clearInterval(interval);
+					} else if (!tokenPinned) {
+						const tokenPinElement = $(`#tags li:contains(${ term }) div.title`).siblings().first().children().first().get(0);
+						if (tokenPinElement) { // the tag was visible
+							tokenPinElement.click();
+							tokenPinned = true;
+							Meteor.clearInterval(interval);
+						} else {
+							counter++;
+						}
+					}
+				}, 100);
+			}, 50);
 		}
 
 	},
