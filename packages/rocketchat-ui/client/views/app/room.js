@@ -721,7 +721,7 @@ Template.room.events({
 		}
 	},
 
-	'click .recognized-term'(e, instance) {
+	'click .recognized-term'(e) {
 		if (!Meteor.userId()) {
 			return;
 		}
