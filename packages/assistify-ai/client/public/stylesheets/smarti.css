@@ -144,8 +144,6 @@
 	cursor: pointer;
 
 	color: #d5195b;
-
-	font-weight: bold;
 }
 
 .recognized-term::after {
