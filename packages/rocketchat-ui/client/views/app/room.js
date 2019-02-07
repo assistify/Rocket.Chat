@@ -733,17 +733,31 @@ Template.room.events({
 				$('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click();
 				// and pin the term. We don't have a callback available for that,
 				// so we'll just try it multiple times. Once the pin was visible, we press it.
-				let tokenPinned = false;
+				let processed = false;
 				let counter = 1;
 				const interval = Meteor.setInterval(() => {
-					if (counter >= 30) {
+					if (counter >= 30 || processed) {
 						Meteor.clearInterval(interval);
-					} else if (!tokenPinned) {
-						const tokenPinElement = $(`#tags li:contains(${ term }) div.title`).siblings().first().children().first().get(0);
-						if (tokenPinElement) { // the tag was visible
-							tokenPinElement.click();
-							tokenPinned = true;
-							Meteor.clearInterval(interval);
+					} else {
+						const tagsElement = $('.contextual-bar #widgetContainer #tags');
+						if (tagsElement && tagsElement.children('ul').children('li').length > 0) {
+							processed = true;
+
+							const tokenElement = tagsElement.find(`li:contains(${ term }) div.title`);
+							if (!tokenElement.parent().hasClass('pinned')
+								&& !tokenElement.parent().hasClass('user-tag')) {
+								// the token has not been pinned already
+								const tokenPinElement = tokenElement.siblings().first().children().first().get(0);
+								if (tokenPinElement) { // the tag was visible
+									tokenPinElement.click();
+								} else {
+									// the tags were loaded, but there was none matching => create a new one
+									tagsElement.children('ul').children('li.add').get(0).click();
+									const input = tagsElement.children('ul').children('li.add').children('input');
+									input.val(term);
+									input.trigger($.Event('keydown', { which: 13 })); // eslint-disable-line new-cap
+								}
+							}
 						} else {
 							counter++;
 						}
