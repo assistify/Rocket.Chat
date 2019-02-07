@@ -139,3 +139,15 @@
 	color: #ffffff;
 	background: #d5195b;
 }
+
+.recognized-term {
+	cursor: pointer;
+
+	color: #d5195b;
+
+	font-weight: bold;
+}
+
+.recognized-term::after {
+	content: " \2197";
+}
