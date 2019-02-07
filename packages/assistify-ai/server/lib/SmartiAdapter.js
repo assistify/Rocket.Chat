@@ -129,6 +129,11 @@ export class SmartiAdapter {
 			// we at least cannot consider the sync successful
 			Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
 		}
+
+		// TODO: Setting
+		if (RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Enabled')) {
+			Meteor.defer(() => SmartiAdapter.triggerAnalysis(message.rid));
+		}
 	}
 
 	/**

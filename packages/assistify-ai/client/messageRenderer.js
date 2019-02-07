@@ -8,11 +8,13 @@ import s from 'underscore.string';
  * @augments message.html - the rendered message body
  */
 const highlightRecognizedTerms = function(message) {
-	let { html } = message;
-	if (message.recognizedTerms) {
-		message.recognizedTerms.forEach((term) => html = html.replace(new RegExp(`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(term) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`, 'gmi'), '$1<span class="recognized-term">$2</span>$3'));
+	if (RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Enabled')) {
+		let { html } = message;
+		if (message.recognizedTerms) {
+			message.recognizedTerms.forEach((term) => html = html.replace(new RegExp(`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(term) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`, 'gmi'), '$1<span class="recognized-term">$2</span>$3'));
+		}
+		message.html = html;
 	}
-	message.html = html;
 };
 
 RocketChat.callbacks.add('renderMessage', highlightRecognizedTerms, RocketChat.callbacks.priority.LOW, 'smartiHighlighting');
