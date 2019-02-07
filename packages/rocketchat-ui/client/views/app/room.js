@@ -721,6 +721,18 @@ Template.room.events({
 		}
 	},
 
+	'click .recognized-term'(/* e, instance */) {
+		if (!Meteor.userId()) {
+			return;
+		}
+		// const term = $(e.currentTarget).get(0).innerText;
+
+		if ($('.rc-header .messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed
+			Meteor.setTimeout(() => $('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click(), 50);
+		}
+
+	},
+
 	'click .image-to-download'(event) {
 		ChatMessage.update({ _id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
