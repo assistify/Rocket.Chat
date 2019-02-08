@@ -737,7 +737,7 @@ Template.room.events({
 			let processed = false;
 			let counter = 1;
 			const interval = Meteor.setInterval(() => {
-				if (counter >= 30 || processed) {
+				if (counter >= 100 || processed) {
 					Meteor.clearInterval(interval);
 				} else {
 					const tagsElement = $('.contextual-bar #widgetContainer #tags');
