@@ -11,7 +11,7 @@
     "Assistify_AI_Smarti_Domain_Description": "Trage hier den Smarti Client-Name ein, der zu dieser Rocket.Chat Instanz gehört.",
     "Assistify_AI_Smarti_Auth_Token": "Smarti Client-Token",
     "Assistify_AI_Smarti_Auth_Token_Description": "Trage hier den Smarti Client-Token ein, damit sich Rocket.Chat gegenüber Smarti authentifizieren kann.",
-    "Assistify_AI_Smarti_Inline_Highlighting_Enabled": "Hervorheben identifizierter Termini",
+    "Assistify_AI_Smarti_Inline_Highlighting_Enabled": "Hervorheben identifizierter Terme",
     "Assistify_AI_Smarti_Inline_Highlighting_Enabled_Description": "Wenn diese Option aktiviert ist, werden von Smarti identifizierte Suchterme im Text hervorgehoben.\nVorsicht: Das hat zur Folge, dass alle Nachrichten analysiert werden, was die Last auf dem Smarti-Server signifikant erhöht!",
     "Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types": "Nicht hervorzuhebende Token-Typen",
     "Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types_Description": "Kommaseparierte Liste von Smarti Token-Typen, die nicht in Nachrichten hervorgehboben werden sollen.",
