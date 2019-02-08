@@ -89,6 +89,15 @@ Meteor.startup(() => {
 				i18nDescription: 'Assistify_AI_Smarti_Inline_Highlighting_Enabled_Description',
 			});
 
+			this.add('Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types', 'Attribute', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types',
+				i18nDescription: 'Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types_Description',
+				enableQuery: [{ _id: 'Assistify_AI_Smarti_Inline_Highlighting_Enabled', value: true }],
+			});
+
+
 			this.add('Assistify_AI_Resync', 'triggerResync', {
 				type: 'action',
 				i18nDescription: 'Assistify_AI_Resync_Description',
