@@ -146,6 +146,10 @@
 	color: #d5195b;
 }
 
+.recognized-term .text {
+	border-bottom: 1px dashed;
+}
+
 .recognized-term::after {
 	content: "\2197";
 	vertical-align: super;

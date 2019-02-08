@@ -13,7 +13,7 @@ const highlightRecognizedTerms = function(message) {
 		if (message.recognizedTerms) {
 			message.recognizedTerms.forEach((term) => {
 				const regexpFindTerm = `(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(term) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`;
-				html = html.replace(new RegExp(regexpFindTerm, 'gmi'), '$1<span class="recognized-term">$2</span>$3');
+				html = html.replace(new RegExp(regexpFindTerm, 'gmi'), '$1<span class="recognized-term"><span class="text">$2</span></span>$3');
 			});
 		}
 		message.html = html;
