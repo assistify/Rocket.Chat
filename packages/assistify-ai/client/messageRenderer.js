@@ -22,9 +22,10 @@ const highlightrecognizedTokens = function(message) {
 						we'll remove it for this processing since else, the negative lookahead of the regex,
 						which prevents replacement inside html-tags such as links, will prevent replacing of any content
 					*/
-					const wrappedInParagraph = html.substr(0, 3) === '<p>' && html.substr(html.length - 5, 4) === '</p>';
+					html = html.trim();
+					const wrappedInParagraph = html.startsWith('<p>') && html.endsWith('</p>');
 					if (wrappedInParagraph) {
-						html = html.substr(3, html.length - 8);
+						html = html.substr(3, html.length - 7);
 					}
 					const regexpFindTerm = `(^|\\b|[\\s.,،'\\\"\\+!?:-])(${ s.escapeRegExp(term.value) })($|\\b|[\\s.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`;
 					html = html.replace(new RegExp(regexpFindTerm, 'gmi'), '$1<span class="recognized-term"><span class="text">$2</span></span>$3');
