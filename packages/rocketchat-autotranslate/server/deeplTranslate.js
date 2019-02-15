@@ -90,6 +90,14 @@ class DeeplAutoTranslate extends AutoTranslate {
 					language: 'pl',
 					name: TAPi18n.__('Polish', { lng: target }),
 				},
+				{
+					language: 'pt',
+					name: TAPi18n.__('Portuguese', { lng: target }),
+				},
+				{
+					language: 'ru',
+					name: TAPi18n.__('Russian', { lng: target }),
+				},
 			];
 		}
 	}
