@@ -1,8 +1,5 @@
 RocketChat.models.Messages.addTranslations = function(messageId, translations, providerName) {
-	const updateObj = {};
-	if (providerName) {
-		updateObj.translations.provider = providerName;
-	}
+	const updateObj = { translationProvider: providerName };
 	Object.keys(translations).forEach((key) => {
 		const translation = translations[key];
 		updateObj[`translations.${ key }`] = translation;
