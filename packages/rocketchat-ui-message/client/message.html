@@ -33,7 +33,7 @@
 			{{#if showTranslated}}
 				<span class="translated">
 					<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
-					{{ translationProvider }}
+					<span class="translation-provider">{{ translationProvider }}</span>
 				</span>
 			{{/if}}
 			{{#if sentByEmail}}
