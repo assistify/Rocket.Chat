@@ -1,7 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
-
-RocketChat.models.Messages.addTranslations = function(messageId, translations) {
-	const updateObj = {};
+RocketChat.models.Messages.addTranslations = function(messageId, translations, providerName) {
+	const updateObj = { translationProvider: providerName };
 	Object.keys(translations).forEach((key) => {
 		const translation = translations[key];
 		updateObj[`translations.${ key }`] = translation;
