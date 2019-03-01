@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars,new-cap */
+import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-
 import { WordCloud } from 'meteor/overture8:wordcloud2';
 
 function drawWords() {

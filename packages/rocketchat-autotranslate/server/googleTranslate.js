@@ -6,6 +6,8 @@
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { HTTP } from 'meteor/http';
 
 /**
  * Represents google translate class

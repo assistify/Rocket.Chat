@@ -1,6 +1,9 @@
-/* globals modal */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
 
-this.modal = {
+modal = {
 	renderedModal: null,
 	open(config = {}, fn, onCancel) {
 		config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));

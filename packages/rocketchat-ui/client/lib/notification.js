@@ -1,9 +1,16 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
+import { getAvatarAsPng } from './avatar';
 
-const KonchatNotification = {
+KonchatNotification = {
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
@@ -79,7 +86,6 @@ const KonchatNotification = {
 			}
 		}
 
-		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
 			return KonchatNotification.notify(notification);
@@ -169,5 +175,3 @@ Meteor.startup(() => {
 		}
 	});
 });
-export { KonchatNotification };
-this.KonchatNotification = KonchatNotification;

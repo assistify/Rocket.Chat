@@ -75,6 +75,7 @@ describe('[Message Popup]', () => {
 			checkIfUserIsValid(username, email, password);
 
 			sideNav.openChannel('general');
+
 			sideNav.general.waitForVisible(5000);
 			sideNav.general.click();
 		});

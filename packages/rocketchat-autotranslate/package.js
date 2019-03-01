@@ -10,6 +10,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'ddp-rate-limiter',
 		'rocketchat:lib',
+		'templating',
+		'rocketchat:utils',
 	]);
 
 	api.use('templating', 'client');
@@ -38,6 +40,8 @@ Package.onUse(function(api) {
 		'server/methods/translateMessage.js',
 		'server/methods/getSupportedLanguages.js',
 	], 'server');
+
+	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
 

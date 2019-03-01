@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+
 const DURATION_WEEK = 1000 * 60 * 60 * 24 * 7;
 Meteor.methods({
 	hideOldSubscriptions(userId = Meteor.userId(), idleDuration = DURATION_WEEK) {

@@ -1,5 +1,5 @@
-/* globals RocketChat */
-
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { SmartiAdapter } from '../lib/SmartiAdapter';
 
 Meteor.methods({

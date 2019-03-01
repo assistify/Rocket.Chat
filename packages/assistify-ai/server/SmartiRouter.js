@@ -1,5 +1,6 @@
-/* globals SystemLogger, RocketChat */
-
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { Match, check } from 'meteor/check';
 import { SmartiAdapter } from './lib/SmartiAdapter';
 
 /**
