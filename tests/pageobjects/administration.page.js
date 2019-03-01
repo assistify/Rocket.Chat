@@ -224,8 +224,8 @@ class Administration extends Page {
 	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
 	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
 
-	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .button.expand'); }
-	get buttonFirstSectionExpand() { return browser.element('.section:nth-of-type(1) .button.expand'); }
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button'); }
+	get buttonFirstSectionExpand() { return browser.element('.section:nth-of-type(1) .rc-button'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);
