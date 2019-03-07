@@ -1,6 +1,8 @@
+
 # Assistify 0.9.9
 
 - Minor fixes
+- Assistify.Chat is now based on Rocket.Chat 0.73.0!
 
 # Assistify 0.9.8
 
@@ -58,49 +60,6 @@ Reason for this quite unusual behavior is that we wanted to return closer to the
 - Finally, we added our AI component Smarti to be available in all public channels and private groups now ([#419](https://github.com/assistify/Rocket.Chat/issues/419)) - and we'll continue developing Smarti to be even smarter. For the time being, if you remember that you have been asked a similar question earlier: Click on the lightbulb in the top-right and check whether Smarti can help you with previous conversations. Same if you know that the current chat is about something you noted down in a wiki. Check whether Smarti could find it for you and reduce your effort to reply - and let us know!
 
 Assistify.Chat is now based on Rocket.Chat 0.68.5!
-
-# 0.73.2
-`2019-01-07  ·  1 🎉  ·  3 👩‍💻👨‍💻`
-
-### Engine versions
-- Node: `8.11.4`
-- NPM: `6.4.1`
-- MongoDB: `3.2, 3.4, 3.6, 4.0`
-
-### 🎉 New features
-
-- Cloud Integration ([#13013](https://github.com/RocketChat/Rocket.Chat/pull/13013))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@graywolf336](https://github.com/graywolf336)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-# 0.73.1
-`2018-12-28  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-### Engine versions
-- Node: `8.11.4`
-- NPM: `6.4.1`
-- MongoDB: `3.2, 3.4, 3.6, 4.0`
-
-### 🐛 Bug fixes
-
-- Default importer path ([#13045](https://github.com/RocketChat/Rocket.Chat/pull/13045))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Execute tests with versions 3.2, 3.4, 3.6 and 4.0 of MongoDB ([#13049](https://github.com/RocketChat/Rocket.Chat/pull/13049))
-- Regression: Get room's members list not working on MongoDB 3.2 ([#13051](https://github.com/RocketChat/Rocket.Chat/pull/13051))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.73.0
 `2018-12-28  ·  10 🎉  ·  9 🚀  ·  34 🐛  ·  84 🔍  ·  26 👩‍💻👨‍💻`
