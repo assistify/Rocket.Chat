@@ -1,8 +1,13 @@
-/* globals popover */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
 import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
+import { modal, ChatRoom, popover } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const common = {
 	canLeaveRoom() {

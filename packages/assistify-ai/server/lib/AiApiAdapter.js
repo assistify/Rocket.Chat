@@ -1,4 +1,5 @@
-/* globals _ */
+import { HTTP } from 'meteor/http';
+import _ from 'underscore';
 
 export class ApiAiAdapter {
 	constructor(adapterProps) {

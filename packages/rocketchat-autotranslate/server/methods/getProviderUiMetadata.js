@@ -1,4 +1,5 @@
 import { TranslationProviderRegistry } from '../autotranslate';
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	'autoTranslate.getProviderUiMetadata'() {
