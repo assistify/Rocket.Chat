@@ -88,11 +88,7 @@ RocketChat.QueueMethods = {
 	 * only the client until paired with an agent
 	 */
 	'Guest_Pool'(guest, message, roomInfo) {
-		let agents = RocketChat.Livechat.getOnlineAgents(guest.department);
-
-		if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
-			agents = RocketChat.Livechat.getAgents(guest.department);
-		}
+		const agents = RocketChat.Livechat.getAgents(guest.department);
 
 		if (agents.count() === 0) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
