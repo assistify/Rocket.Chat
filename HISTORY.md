@@ -1,3 +1,5 @@
+# Assistify 1.0.0
+- Smarti highligthing optimisation
 
 # Assistify 0.9.9
 
