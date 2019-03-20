@@ -2,7 +2,7 @@
 # Assistify 0.9.9
 
 - Minor fixes
-- Assistify.Chat is now based on Rocket.Chat 0.73.0!
+- Assistify.Chat is now based on Rocket.Chat 0.73.0
 
 # Assistify 0.9.8
 
