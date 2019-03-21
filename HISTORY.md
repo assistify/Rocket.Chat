@@ -1,3 +1,5 @@
+# Assistify 0.9.10
+- Smarti Highlighting Optimization
 
 # Assistify 0.9.9
 
