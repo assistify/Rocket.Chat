@@ -432,9 +432,10 @@ workflows:
             - test-without-oplog-mongo-3-4
             - test-without-oplog-mongo-3-6
             - test-without-oplog-mongo-4-0
+            - hold
           filters:
             branches:
-              only: 
+              only:
                 - develop
                 - master
             tags:
