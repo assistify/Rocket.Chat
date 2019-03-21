@@ -1,3 +1,6 @@
+# Assistify 0.9.11
+- Live chat improvement: Open LC requests are now visible to other agents in Guest pool routing mechanism.
+
 # Assistify 0.9.10
 - Smarti Highlighting Optimization
 
