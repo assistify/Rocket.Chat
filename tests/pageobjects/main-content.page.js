@@ -78,6 +78,25 @@ class MainContent extends Page {
 		}, 5000);
 	}
 
+	sendMessageOptimistic(text) {
+		this.setTextToInput(text);
+		this.sendBtn.click();
+	}
+
+	waitForMessageArrival(text, timeout) {
+		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .body', timeout);
+			return browser.getText('.message:last-child .body') === text;
+		}, timeout);
+	}
+
+	confirmPopup(which) {
+		browser.waitUntil(function() {
+			browser.waitForVisible(`input[value="${ which }"]`);
+			return browser.element(`input[value="${ which }"]`).click();
+		}, 5000);
+	}
+
 	// adds text to the input
 	addTextToInput(text) {
 		this.messageInput.waitForVisible(5000);

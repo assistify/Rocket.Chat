@@ -113,7 +113,7 @@ module.exports = {
 		reporter: 'spec',
 		slow: 100,
 		// retries: 3,
-		bail: true, // bail after first test failure
+		bail: false, // bail after first test failure
 	},
 
 	// 	// - - - - JASMINE  - - - -
