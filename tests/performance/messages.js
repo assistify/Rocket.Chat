@@ -8,11 +8,13 @@ import sideNav from '../pageobjects/side-nav.page';
 import { username, email, password } from '../data/user.js';
 import { checkIfUserIsValid } from '../data/checks';
 
+const greyTimeout = process.env.GREY_TIMEOUT || 2000;
+
 function singleMessage(index) {
-	it('Message sending should work in less than 2 seconds', () => {
+	it(`Message sending should work in less than ${ greyTimeout } seconds`, () => {
 		const text = `how long is the round-trip for message #${ index }?`;
 		mainContent.sendMessageOptimistic(text);
-		mainContent.waitForMessageArrival(text, 1000);
+		mainContent.waitForMessageArrival(text, greyTimeout);
 		// mainContent.openMessageActionMenu();
 		// mainContent.messageDelete.click();
 		// mainContent.confirmPopup('Yes, delete it!');
