@@ -125,18 +125,6 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		};
 	}
 
-	// const from = room.t === 'd' ? message.u.name : room.name;	// using user full-name/channel name in from address
-	// email.from = `${ String(from).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
-	// // If direct reply enabled, email content with headers
-	// if (RocketChat.settings.get('Direct_Reply_Enable')) {
-	// 	const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') || RocketChat.settings.get('Direct_Reply_Username');
-	// 	email.headers = {
-	// 		// Reply-To header with format "username+messageId@domain"
-	// 		'Reply-To': `${ replyto.split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
-	// 	};
-	// }
-	console.log('email-headers: ', email.headers);
-
 	RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
 	return Mailer.send(email);
 }
