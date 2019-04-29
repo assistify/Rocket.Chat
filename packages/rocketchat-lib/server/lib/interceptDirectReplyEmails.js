@@ -1,7 +1,27 @@
 import IMAP from 'imap';
 import POP3 from 'poplib';
+import { inspect } from 'util';
 import { simpleParser } from 'mailparser';
 
+/**
+ * Provides a email interceptor for Rocket.Chat that can be connected to an IMAP or an POP3 mailbox.
+ * 
+ * TODO: The semantic of the filename `interceptDirectReplyEmails` does not fit the current implementation.
+ * TODO: This file works/handles all new emails for the given mailbox.
+ * TODO: Next to direct reply messages an E-Mail interceptor can be used for several use cases:
+ * 
+ * 1) Migrating from email-support to livechat-support (In order to keep existing email support mailbox alive)
+ *    - Opens a new livechat conversation when a mail comes in and takes the mail content as first message
+ *    - automatically send an livechat invitation via email to the customer
+ * 
+ * 2) Synchronize a email conversations with chatbased conversations
+ *    - Writing emails to an named mailbox will create new chat message in a specified channel
+ *    - Writing chat message within that channel will also send a mail to the according mailbox
+ * 
+ * 3) Direct reply to message via mail
+ *    - Sending a chat message while users are offline will cause an email notification
+ *    - Direct reply allows to answer to the chat message by reply to the email notification
+ */
 export class IMAPIntercepter {
 	constructor() {
 		this.imap = new IMAP({
@@ -14,8 +34,6 @@ export class IMAPIntercepter {
 			connTimeout: 30000,
 			keepalive: true,
 		});
-
-		this.delete = RocketChat.settings.get('Direct_Reply_Delete') ? RocketChat.settings.get('Direct_Reply_Delete') : true;
 
 		// On successfully connected.
 		this.imap.on('ready', Meteor.bindEnvironment(() => {
@@ -84,7 +102,7 @@ export class IMAPIntercepter {
 			if (newEmails.length > 0) {
 				const f = this.imap.fetch(newEmails, {
 					// fetch headers & first body part.
-					bodies: ['HEADER.FIELDS (FROM TO DATE MESSAGE-ID)', '1'],
+					bodies: ['HEADER.FIELDS (FROM TO REFERENCES SUBJECT DATE MESSAGE-ID)', '1'],
 					struct: true,
 					markSeen: true,
 				});
@@ -114,19 +132,34 @@ export class IMAPIntercepter {
 								email.headers.to = email.headers.to[0];
 								email.headers.date = email.headers.date[0];
 								email.headers.from = email.headers.from[0];
+								email.headers.subject = email.headers.subject[0];
+								if (email.headers.references && email.headers.references[0]) {
+									email.headers.references = email.headers.references[0];
+								}
 							}
 						});
 					});
-
-					// On fetched each message, pass it further
 					msg.once('end', Meteor.bindEnvironment(() => {
-						// delete message from inbox
-						if (this.delete) {
-							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
-								if (err) { console.log(`Mark deleted error: ${ err }`); }
-							});
+						// direct reply emails must have a message id (in its 'to' or 'subject' header) and a need a reference (in-reply-to)
+						if ((email.headers.subject.indexOf('reply:') > 0 || email.headers.to.indexOf('+') > 0) && email.headers.references) {
+							// On fetched each message, pass it further
+							if (RocketChat.settings.get('Direct_Reply_Delete')) {
+								this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
+									if (err) { console.log(`Mark deleted error: ${ err }`); }
+								});
+							} else {
+								this.imap.seq.addFlags(seqno, 'Flagged', (err) => {
+									if (err) { console.log(`Mark as flagged error: ${ err }`); }
+								});
+							}
+							RocketChat.processDirectEmail(email);
+						} else if (email.headers.subject.indexOf('livechat:') > 0) {
+							// TODO: start a livechat
+						} else if (email.headers.subject.indexOf('groupchat:') > 0) {
+							// TODO: create a new group
+						} else {
+							// TODO: handle sth. else
 						}
-						RocketChat.processDirectEmail(email);
 					}));
 				}));
 				f.once('error', (err) => {
