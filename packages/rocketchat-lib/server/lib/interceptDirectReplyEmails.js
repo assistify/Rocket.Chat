@@ -1,23 +1,22 @@
 import IMAP from 'imap';
 import POP3 from 'poplib';
-import { inspect } from 'util';
 import { simpleParser } from 'mailparser';
 
 /**
  * Provides a email interceptor for Rocket.Chat that can be connected to an IMAP or an POP3 mailbox.
- * 
+ *
  * TODO: The semantic of the filename `interceptDirectReplyEmails` does not fit the current implementation.
  * TODO: This file works/handles all new emails for the given mailbox.
  * TODO: Next to direct reply messages an E-Mail interceptor can be used for several use cases:
- * 
+ *
  * 1) Migrating from email-support to livechat-support (In order to keep existing email support mailbox alive)
  *    - Opens a new livechat conversation when a mail comes in and takes the mail content as first message
  *    - automatically send an livechat invitation via email to the customer
- * 
+ *
  * 2) Synchronize a email conversations with chatbased conversations
  *    - Writing emails to an named mailbox will create new chat message in a specified channel
  *    - Writing chat message within that channel will also send a mail to the according mailbox
- * 
+ *
  * 3) Direct reply to message via mail
  *    - Sending a chat message while users are offline will cause an email notification
  *    - Direct reply allows to answer to the chat message by reply to the email notification
