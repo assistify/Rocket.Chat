@@ -148,7 +148,7 @@ statistics.get = function _getStatistics() {
 	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 	statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-	statistics.usages = getUsages();
+//	statistics.usages = getUsages();
 
 	return statistics;
 };
