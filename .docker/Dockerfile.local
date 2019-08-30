@@ -52,4 +52,5 @@ ENV DEPLOY_METHOD=docker \
 
 EXPOSE 3000
 
-CMD ["node", "main.js"]
+COPY .docker/startup.sh /app/bundle/startup.sh
+CMD ["/bin/bash", "startup.sh"]
