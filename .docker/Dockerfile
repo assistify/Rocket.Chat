@@ -1,7 +1,6 @@
 FROM rocketchat/base:8
 
 ADD . /app
-COPY .docker/startup.sh /app/bundle/startup.sh
 
 RUN set -x \
  && cd /app/bundle/programs/server \
@@ -26,4 +25,4 @@ ENV DEPLOY_METHOD=docker \
 
 EXPOSE 3000
 
-CMD ["/bin/bash", "startup.sh"]
+CMD ["/bin/bash", "/app/startup.sh"]

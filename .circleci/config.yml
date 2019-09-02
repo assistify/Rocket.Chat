@@ -361,6 +361,7 @@ jobs:
 
             echo "Building custom Docker image"
             cp ~/repo/.docker/Dockerfile .
+            cp ~/repo/.docker/startup.sh .
             docker build -t assistify/chat:pr-$CIRCLE_PR_NUMBER .
             docker push assistify/chat:pr-$CIRCLE_PR_NUMBER
 
