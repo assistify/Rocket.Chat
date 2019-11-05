@@ -20,7 +20,7 @@ Meteor.startup(function() {
 			key: 'deepl-translate',
 			i18nLabel: 'AutoTranslate_DeepL',
 		}, {
-			key: 'ms-translate',
+			key: 'microsoft-translate',
 			i18nLabel: 'AutoTranslate_Microsoft',
 		}],
 		enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
@@ -67,7 +67,7 @@ Meteor.startup(function() {
 			{
 				_id: 'AutoTranslate_Enabled', value: true,
 			}, {
-				_id: 'AutoTranslate_ServiceProvider', value: 'ms-translate',
+				_id: 'AutoTranslate_ServiceProvider', value: 'microsoft-translate',
 			}],
 	});
 });
