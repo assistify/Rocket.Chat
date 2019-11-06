@@ -57,7 +57,7 @@ Meteor.startup(function() {
 			}],
 	});
 
-	settings.add('AutoTranslate_MSAPIKey', '', {
+	settings.add('AutoTranslate_MicrosoftAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Microsoft',
