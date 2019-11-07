@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { logger } from './logger';
 import { settings } from '../../settings';
 
 /**
@@ -122,7 +122,7 @@ class MsAutoTranslate extends AutoTranslate {
 				));
 			}
 		} catch (e) {
-			SystemLogger.error('Error translating message', e);
+			logger.microsoft.error('Error translating message attachment', e);
 		}
 		return translations;
 	}
@@ -156,7 +156,7 @@ class MsAutoTranslate extends AutoTranslate {
 					}
 				}
 			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
+				logger.microsoft.error('Error translating message attachment', e);
 			}
 		});
 		return translations;
