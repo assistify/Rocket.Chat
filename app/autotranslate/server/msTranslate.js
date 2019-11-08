@@ -122,7 +122,7 @@ class MsAutoTranslate extends AutoTranslate {
 				));
 			}
 		} catch (e) {
-			logger.microsoft.error('Error translating message attachment', e);
+			logger.microsoft.error('Error translating message', e);
 		}
 		return translations;
 	}
@@ -164,7 +164,6 @@ class MsAutoTranslate extends AutoTranslate {
 				));
 			}
 		} catch (e) {
-			// SystemLogger.error('Error translating message attachment', e);
 			logger.microsoft.error('Error translating message attachment', e);
 		}
 		return translations;
