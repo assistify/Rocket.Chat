@@ -79,7 +79,7 @@ class MsAutoTranslate extends AutoTranslate {
 				language,
 				name: languages.data.translation[language].name,
 			}));
-			return this.supportedLanguages[target];
+			return this.supportedLanguages[target || 'en'];
 		}
 	}
 
