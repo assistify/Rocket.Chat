@@ -478,12 +478,6 @@ workflows:
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-with-oplog-mongo-3-2: &test-mongo
-          requires:
-            - build
-          filters:
-            tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - test-with-oplog-mongo-3-4: &test-mongo-no-pr
           requires:
             - build
@@ -498,7 +492,6 @@ workflows:
           requires:
             - image-build
             - image-build-prod
-            - test-with-oplog-mongo-3-2
             - test-with-oplog-mongo-3-4
             - test-with-oplog-mongo-3-6
             - test-with-oplog-mongo-4-0
@@ -537,7 +530,7 @@ workflows:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
-            - build
+            - pr-build
           filters:
             branches:
               ignore:
@@ -545,11 +538,4 @@ workflows:
                 - master
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
-      - pr-image-build:
-          requires:
-            - pr-build
-          filters:
-            branches:
-              ignore: develop
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+
