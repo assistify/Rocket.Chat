@@ -1,3 +1,6 @@
+# 2.3.2-0.9.15
+
+This brings an updated livechat package - with BBBBetter user experience
 
 # 2.3.2
 `2019-12-12  ·  2 🐛  ·  2 👩‍💻👨‍💻`
