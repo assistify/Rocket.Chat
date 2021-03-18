@@ -52,6 +52,7 @@ Meteor.startup(function() {
 		{ _id: 'leave-c',                            roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
 		{ _id: 'leave-p',                            roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
 		{ _id: 'manage-assets',                      roles: ['admin'] },
+		{ _id: 'manage-email-inbox',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                       roles: ['admin'] },
 		{ _id: 'manage-user-status',                 roles: ['admin'] },
 		{ _id: 'manage-outgoing-integrations',       roles: ['admin'] },
@@ -120,6 +121,7 @@ Meteor.startup(function() {
 		{ _id: 'edit-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages',                      roles: ['admin'] },
+		{ _id: 'toggle-room-e2e-encryption',         roles: ['owner'] },
 	];
 
 	for (const permission of permissions) {
@@ -187,7 +189,15 @@ Meteor.startup(function() {
 		}, { fields: { _id: 1 } });
 
 		if (!existent) {
-			Permissions.upsert({ _id: permissionId }, { $set: permission });
+			try {
+				Permissions.upsert({ _id: permissionId }, { $set: permission });
+			} catch (e) {
+				if (!e.message.includes('E11000')) {
+					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
+					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
+					Permissions.upsert({ _id: permissionId }, { $set: permission });
+				}
+			}
 		}
 
 		delete previousSettingPermissions[permissionId];

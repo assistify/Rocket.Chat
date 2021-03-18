@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Table, Flex } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import MarkdownText from '../../components/basic/MarkdownText';
+import UserAvatar from '../../components/avatar/UserAvatar';
+import MarkdownText from '../../components/MarkdownText';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
@@ -47,7 +47,7 @@ function UserTable({
 
 	const directRoute = useRoute('direct');
 
-	const data = useEndpointData('directory', query) || {};
+	const { value: data = {} } = useEndpointData('directory', query);
 
 	const onClick = useCallback((username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
@@ -87,9 +87,11 @@ function UserTable({
 		</Table.Cell>}
 	</Table.Row>, [mediaQuery, federation, canViewFullOtherUserInfo, formatDate, onClick]);
 
+	const refAutoFocus = useAutoFocus(true);
+
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Users')} onChange={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Users')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}
