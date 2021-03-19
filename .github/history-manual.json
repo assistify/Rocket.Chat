@@ -43,8 +43,22 @@
 			"sampaiodiego"
 		]
 	}],
-	"3.8.6": [{
+	"3.9.1": [{
+		"title": "[FIX] Exception on certain login cases including SAML",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
+	}],
+	"3.10.5": [{
 		"title": "[FIX] Security Hotfix",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
+	}],
+	"3.12.0-rc.3": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
 		"userLogin": "sampaiodiego",
 		"contributors": [
 			"sampaiodiego"

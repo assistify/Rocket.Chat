@@ -8,6 +8,7 @@ import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { roomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { escapeRegExp } from '../../lib/escapeRegExp';
 
 function fetchRooms(userId, rooms) {
 	if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
@@ -21,7 +22,7 @@ function fetchRooms(userId, rooms) {
 }
 
 function searchRooms({ userId, text }) {
-	const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
+	const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
 
 	const roomOptions = {
 		limit: 5,
@@ -91,6 +92,7 @@ function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtr
 		}
 	}
 }
+
 
 function _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 	// Then get the outsiders if allowed
@@ -174,7 +176,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 	if (users.length === 0 && canListOutsiders) {
 		const exactMatch = Promise.await(Users.findOneByUsernameIgnoringCase(text, { projection: options.projection, readPreference: options.readPreference }));
 		if (exactMatch) {
-			users.push(exactMatch);
+			users.push(mapOutsiders(exactMatch));
 			processLimitAndUsernames(options, usernames, users);
 		}
 	}

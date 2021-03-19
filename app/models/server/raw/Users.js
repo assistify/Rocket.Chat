@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -46,7 +45,7 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = {
@@ -69,7 +68,7 @@ export class UsersRaw extends BaseRaw {
 	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
-		if (Array.isArray(exceptions)) {
+		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
@@ -88,7 +87,7 @@ export class UsersRaw extends BaseRaw {
 			return this.find(query, options);
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + s.escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
@@ -113,7 +112,7 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = { username };
@@ -134,9 +133,9 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department) {
+	async getNextLeastBusyAgent(department, ignoreAgentId) {
 		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
 			{ $lookup: {
 				from: 'rocketchat_subscription',
 				let: { id: '$_id' },
@@ -192,7 +191,7 @@ export class UsersRaw extends BaseRaw {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
 			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: '$subs' } } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $eq: ['$$sub.t', 'l'] } } } } } },
 			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
@@ -387,6 +386,27 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	getUserLanguages() {
+		const pipeline = [
+			{
+				$match: {
+					language: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+			},
+			{
+				$group: {
+					_id: '$language',
+					total: { $sum: 1 },
+				},
+			},
+		];
+
+		return this.col.aggregate(pipeline).toArray();
 	}
 
 	updateStatusText(_id, statusText) {

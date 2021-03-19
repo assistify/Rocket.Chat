@@ -214,6 +214,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 
 OEmbed.getUrlMetaWithCache = function(url, withFragment) {
 	const cache = OEmbedCache.findOneById(url);
+
 	if (cache != null) {
 		return cache.data;
 	}
@@ -257,6 +258,8 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%\"');
+
 OEmbed.rocketUrlParser = function(message) {
 	if (Array.isArray(message.urls)) {
 		let attachments = [];
@@ -276,6 +279,9 @@ OEmbed.rocketUrlParser = function(message) {
 				}
 				if (data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta);
+					if (item.meta && item.meta.oembedHtml) {
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					}
 				}
 				if (data.headers != null) {
 					item.headers = getRelevantHeaders(data.headers);

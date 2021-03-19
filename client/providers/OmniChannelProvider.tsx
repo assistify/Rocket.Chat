@@ -7,11 +7,12 @@ import { Notifications } from '../../app/notifications/client';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useUser, useUserId } from '../contexts/UserContext';
-import { useMethodData, AsyncState } from '../contexts/ServerContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
+import { useMethodData } from '../hooks/useMethodData';
+import { AsyncStatePhase } from '../hooks/useAsyncState';
 
 const args = [] as any;
 
@@ -43,6 +44,10 @@ const useOmnichannelInquiries = (): Array<any> => {
 
 	return useReactiveValue(useCallback(() => LivechatInquiry.find({
 		status: 'queued',
+		$or: [
+			{ defaultAgent: { $exists: false } },
+			{ 'defaultAgent.agentId': uid },
+		],
 	}, {
 		sort: {
 			queueOrder: 1,
@@ -50,7 +55,7 @@ const useOmnichannelInquiries = (): Array<any> => {
 			estimatedServiceTimeAt: 1,
 		},
 		limit: omnichannelPoolMaxIncoming,
-	}).fetch(), [omnichannelPoolMaxIncoming]));
+	}).fetch(), [omnichannelPoolMaxIncoming, uid]));
 };
 
 const OmnichannelDisabledProvider: FC = ({ children }) => <OmnichannelContext.Provider value={emptyContext} children={children}/>;
@@ -79,12 +84,12 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 	});
 
 	const user = useUser() as IOmnichannelAgent;
-	const [routeConfig, status, reload] = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
+	const { value: routeConfig, phase: status, reload } = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
 
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
 
 	useEffect(() => {
-		status !== AsyncState.LOADING && reload();
+		status !== AsyncStatePhase.LOADING && reload();
 	}, [omnichannelRouting, reload]); // eslint-disable-line
 
 	useEffect(() => {
