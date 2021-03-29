@@ -363,7 +363,26 @@ jobs:
 
         docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
 
-        cp $GITHUB_WORKSPACE/.docker/Dockerfile .
+    - name: Publish assets
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
+        GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+        REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
+        REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
+        UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+      run: |
+        if [[ '${{ github.event_name }}' = 'release' ]]; then
+          export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+          export CIRCLE_BRANCH=""
+        else
+          export CIRCLE_TAG=""
+          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
+        fi;
+
+        export CIRCLE_SHA1=$GITHUB_SHA
+        export CIRCLE_BUILD_NUM=$GITHUB_SHA
 
         export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
 
