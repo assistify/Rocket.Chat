@@ -31,7 +31,7 @@ jobs:
         cat $GITHUB_EVENT_PATH
 
     - name: Use Node.js 12.18.4
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: "12.18.4"
 
@@ -51,7 +51,7 @@ jobs:
 
     - name: Cache cypress
       id: cache-cypress
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -59,19 +59,19 @@ jobs:
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: node_modules
         key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ./.meteor/local
         key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -122,6 +122,12 @@ jobs:
 
     - run: meteor npm run typecheck
 
+    - name: Build Storybook to sanity check components
+      run: npm run build-storybook ; rm -rf ./storybook-static
+      env:
+        NODE_OPTIONS: --max_old_space_size=8192
+
+
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
     #   run: |
@@ -136,6 +142,13 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
       run: |
         meteor reset
+
+    - name: Try building micro services
+      run: |
+        cd ./ee/server/services
+        npm i
+        npm run build
+        rm -rf dist/
 
     - name: Build Rocket.Chat From Pull Request
       if: startsWith(github.ref, 'refs/pull/') == true
@@ -160,13 +173,13 @@ jobs:
         tar czf Rocket.Chat.test.tar.gz ./build-test
 
     - name: Store build for tests
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: build-test
         path: /tmp/Rocket.Chat.test.tar.gz
 
     - name: Store build
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: build
         path: /tmp/build
@@ -187,7 +200,7 @@ jobs:
         mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Restore build for tests
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: build-test
         path: /tmp
@@ -199,7 +212,7 @@ jobs:
         cd -
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -216,7 +229,7 @@ jobs:
 
     - name: Cache cypress
       id: cache-cypress
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -224,7 +237,7 @@ jobs:
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -282,25 +295,25 @@ jobs:
 
     - name: Cache node modules
       id: cache-nodemodules
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: node_modules
         key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ./.meteor/local
         key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Use Node.js 12.18.4
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: "12.18.4"
 
@@ -331,7 +344,6 @@ jobs:
         meteor npm --versions
         meteor node -v
         git version
-        echo $GITHUB_REF
 
     - name: npm install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
@@ -363,26 +375,7 @@ jobs:
 
         docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
 
-    - name: Publish assets
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-east-1'
-        GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-        REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
-        REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
-        UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
-      run: |
-        if [[ '${{ github.event_name }}' = 'release' ]]; then
-          export CIRCLE_TAG="${GITHUB_REF#*tags/}"
-          export CIRCLE_BRANCH=""
-        else
-          export CIRCLE_TAG=""
-          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
-        fi;
-
-        export CIRCLE_SHA1=$GITHUB_SHA
-        export CIRCLE_BUILD_NUM=$GITHUB_SHA
+        cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
         export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
 
@@ -414,7 +407,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASS }}
 
     - name: Restore build
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: build
         path: /tmp/build
@@ -440,22 +433,22 @@ jobs:
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        GIT_TAG="${GITHUB_REF#*tags/}"
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
           IMAGE="${IMAGE}.preview"
         fi;
 
-        docker build -t ${IMAGE}:$CIRCLE_TAG .
-        docker push ${IMAGE}:$CIRCLE_TAG
+        docker build -t ${IMAGE}:$GIT_TAG .
+        docker push ${IMAGE}:$GIT_TAG
 
-        if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+        if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
           RELEASE="latest"
-        elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+        elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
           RELEASE="release-candidate"
         fi
 
-        docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
+        docker tag ${IMAGE}:$GIT_TAG ${IMAGE}:${RELEASE}
         docker push ${IMAGE}:${RELEASE}
 
     - name: Build Docker image for develop
